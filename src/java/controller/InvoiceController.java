@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author admin
  */
-@WebServlet(name = "InvoiceController", urlPatterns = {"/InvoiceController"})
+@WebServlet(name = "InvoiceController", urlPatterns = {"/Invoice/*"})
 public class InvoiceController extends HttpServlet {
 
     /**

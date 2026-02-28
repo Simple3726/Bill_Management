@@ -2,12 +2,8 @@ package service;
 
 import entity.ActivityLog;
 import entity.Invoice;
-import entity.Shift;
 import entity.User;
-import java.util.List;
-import repository.ActivityLogDAO;
 import repository.InvoiceDAO;
-import repository.ShiftDAO;
 
 /**
  *
@@ -28,7 +24,12 @@ public class InvoiceService {
         }
         invoice.setStatus("APPROVED");
         invoiceDAO.update(invoice);
-        //ghi log
+       
+        ShiftService shiftService = new ShiftService();
+        
+        ActivityLog log = new ActivityLog();
+        log.setUserId(currentUser.getUserId());
+        log.setShiftId(shiftService.getShiftByInvoice(invoiceId, invoice.getCreatedAt()));
         
     }
 }

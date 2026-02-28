@@ -22,6 +22,7 @@ public class InvoiceService {
         if(invoice.getAmount().compareTo(new BigDecimal(0)) <=0){
             throw new Exception("Amount must be larger than 0");
         }
+        invoice.setInvoiceCode(invoice.generateInvoiceCode());
         invoice.setStatus("APPROVED");
         
 //        if(invoice.getAmount().compareTo(new BigDecimal(5000000)) >= 0){

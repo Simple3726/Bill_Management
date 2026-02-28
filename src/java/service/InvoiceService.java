@@ -1,5 +1,7 @@
 package service;
 
+import entity.Invoice;
+
 /**
  *
  * @author admin
@@ -7,7 +9,10 @@ package service;
 public class InvoiceService {
 
     /**
-     * @param args the command line arguments
+     * Holding the CRUD function of Invoice
      */
     
+    public void CreateInvoice(Invoice invoice){
+        
+    }
 }

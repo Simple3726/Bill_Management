@@ -1,13 +1,15 @@
 package service;
 
+import java.time.LocalDateTime;
+
 /**
  *
  * @author admin
  */
 public class ShiftService {
 
-    /**
-     * @param args the command line arguments
-     */
+    public void getShiftByInvoice(Long invoiceId, LocalDateTime startTime, LocalDateTime endTime){
+        
+    }
     
 }

@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author admin
  */
-@WebServlet(name = "InvoiceController", urlPatterns = {"/Invoice/*"})
 
 @WebServlet(name = "InvoiceController", urlPatterns = {"/InvoiceController/*"})
 public class InvoiceController extends HttpServlet {

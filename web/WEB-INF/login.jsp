@@ -12,6 +12,13 @@
         <title>Login Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1>Login Page</h1>
+        <%
+            String alertLogout = (String)request.getAttribute("MSG_LOGOUT");// chuỗi này lấy request MSG_LOGOUT để in ra thông báo
+        %>
+        <h4><%= alertLogout %></h4>
+        <%}%>
+        
     </body>
+    
 </html>

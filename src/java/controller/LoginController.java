@@ -1,5 +1,6 @@
 package controller;
 
+import entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -7,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import repository.UserDAO;
 
 /**
  *
@@ -28,7 +30,10 @@ public class LoginController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-            
+            String userID = request.getParameter("userID");
+            String pass = request.getParameter("pass");
+            UserDAO dao = new UserDAO();
+            User user =  dao.
         }
     }
 

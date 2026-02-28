@@ -57,7 +57,7 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
-    }
+    }db                                                                                         
 
     public String getStatus() {
         return status;

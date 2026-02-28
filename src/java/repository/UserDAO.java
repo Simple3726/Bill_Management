@@ -4,10 +4,36 @@ import entity.User;
 import utils.DBConnection;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
+    public User login(String userID, String password) throws SQLException, ClassNotFoundException {
+        String sql = "";
+        User acc = null;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DBConnection.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, userID);
+            ps.setString(2, password);
+            
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                String username = rs.getString("username");
+                acc = new User(Long.MIN_VALUE, username, password, sql, sql, LocalDateTime.MAX);
+            }
+        }finally {
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (conn != null) conn.close();
+        }
+        return acc;
+    }
 
     // ===============================
     // CREATE

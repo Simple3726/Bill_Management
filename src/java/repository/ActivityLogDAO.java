@@ -17,7 +17,11 @@ public class ActivityLogDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, log.getUserId());
-            ps.setLong(2, log.getShiftId());
+            if (log.getShiftId() != null){
+                ps.setLong(2, log.getShiftId());
+            } else {
+                    ps.setNull(2, java.sql.Types.BIGINT);
+                    }
             ps.setString(3, log.getActionType());
             ps.setString(4, log.getEntityType());
             ps.setLong(5, log.getEntityId());
@@ -50,7 +54,27 @@ public class ActivityLogDAO {
 
         return list;
     }
+    
+    public List<ActivityLog> findByShift(Long shiftId){
+        List<ActivityLog> list = new ArrayList<>();
+        String sql = "SELECT * FROM ActivityLogs WHERE shift_id = ? ORDER BY created_at DESC";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
+            ps.setLong(1, shiftId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
     private ActivityLog mapResultSet(ResultSet rs) throws SQLException {
         ActivityLog log = new ActivityLog();
         log.setLogId(rs.getLong("log_id"));

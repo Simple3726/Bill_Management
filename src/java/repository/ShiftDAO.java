@@ -5,6 +5,7 @@ import utils.DBConnection;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,6 +113,9 @@ public class ShiftDAO {
         return list;
     }
 
+    // ========================================
+    // MAP RESULT
+    // ========================================
     private Shift mapResultSet(ResultSet rs) throws SQLException {
         Shift s = new Shift();
         s.setShiftId(rs.getLong("shift_id"));
@@ -126,5 +130,30 @@ public class ShiftDAO {
         }
         s.setStatus(rs.getString("status"));
         return s;
+    }
+
+    // ========================================
+    // Count Number of Shifts (Giữ lại từ master)
+    // ========================================
+     public int countShiftBetween(LocalDate start, LocalDate end) {
+        String sql = "SELECT COUNT(*) FROM Shifts WHERE shift_date BETWEEN ? AND ?";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(start));
+            ps.setDate(2, java.sql.Date.valueOf(end));
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
     }
 }

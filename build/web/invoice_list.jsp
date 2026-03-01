@@ -1,6 +1,6 @@
 <%-- 
-    Document   : dashboard
-    Created on : Feb 25, 2026, 2:29:09 PM
+    Document   : invoice_list
+    Created on : Feb 25, 2026, 2:29:29 PM
     Author     : admin
 --%>
 
@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Dash Board Page</title>
+        <title>Invoice List Page</title>
     </head>
     <body>
         <h1>Hello World!</h1>

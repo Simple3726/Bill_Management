@@ -1,6 +1,6 @@
 <%-- 
-    Document   : alert_list
-    Created on : Feb 25, 2026, 2:29:43 PM
+    Document   : error
+    Created on : Feb 25, 2026, 2:29:49 PM
     Author     : admin
 --%>
 
@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Alert Page</title>
+        <title>Error Page</title>
     </head>
     <body>
         <h1>Hello World!</h1>

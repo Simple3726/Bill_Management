@@ -14,12 +14,11 @@ public class AlertDAO {
     // =================================
     public boolean insert(Alert alert) {
 
-        String sql = "INSERT INTO Alerts " +
-                "(entity_type, entity_id, risk_score, message, status, created_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Alerts "
+                + "(entity_type, entity_id, risk_score, message, status, created_at) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, alert.getEntityType());
             ps.setLong(2, alert.getEntityId());
@@ -44,8 +43,7 @@ public class AlertDAO {
 
         String sql = "SELECT * FROM Alerts WHERE alert_id = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
@@ -69,9 +67,7 @@ public class AlertDAO {
         List<Alert> list = new ArrayList<>();
         String sql = "SELECT * FROM Alerts ORDER BY created_at DESC";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(mapResultSet(rs));
@@ -92,8 +88,7 @@ public class AlertDAO {
         List<Alert> list = new ArrayList<>();
         String sql = "SELECT * FROM Alerts WHERE entity_type = ? AND entity_id = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, entityType);
             ps.setLong(2, entityId);
@@ -118,8 +113,7 @@ public class AlertDAO {
 
         String sql = "UPDATE Alerts SET status = ? WHERE alert_id = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, status);
             ps.setLong(2, alertId);
@@ -134,14 +128,82 @@ public class AlertDAO {
     }
 
     // =================================
+    // COUNT ALL ALERT
+    // =================================
+    public int countAll() {
+
+        String sql = "SELECT COUNT(*) FROM Alerts";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    // =================================
+    // CHECK EXISTING ALERT (NEW)
+    // =================================
+    public boolean existsNewAlert(String entityType, Long entityId) {
+
+        String sql = "SELECT COUNT(*) FROM Alerts "
+                + "WHERE entity_type = ? AND entity_id = ? AND status = 'NEW'";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, entityType);
+            ps.setLong(2, entityId);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    // =================================
+    // COUNT BY STATUS
+    // =================================
+    public int countByStatus(String status) {
+
+        String sql = "SELECT COUNT(*) FROM Alerts WHERE status = ?";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    // =================================
     // DELETE
     // =================================
     public boolean delete(Long id) {
 
         String sql = "DELETE FROM Alerts WHERE alert_id = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;
@@ -151,6 +213,31 @@ public class AlertDAO {
         }
 
         return false;
+    }
+    // =================================
+    // FIND BY STATUS
+    // =================================
+
+    public List<Alert> findByStatus(String status) {
+
+        List<Alert> list = new ArrayList<>();
+        String sql = "SELECT * FROM Alerts WHERE status = ? ORDER BY created_at DESC";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
     // =================================

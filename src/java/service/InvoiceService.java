@@ -2,6 +2,9 @@ package service;
 
 import entity.Invoice;
 import java.math.BigDecimal;
+import java.util.List;
+import javax.servlet.ServletException;
+import repository.InvoiceDAO;
 
 /**
  *
@@ -13,13 +16,15 @@ public class InvoiceService {
      * Holding the CRUD function of Invoice
      */
     
-    public void CreateInvoice(Invoice invoice) throws Exception{
+    private InvoiceDAO dao = new InvoiceDAO();
+    
+    public void createInvoice(Invoice invoice) throws Exception{
         //khi create can truyen vao InvoiceCode, amount, status, createBy
         if(invoice.getAmount().compareTo(new BigDecimal(0)) <=0){
             throw new Exception("Amount must be larger than 0");
         }
         invoice.setInvoiceCode(invoice.generateInvoiceCode());
-        invoice.setStatus("APPROVED");
+        invoice.setStatus("COMPLETED");
         
 //        if(invoice.getAmount().compareTo(new BigDecimal(5000000)) >= 0){
 //            
@@ -27,5 +32,10 @@ public class InvoiceService {
 //         Call alertDAO to make an outlier alert
 
 
+    }
+    
+    public List<Invoice> getAllInvoice(){
+        List<Invoice> rs = dao.findAll();
+        return rs;
     }
 }

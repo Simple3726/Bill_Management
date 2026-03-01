@@ -17,7 +17,7 @@ public class DBConnection {
     public static final Connection getConnection() throws ClassNotFoundException, SQLException{
         Connection conn= null;
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        String url= "jdbc:sqlserver://localhost:1433;databaseName=Bill_Management";
+        String url= "jdbc:sqlserver://localhost:1433;databaseName=BillManagement";
         conn= DriverManager.getConnection(url, "sa", "12345");
         return conn;
     }

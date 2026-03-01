@@ -1,6 +1,7 @@
 package repository;
 
 import entity.Invoice;
+import java.math.BigDecimal;
 import utils.DBConnection;
 
 import java.sql.*;
@@ -138,6 +139,7 @@ public class InvoiceDAO {
 
         return list;
     }
+
     // =========================
     // Count Date
     // =========================
@@ -161,6 +163,7 @@ public class InvoiceDAO {
 
         return 0;
     }
+
     // =====================================
     // Count how many Invoices had Alerted
     // =====================================
@@ -213,5 +216,114 @@ public class InvoiceDAO {
         }
 
         return invoice;
+    }
+
+    // =====================================
+    // Get Revenue in range of time
+    // =====================================
+    public BigDecimal getRevenueBetween(LocalDate start, LocalDate end) {
+
+        String sql = "SELECT ISNULL(SUM(amount),0) "
+                + "FROM Invoices "
+                + "WHERE CAST(created_at AS DATE) BETWEEN ? AND ?";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(start));
+            ps.setDate(2, java.sql.Date.valueOf(end));
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBigDecimal(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return BigDecimal.ZERO;
+    }
+
+    // =====================================
+    // Count Invoice in range of time
+    // =====================================
+    public int countInvoiceBetween(LocalDate start, LocalDate end) {
+
+        String sql = "SELECT COUNT(*) FROM Invoices "
+                + "WHERE CAST(created_at AS DATE) BETWEEN ? AND ?";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(start));
+            ps.setDate(2, java.sql.Date.valueOf(end));
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    // =================================================
+    // Count Invoice had been Alerted in range of time
+    // =================================================
+    public int countInvoiceWithAlertBetween(LocalDate start, LocalDate end) {
+
+        String sql
+                = "SELECT COUNT(DISTINCT i.invoice_id) "
+                + "FROM Invoices i "
+                + "JOIN Alerts a ON a.entity_id = i.invoice_id "
+                + "WHERE a.entity_type = 'INVOICE' "
+                + "AND CAST(i.created_at AS DATE) BETWEEN ? AND ?";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(start));
+            ps.setDate(2, java.sql.Date.valueOf(end));
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+    // =====================================
+    // get Average invoice in range of time
+    // =====================================
+    public BigDecimal getAverageInvoiceBetween(LocalDate start, LocalDate end) {
+
+        String sql = "SELECT ISNULL(AVG(amount),0) "
+                + "FROM Invoices "
+                + "WHERE CAST(created_at AS DATE) BETWEEN ? AND ?";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(start));
+            ps.setDate(2, java.sql.Date.valueOf(end));
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBigDecimal(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return BigDecimal.ZERO;
     }
 }

@@ -13,11 +13,10 @@ public class UserDAO {
     // CREATE
     // ===============================
     public boolean insert(User user) {
-        String sql = "INSERT INTO Users(username, password_hash, role, status, created_at) " +
-                     "VALUES (?, ?, ?, ?, NOW())";
+        String sql = "INSERT INTO Users(username, password_hash, role, status, created_at) "
+                + "VALUES (?, ?, ?, ?, NOW())";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getPasswordHash());
@@ -38,8 +37,7 @@ public class UserDAO {
     public User findById(long id) {
         String sql = "SELECT * FROM Users WHERE user_id = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
@@ -60,8 +58,7 @@ public class UserDAO {
     public User findByUsername(String username) {
         String sql = "SELECT * FROM Users WHERE username = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
@@ -83,9 +80,7 @@ public class UserDAO {
         List<User> list = new ArrayList<>();
         String sql = "SELECT * FROM Users";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 list.add(mapResultSetToUser(rs));
@@ -104,8 +99,7 @@ public class UserDAO {
     public boolean update(User user) {
         String sql = "UPDATE Users SET username=?, role=?, status=? WHERE user_id=?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getRole());
@@ -126,8 +120,7 @@ public class UserDAO {
     public boolean updatePassword(long userId, String newHash) {
         String sql = "UPDATE Users SET password_hash=? WHERE user_id=?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, newHash);
             ps.setLong(2, userId);
@@ -146,8 +139,7 @@ public class UserDAO {
     public boolean updateStatus(long userId, String status) {
         String sql = "UPDATE Users SET status=? WHERE user_id=?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, status);
             ps.setLong(2, userId);
@@ -166,8 +158,7 @@ public class UserDAO {
     public boolean delete(long userId) {
         String sql = "DELETE FROM Users WHERE user_id=?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, userId);
             return ps.executeUpdate() > 0;
@@ -191,7 +182,48 @@ public class UserDAO {
         Timestamp ts = rs.getTimestamp("created_at");
         if (ts != null) {
             user.setCreatedAt(ts.toLocalDateTime());
-        }   
+        }
         return user;
+    }
+
+    // ==================================================
+    // COUNT ALL STAFF (role = STAFF)
+    // ==================================================
+    public int countAllStaff() {
+
+        String sql = "SELECT COUNT(*) FROM Users WHERE role = 'STAFF'";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    // ==================================================
+    // COUNT ACTIVE STAFF (role = STAFF AND status = ACTIVE)
+    // ==================================================
+    public int countActiveStaff() {
+
+        String sql = "SELECT COUNT(*) FROM Users "
+                + "WHERE role = 'STAFF' AND status = 'ACTIVE'";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 }

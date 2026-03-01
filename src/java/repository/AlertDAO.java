@@ -4,6 +4,7 @@ import entity.Alert;
 import utils.DBConnection;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -260,5 +261,60 @@ public class AlertDAO {
         }
 
         return alert;
+    }
+
+    // ========================================
+    // Count number of alert in range of time
+    // ========================================
+    public int countAlertBetween(LocalDate start, LocalDate end) {
+
+        String sql = "SELECT COUNT(*) FROM Alerts "
+                + "WHERE CAST(created_at AS DATE) BETWEEN ? AND ?";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(start));
+            ps.setDate(2, java.sql.Date.valueOf(end));
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+    // ====================================================
+    // Count number of alert by status in range of time
+    // ====================================================
+    public int countAlertByStatusBetween(String status,
+            LocalDate start,
+            LocalDate end) {
+
+        String sql = "SELECT COUNT(*) FROM Alerts "
+                + "WHERE status = ? "
+                + "AND CAST(created_at AS DATE) BETWEEN ? AND ?";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ps.setDate(2, java.sql.Date.valueOf(start));
+            ps.setDate(3, java.sql.Date.valueOf(end));
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 }

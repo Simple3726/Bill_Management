@@ -156,4 +156,3 @@ public class ShiftDAO {
         return 0;
     }
     }
-}

@@ -10,7 +10,7 @@ public class User {
 
     private Long userId;
     private String username;
-    private String passwordHash;
+    private String password;
     private String role;      // ADMIN / STAFF / AUDITOR
     private String status;    // ACTIVE / LOCKED
     private LocalDateTime createdAt;
@@ -18,10 +18,10 @@ public class User {
     public User() {
     }
 
-    public User(Long userId, String username, String passwordHash, String role, String status, LocalDateTime createdAt) {
+    public User(Long userId, String username, String password, String role, String status, LocalDateTime createdAt) {
         this.userId = userId;
         this.username = username;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.role = role;
         this.status = status;
         this.createdAt = createdAt;
@@ -43,12 +43,12 @@ public class User {
         this.username = username;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getRole() {
@@ -57,7 +57,7 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
-    }db                                                                                         
+    }                                                                                         
 
     public String getStatus() {
         return status;

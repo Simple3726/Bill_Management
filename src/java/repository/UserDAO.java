@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
-    public User login(String userID, String password) throws SQLException, ClassNotFoundException {
-        String sql = "";
+    public User login(String username, String password) throws SQLException, ClassNotFoundException {
+        String sql = "select * from Users where username = ? and password = ?";
         User acc = null;
         Connection conn = null;
         PreparedStatement ps = null;
@@ -19,13 +19,16 @@ public class UserDAO {
         try {
             conn = DBConnection.getConnection();
             ps = conn.prepareStatement(sql);
-            ps.setString(1, userID);
+            ps.setString(1, username);
             ps.setString(2, password);
             
             rs = ps.executeQuery();
             if (rs.next()) {
-                String username = rs.getString("username");
-                acc = new User(Long.MIN_VALUE, username, password, sql, sql, LocalDateTime.MAX);
+                long userId = rs.getInt("userId");
+                String role = rs.getString("role");
+                String status = rs.getString("status");
+                LocalDateTime createdAt = rs.getTimestamp("crneeated_at").toLocalDateTime();
+                acc = new User(userId, username, password, role, status, createdAt);
             }
         }finally {
             if (rs != null) rs.close();
@@ -46,7 +49,7 @@ public class UserDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getUsername());
-            ps.setString(2, user.getPasswordHash());
+            ps.setString(2, user.getPassword());
             ps.setString(3, user.getRole());
             ps.setString(4, user.getStatus());
 
@@ -211,7 +214,7 @@ public class UserDAO {
         User user = new User();
         user.setUserId(rs.getLong("user_id"));
         user.setUsername(rs.getString("username"));
-        user.setPasswordHash(rs.getString("password_hash"));
+        user.setPassword(rs.getString("password_hash"));
         user.setRole(rs.getString("role"));
         user.setStatus(rs.getString("status"));
         Timestamp ts = rs.getTimestamp("created_at");

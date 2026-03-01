@@ -15,9 +15,23 @@
         <h1>Login Page</h1>
         <%
             String alertLogout = (String)request.getAttribute("MSG_LOGOUT");// chuỗi này lấy request MSG_LOGOUT để in ra thông báo
+            if(alertLogout != null){
         %>
         <h4><%= alertLogout %></h4>
         <%}%>
+        
+        <form action="MainController" method="post">
+            <p>UserID: <input type="text" name="userID"></p>
+            <p>Password: <input type="password" name="pass"></p>
+            <%
+                String msg = (String) request.getAttribute("MSG");
+                if(msg != null){
+                
+             %>
+            <p style="color: red"><%= msg%></p>
+             <%}%>
+             <button type="submit" name="action" value="Login">Login</button>
+        </form>
         
     </body>
     

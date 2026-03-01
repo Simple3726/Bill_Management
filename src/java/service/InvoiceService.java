@@ -5,10 +5,7 @@ import entity.Invoice;
 import entity.User;
 import repository.InvoiceDAO;
 
-/**
- *
- * @author admin
- */
+
 public class InvoiceService {
     
     public void approveInvoice(Long invoiceId,User currentUser){
@@ -30,6 +27,8 @@ public class InvoiceService {
         ActivityLog log = new ActivityLog();
         log.setUserId(currentUser.getUserId());
         log.setShiftId(shiftService.getShiftByInvoice(invoiceId, invoice.getCreatedAt()));
-        
+        log.setActionType(invoice.getStatus());
+        log.setEntityId(invoiceId);
+        log.setCreatedAt(invoice.getCreatedAt());
     }
 }

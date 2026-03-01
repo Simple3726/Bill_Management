@@ -11,7 +11,7 @@ public class AlertService {
     private AlertDAO alertDAO = new AlertDAO();
 
     // =========================================
-    // 1️⃣ Tạo Alert khi risk cao
+    // Create Alert
     // =========================================
     public void createAlert(String entityType,
                             Long entityId,

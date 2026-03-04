@@ -7,6 +7,7 @@ package controller;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ FTL stack trace ("~" means nesting-related):
 	- Failed at: ${h1dra1710}  [in template "Templates/Classes/Class.java" at line 12, column 12]
 ----
  */
+@WebServlet("/MenuController")
 public class MenuController extends HttpServlet{
     private static final String LOGIN = "Login";
     private static final String LOGIN_CONTROLLER = "LoginController";
@@ -47,7 +49,7 @@ public class MenuController extends HttpServlet{
                 request.setAttribute("ERROR", "Your action not support");
             }
         }catch(Exception e){
-            log("Error at MainController: " + e.toString());
+            log("Error at MenuController: " + e.toString());
         }finally{
             request.getRequestDispatcher(url).forward(request, response);
         }

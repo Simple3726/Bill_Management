@@ -4,6 +4,8 @@ import entity.Invoice;
 import entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,12 +32,7 @@ public class InvoiceController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     
-    private InvoiceService service;
-    
-    @Override
-    public void init() throws ServletException {
-        service = new InvoiceService();
-    }
+    private InvoiceService service = new InvoiceService();
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
@@ -53,7 +50,7 @@ public class InvoiceController extends HttpServlet {
         case "/List":
             listInvoice(request, response);
             break;
-        case "/Add":
+        case "/CreateForm":
             showCreateForm(request, response);
             break;
         case "/Create":
@@ -92,8 +89,9 @@ public class InvoiceController extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             request.getRequestDispatcher("invoice_form.jsp").forward(request, response);
-        } else {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+        } 
+        else {
+            response.sendRedirect(request.getContextPath() + "login.jsp");
         }
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

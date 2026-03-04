@@ -10,7 +10,7 @@ import java.util.List;
 
 public class UserDAO {
     public User login(String username, String password) throws SQLException, ClassNotFoundException {
-        String sql = "select * from Users where username = ? and password = ?";
+        String sql = "SELECT * FROM Users WHERE username = ? AND password = ?";
         User acc = null;
         Connection conn = null;
         PreparedStatement ps = null;
@@ -18,18 +18,21 @@ public class UserDAO {
         
         try {
             conn = DBConnection.getConnection();
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, username);
-            ps.setString(2, password);
-            
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                long userId = rs.getInt("userId");
-                String role = rs.getString("role");
-                String status = rs.getString("status");
-                LocalDateTime createdAt = rs.getTimestamp("crneeated_at").toLocalDateTime();
-                acc = new User(userId, username, password, role, status, createdAt);
+            if(conn != null){
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, userId);
+                ps.setString(2, password);
+
+                rs = ps.executeQuery();
+                if (rs.next()) {
+                    long userId = rs.getInt("userId");
+                    String role = rs.getString("role");
+                    String status = rs.getString("status");
+                    LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
+                    acc = new User(userId, username, password, role, status, createdAt);
+                }
             }
+        }catch(Exception e){
         }finally {
             if (rs != null) rs.close();
             if (ps != null) ps.close();

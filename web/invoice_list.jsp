@@ -19,8 +19,9 @@
 <div class="container mt-5">
     <h2 class="mb-4 text-primary">Danh sách Hóa đơn</h2>
     <div style="margin-bottom: 20px;">
-        <a href="${pageContext.request.contextPath}/InvoiceController/Add" 
-           style="
+        <form action="MenuController" method="POST">
+            <button type="submit" name="action" value="CreateForm"
+                style="
                 display: inline-block;
                 padding: 10px 25px;
                 background-color: #212529; /* Màu tối để hợp với Header của bảng */
@@ -31,9 +32,9 @@
                 transition: 0.3s;
            "
            onmouseover="this.style.backgroundColor='#495057'"
-           onmouseout="this.style.backgroundColor='#212529'">
-           + New Invoice
-        </a>
+           onmouseout="this.style.backgroundColor='#212529'">+NewInvoice</button>
+        </form>
+        
     </div>
     <div class="card shadow">
         <div class="card-body">

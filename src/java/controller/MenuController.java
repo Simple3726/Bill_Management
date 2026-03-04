@@ -37,6 +37,8 @@ public class MenuController extends HttpServlet {
     private static final String DELETE_INVOICE_CONTROLLER = "InvoiceController/Delete";
     private static final String CREATE = "Create";
     private static final String CREATE_INVOICE_CONTROLLER = "InvoiceController/Create";
+    private static final String CREATE_PAGE = "CreateForm";
+    private static final String CREATE_PAGE_INV_CONTROLLER = "InvoiceController/CreateForm";
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -57,6 +59,9 @@ public class MenuController extends HttpServlet {
             }
             else if(CREATE.equals(action)){
                 url = CREATE_INVOICE_CONTROLLER;
+            }
+            else if(CREATE_PAGE.equals(action)){
+                url = CREATE_PAGE_INV_CONTROLLER;
             }
             else{
                 request.setAttribute("ERROR", "Your action not support");

@@ -34,6 +34,14 @@ public class MenuController extends HttpServlet{
     private static final String LOGOUT = "Logout";
     private static final String LOGOUT_CONTROLLER = "LogoutController";
     
+    private static final String CREATE = "Create";
+    private static final String CREATE_INVOICE_CONTROLLER="InvoiceController/Create";
+    
+    private static final String LIST = "List";
+    private static final String LIST_INVOICE_CONTROLLER = "InvoiceController/List";
+    
+    private static final String APPROVE = "Approve";
+    private static final String APPROVE_INVOICE_CONTROLLER = "InvoiceController/Invoice";
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)throws  ServletException, IOException{
         response.setContentType("text/html;charset=UTF-8");
@@ -44,6 +52,12 @@ public class MenuController extends HttpServlet{
                 url = LOGIN_CONTROLLER;
             }else if(LOGOUT.equals(action)){
                 url = LOGOUT_CONTROLLER;
+            }else if(CREATE.equals(action)){
+                url = CREATE_INVOICE_CONTROLLER;
+            }else if(LIST.equals(action)){
+                url = LIST_INVOICE_CONTROLLER;
+            }else if(APPROVE.equals(action)){
+                url = APPROVE_INVOICE_CONTROLLER;
             }
             else{
                 request.setAttribute("ERROR", "Your action not support");

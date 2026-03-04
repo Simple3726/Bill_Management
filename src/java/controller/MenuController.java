@@ -31,14 +31,12 @@ public class MenuController extends HttpServlet {
     private static final String LOGIN_CONTROLLER = "LoginController";
     private static final String LOGOUT = "Logout";
     private static final String LOGOUT_CONTROLLER = "LogoutController";
-    private static final String SEARCH = "Search";
-    private static final String SEARCH_CONTROLLER = "SearchController";
     private static final String UPDATE = "Update";
-    private static final String UPDATE_CONTROLLER = "UpdateController";
+    private static final String UPDATE_INVOICE_CONTROLLER = "InvoiceController/Update";
     private static final String DELETE = "Delete";
-    private static final String DELETE_CONTROLLER = "DeleteController";
+    private static final String DELETE_INVOICE_CONTROLLER = "InvoiceController/Delete";
     private static final String CREATE = "Create";
-    private static final String CREATE_CONTROLLER = "CreateController";
+    private static final String CREATE_INVOICE_CONTROLLER = "InvoiceController/Create";
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -51,23 +49,20 @@ public class MenuController extends HttpServlet {
             else if(LOGOUT.equals(action)) {
                 url = LOGOUT_CONTROLLER;
             }
-            else if(SEARCH.equals(action)) {
-                url = SEARCH_CONTROLLER;
-            }
             else if(UPDATE.equals(action)) {
-                url = UPDATE_CONTROLLER;
+                url = UPDATE_INVOICE_CONTROLLER;
             }
             else if(DELETE.equals(action)){
-                url = DELETE_CONTROLLER;
+                url = DELETE_INVOICE_CONTROLLER;
             }
             else if(CREATE.equals(action)){
-                url = CREATE_CONTROLLER;
+                url = CREATE_INVOICE_CONTROLLER;
             }
             else{
                 request.setAttribute("ERROR", "Your action not support");
             }
         } catch (Exception e) {
-            log("Error at MainController: "+ e.toString());
+            log("Error at MenuController: "+ e.toString());
         }finally{
             request.getRequestDispatcher(url).forward(request, response);
         }
@@ -76,8 +71,7 @@ public class MenuController extends HttpServlet {
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
+     ** @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs

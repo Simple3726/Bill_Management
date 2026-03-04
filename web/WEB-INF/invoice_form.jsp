@@ -48,7 +48,7 @@
                             <div class="input-group">
                                 <input type="number" name="amount" class="form-control form-control-lg text-end" 
                                        step="0.01" min="0" placeholder="0.00" value="${invoice.amount}" required>
-                                <span class="input-group-text">₫</span>
+                                <span class="input-group-text">VND</span>
                             </div>
                             <div class="form-text text-muted">Sử dụng dấu chấm (.) cho phần thập phân.</div>
                         </div>

@@ -150,7 +150,7 @@ public class InvoiceDAO {
     // =========================
     private Invoice mapResultSet(ResultSet rs) throws SQLException {
         Invoice invoice = new Invoice();
-
+        
         invoice.setInvoiceId(rs.getLong("invoice_id"));
         invoice.setInvoiceCode(rs.getString("invoice_code"));
         invoice.setAmount(rs.getBigDecimal("amount")); // BigDecimal đúng

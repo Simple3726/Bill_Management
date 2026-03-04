@@ -12,12 +12,29 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Danh sách Hóa đơn (No JSTL)</title>
+    <title>Danh sách Hóa đơn</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 <div class="container mt-5">
     <h2 class="mb-4 text-primary">Danh sách Hóa đơn</h2>
+    <div style="margin-bottom: 20px;">
+        <a href="${pageContext.request.contextPath}/InvoiceController/Add" 
+           style="
+                display: inline-block;
+                padding: 10px 25px;
+                background-color: #212529; /* Màu tối để hợp với Header của bảng */
+                color: white;
+                text-decoration: none;
+                border-radius: 4px;
+                font-weight: 500;
+                transition: 0.3s;
+           "
+           onmouseover="this.style.backgroundColor='#495057'"
+           onmouseout="this.style.backgroundColor='#212529'">
+           + New Invoice
+        </a>
+    </div>
     <div class="card shadow">
         <div class="card-body">
             <table class="table table-hover">

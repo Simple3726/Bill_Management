@@ -17,8 +17,7 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet(name = "ShiftController", urlPatterns = {"/ShiftController"})
 public class ShiftController extends HttpServlet {
-
-    private ShiftService shiftService;
+private ShiftService shiftService;
     private ShiftDAO shiftDAO;
     private ActivityLogDAO activityLogDAO;
 
@@ -29,54 +28,47 @@ public class ShiftController extends HttpServlet {
         activityLogDAO = new ActivityLogDAO();
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
         
-        // GIẢ LẬP ID User (Chờ Hiếu làm xong Login sẽ lấy từ session)
-        Long userId = 1L; 
-
-        boolean isShiftOpen = false;
-        try {
-            // Hàm này của bạn sẽ ném lỗi nếu không có ca
-            Shift currentShift = shiftService.getCurrentShift(userId); 
-            isShiftOpen = true;
-            // Cập nhật lại session cho chắc chắn
-            session.setAttribute("CURRENT_SHIFT_ID", currentShift.getShiftId());
-        } catch (RuntimeException e) {
-            // Bắt lỗi tức là không có ca nào đang mở
-            isShiftOpen = false;
-            session.removeAttribute("CURRENT_SHIFT_ID");
-        }
-
-        request.setAttribute("isShiftOpen", isShiftOpen);
-        request.getRequestDispatcher("/shift.jsp").forward(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
         
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
-        Long userId = 1L; // GIẢ LẬP ID User
+        
+        // GIẢ LẬP ID User (Chờ module Login làm xong)
+        Long userId = 1L; 
 
         try {
+            // TRƯỜNG HỢP 1: Tải giao diện
+            if (action == null || action.isEmpty()) {
+                boolean isShiftOpen = false;
+                try {
+                    Shift currentShift = shiftService.getCurrentShift(userId); 
+                    isShiftOpen = true;
+                    session.setAttribute("CURRENT_SHIFT_ID", currentShift.getShiftId());
+                } catch (RuntimeException e) {
+                    isShiftOpen = false;
+                    session.removeAttribute("CURRENT_SHIFT_ID");
+                }
+                request.setAttribute("isShiftOpen", isShiftOpen);
+                request.getRequestDispatcher("/shift.jsp").forward(request, response);
+                return; // Phải có return để dừng xử lý, không chạy tiếp xuống dưới
+            }
+
+            // TRƯỜNG HỢP 2: Xử lý các hành động
             if ("open".equals(action)) {
                 try {
-                    // Kiểm tra xem có ca nào đang mở không
                     shiftService.getCurrentShift(userId);
-                    // Nếu chạy qua dòng trên mà không sinh lỗi -> Đã có ca
                     session.setAttribute("error", "Bạn đang có một ca làm việc chưa đóng!");
                 } catch (RuntimeException e) {
-                    // Không có ca nào -> Tiến hành mở ca mới
                     Shift newShift = new Shift();
                     newShift.setUserId(userId);
                     newShift.setStartTime(LocalDateTime.now());
                     newShift.setStatus("OPEN");
 
-                    Long newShiftId = shiftDAO.insert(newShift); // Gọi DAO tạo ca
+                    Long newShiftId = shiftDAO.insert(newShift);
                     
                     if (newShiftId != null) {
                         session.setAttribute("CURRENT_SHIFT_ID", newShiftId);
@@ -86,17 +78,13 @@ public class ShiftController extends HttpServlet {
                         session.setAttribute("error", "Lỗi hệ thống khi mở ca!");
                     }
                 }
-
             } else if ("close".equals(action)) {
                 try {
-                    // Lấy ca hiện tại ra
                     Shift currentShift = shiftService.getCurrentShift(userId);
-                    
-                    // Cập nhật trạng thái đóng ca
                     currentShift.setEndTime(LocalDateTime.now());
                     currentShift.setStatus("CLOSED");
                     
-                    boolean isClosed = shiftDAO.update(currentShift); // Gọi DAO cập nhật
+                    boolean isClosed = shiftDAO.update(currentShift);
                     
                     if (isClosed) {
                         session.removeAttribute("CURRENT_SHIFT_ID");
@@ -106,11 +94,11 @@ public class ShiftController extends HttpServlet {
                         session.setAttribute("error", "Lỗi hệ thống khi đóng ca!");
                     }
                 } catch (RuntimeException e) {
-                    // Bắt lỗi không có ca
                     session.setAttribute("error", "Không tìm thấy ca nào đang mở để đóng!");
                 }
             }
 
+            // Sau khi xử lý action xong thì redirect lại chính Controller này để tải lại trang
             response.sendRedirect(request.getContextPath() + "/ShiftController");
 
         } catch (Exception e) {
@@ -120,6 +108,21 @@ public class ShiftController extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Chỉ cần gọi processRequest
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Chỉ cần gọi processRequest
+        processRequest(request, response);
+    }
+
+    // Hàm hỗ trợ ghi log
     private void ghiLog(Long userId, Long shiftId, String action, String entityType, Long entityId) {
         ActivityLog log = new ActivityLog();
         log.setUserId(userId);

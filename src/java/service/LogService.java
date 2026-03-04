@@ -9,7 +9,7 @@ import repository.ActivityLogDAO;
  */
 public class LogService {
 
-    private ActivityLogDAO activityLogDAO = new ActivityLogDAO();
+    private final ActivityLogDAO activityLogDAO = new ActivityLogDAO();
 
     // Hàm addLog nhận vào 6 tham số đúng như InvoiceService đang gọi
     public void addLog(Long userId, Long shiftId, String actionType, String entityType, Long entityId, String description) {

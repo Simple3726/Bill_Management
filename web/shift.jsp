@@ -1,17 +1,9 @@
-<%-- 
-    Document   : shift
-    Created on : Feb 25, 2026, 2:29:15 PM
-    Author     : admin
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Quản lý Ca Làm Việc - Play 4 Health</title>
+    <title>Shift Management</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -32,56 +24,64 @@
 <body>
     <div class="container">
         <div class="shift-container">
-            <h2 class="text-center mb-4">Quản Lý Ca Làm Việc</h2>
+            <h2 class="text-center mb-4">Shift Management</h2>
 
-            <c:if test="${not empty sessionScope.message}">
+            <%
+                // 1. Retrieve attributes from Session and Request
+                String message = (String) session.getAttribute("message");
+                String error = (String) session.getAttribute("error");
+                
+                Boolean isShiftOpenObj = (Boolean) request.getAttribute("isShiftOpen");
+                boolean isShiftOpen = (isShiftOpenObj != null) ? isShiftOpenObj : false;
+
+                // 2. Display success message
+                if (message != null && !message.trim().isEmpty()) {
+            %>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    ${sessionScope.message}
+                    <%= message %>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <c:remove var="message" scope="session" />
-            </c:if>
+            <%
+                    session.removeAttribute("message"); // Clear after displaying
+                }
 
-            <c:if test="${not empty sessionScope.error}">
+                // 3. Display error message
+                if (error != null && !error.trim().isEmpty()) {
+            %>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    ${sessionScope.error}
+                    <%= error %>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <c:remove var="error" scope="session" />
-            </c:if>
+            <%
+                    session.removeAttribute("error"); // Clear after displaying
+                }
+            %>
 
             <div class="text-center mb-4">
-                <p class="mb-1 text-muted">Trạng thái hiện tại:</p>
-                <c:choose>
-                    <c:when test="${isShiftOpen}">
-                        <span class="status-open">🟢 ĐANG TRONG CA</span>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="status-closed">🔴 CHƯA MỞ CA</span>
-                    </c:otherwise>
-                </c:choose>
+                <p class="mb-1 text-muted">Current Status:</p>
+                <% if (isShiftOpen) { %>
+                    <span class="status-open">🟢 ACTIVE SHIFT</span>
+                <% } else { %>
+                    <span class="status-closed">🔴 NO ACTIVE SHIFT</span>
+                <% } %>
             </div>
 
-            <form action="${pageContext.request.contextPath}/ShiftController" method="POST">
-                <c:choose>
-                    <c:when test="${isShiftOpen}">
-                        <input type="hidden" name="action" value="close">
-                        <button type="submit" class="btn btn-danger btn-lg w-100" onclick="return confirm('Bạn có chắc chắn muốn kết thúc ca làm việc này không?');">
-                            Đóng Ca Làm Việc
-                        </button>
-                    </c:when>
-                    
-                    <c:otherwise>
-                        <input type="hidden" name="action" value="open">
-                        <button type="submit" class="btn btn-success btn-lg w-100">
-                            Bắt Đầu Mở Ca
-                        </button>
-                    </c:otherwise>
-                </c:choose>
+            <form action="<%= request.getContextPath() %>/ShiftController" method="POST">
+                <% if (isShiftOpen) { %>
+                    <input type="hidden" name="action" value="close">
+                    <button type="submit" class="btn btn-danger btn-lg w-100" onclick="return confirm('Are you sure you want to end this shift?');">
+                        End Shift
+                    </button>
+                <% } else { %>
+                    <input type="hidden" name="action" value="open">
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        Start Shift
+                    </button>
+                <% } %>
             </form>
 
             <div class="mt-4 text-center">
-                <a href="${pageContext.request.contextPath}/dashboard.jsp" class="btn btn-outline-secondary btn-sm">Quay lại Dashboard</a>
+                <a href="<%= request.getContextPath() %>/dashboard.jsp" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
             </div>
         </div>
     </div>

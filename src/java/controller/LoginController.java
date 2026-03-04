@@ -1,12 +1,18 @@
 package controller;
 
+import entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import repository.UserDAO;
 
 /**
  *
@@ -25,10 +31,23 @@ public class LoginController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException, ClassNotFoundException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-            
+            String userID = request.getParameter("userID");
+            String pass = request.getParameter("pass");
+            UserDAO dao = new UserDAO();
+            User user =  dao.login(userID, pass);
+            if(user!=null){
+                HttpSession session = request.getSession();
+                session.setAttribute("user", user);
+                request.getRequestDispatcher("invoice_list.jsp").forward(request, response);
+            }else{
+                request.setAttribute("MSG", "Incorrect UserID or Password");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -44,7 +63,13 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -58,7 +83,13 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -72,3 +103,4 @@ public class LoginController extends HttpServlet {
     }// </editor-fold>
 
 }
+    

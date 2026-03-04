@@ -4,11 +4,39 @@ import entity.User;
 import utils.DBConnection;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
-
+    public User login(String username, String password) throws SQLException, ClassNotFoundException {
+        String sql = "select * from Users where username = ? and password = ?";
+        User acc = null;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DBConnection.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, username);
+            ps.setString(2, password);
+            
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                long userId = rs.getInt("userId");
+                String role = rs.getString("role");
+                String status = rs.getString("status");
+                LocalDateTime createdAt = rs.getTimestamp("crneeated_at").toLocalDateTime();
+                acc = new User(userId, username, password, role, status, createdAt);
+            }
+        }finally {
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (conn != null) conn.close();
+        }
+        return acc;
+    }
     // ===============================
     // CREATE
     // ===============================
@@ -176,7 +204,7 @@ public class UserDAO {
         User user = new User();
         user.setUserId(rs.getLong("user_id"));
         user.setUsername(rs.getString("username"));
-        user.setPasswordHash(rs.getString("password_hash"));
+        user.setPassword(rs.getString("password"));
         user.setRole(rs.getString("role"));
         user.setStatus(rs.getString("status"));
         Timestamp ts = rs.getTimestamp("created_at");

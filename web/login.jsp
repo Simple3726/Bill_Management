@@ -20,7 +20,7 @@
         <h4><%= alertLogout %></h4>
         <%}%>
         
-        <form action="MainController" method="post">
+        <form action="MenuController" method="post">
             <p>UserID: <input type="text" name="userID"></p>
             <p>Password: <input type="password" name="pass"></p>
             <%

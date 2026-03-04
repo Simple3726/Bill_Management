@@ -1,5 +1,6 @@
 package service;
 
+import detection.DetectionEngine;
 import entity.Invoice;
 import entity.InvoiceHistory;
 import entity.Shift;

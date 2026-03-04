@@ -2,6 +2,8 @@ package entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Random;
 
 /**
  *
@@ -86,4 +88,14 @@ public class Invoice {
         this.updatedAt = updatedAt;
     }
     
+    public String generateInvoiceCode() {
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+        String timePart = LocalDateTime.now().format(formatter);
+
+        int random = new Random().nextInt(900) + 100; // 3 digits
+
+        return "INV-" + timePart + "-" + random;
+    }
 }

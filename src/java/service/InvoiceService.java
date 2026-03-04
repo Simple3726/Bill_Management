@@ -107,14 +107,14 @@ public class InvoiceService {
         // =========================
         // 6. Log activity
         // =========================
-        logService.addLog(
-                currentUser.getUserId(),
-                shift.getShiftId(),
-                "APPROVE_INVOICE",
-                "INVOICE",
-                invoiceId,
-                "Invoice approved"
-        );
+//        logService.addLog(
+//                currentUser.getUserId(),
+//                shift.getShiftId(),
+//                "APPROVE_INVOICE",
+//                "INVOICE",
+//                invoiceId,
+//                "Invoice approved"
+//        );
 
         // =========================
         // 7. Run Detection

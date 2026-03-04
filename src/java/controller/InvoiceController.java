@@ -68,7 +68,7 @@ public class InvoiceController extends HttpServlet {
     
     private void listInvoice(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         request.setAttribute("invoiceList", service.getAllInvoice());
-        request.getRequestDispatcher("/WEB-INF/invoice_list.jsp").forward(request, response);
+        request.getRequestDispatcher("invoice_list.jsp").forward(request, response);
     }
     private void createInvoice(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         try {
@@ -91,7 +91,7 @@ public class InvoiceController extends HttpServlet {
         // Kiểm tra login trước khi cho xem form
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
-            request.getRequestDispatcher("/WEB-INF/invoice_form.jsp").forward(request, response);
+            request.getRequestDispatcher("invoice_form.jsp").forward(request, response);
         } else {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
         }

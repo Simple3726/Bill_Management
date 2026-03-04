@@ -38,7 +38,6 @@ public class ActivityLogDAO {
             }
 
             ps.executeUpdate();
-
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 return rs.getLong(1);

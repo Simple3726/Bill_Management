@@ -27,7 +27,7 @@ public class UserDAO {
                 long userId = rs.getInt("userId");
                 String role = rs.getString("role");
                 String status = rs.getString("status");
-                LocalDateTime createdAt = rs.getTimestamp("crneeated_at").toLocalDateTime();
+                LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
                 acc = new User(userId, username, password, role, status, createdAt);
             }
         }finally {

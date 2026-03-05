@@ -37,12 +37,12 @@ public class LoginController extends HttpServlet {
             String userID = request.getParameter("userID");
             String pass = request.getParameter("pass");
             UserDAO dao = new UserDAO();
-            User user =  dao.login(userID, pass);
-            if(user!=null){
+            User user = dao.login(userID, pass);
+            if (user != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user);
                 request.getRequestDispatcher("/WEB-INF/invoice_list.jsp").forward(request, response);
-            }else{
+            } else {
                 request.setAttribute("MSG", "Incorrect UserID or Password");
                 request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
             }

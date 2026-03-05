@@ -30,7 +30,7 @@ public class LogOutController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
             HttpSession session = request.getSession(false);
-            if(session!=null){
+            if (session != null) {
                 session.invalidate();
             }
             request.setAttribute("MSG_LOGOUT", "logout successfully");

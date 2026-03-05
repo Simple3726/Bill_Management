@@ -119,6 +119,10 @@
             .btn:hover {
                 opacity: 0.85;
             }
+            .btn-approve {
+                background-color: #2ea44f;
+                color: white;
+            }
 
         </style>
     </head>
@@ -129,7 +133,7 @@
             <div class="card">
 
                 <div class="card-header">
-                    <h2>🚨 Alert List</h2>
+                    <h2> Alert List</h2>
                 </div>
 
                 <table>
@@ -178,19 +182,37 @@
                             <td><%= alert.getCreatedAt()%></td>
 
                             <td>
+
                                 <% if ("NEW".equals(alert.getStatus())) {%>
-                                <form action="alert" method="post" style="display:inline;">
+
+                                <form action="AlertController" method="post" style="display:inline;">
                                     <input type="hidden" name="action" value="investigate">
                                     <input type="hidden" name="alertId" value="<%= alert.getAlertId()%>">
                                     <button class="btn btn-investigate">Investigate</button>
                                 </form>
+
                                 <% } else if ("INVESTIGATING".equals(alert.getStatus())) {%>
-                                <form action="alert" method="post" style="display:inline;">
+
+                                <!-- Resolve Alert -->
+                                <form action="AlertController" method="post" style="display:inline;">
                                     <input type="hidden" name="action" value="resolve">
                                     <input type="hidden" name="alertId" value="<%= alert.getAlertId()%>">
                                     <button class="btn btn-resolve">Resolve</button>
                                 </form>
+
+                                <!-- Approve Invoice -->
+                                <% if ("INVOICE".equals(alert.getEntityType())) {%>
+                                <form action="<%=request.getContextPath()%>/InvoiceController/Approve" 
+                                      method="post" style="display:inline;">
+
+                                    <input type="hidden" name="invoiceId" value="<%= alert.getEntityId()%>">
+
+                                    <button class="btn btn-approve">Approve</button>
+                                </form>
                                 <% } %>
+
+                                <% } %>
+
                             </td>
                         </tr>
                         <%

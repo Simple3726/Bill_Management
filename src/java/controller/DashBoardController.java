@@ -2,11 +2,13 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import service.DashBoardService;
 
 /**
  *
@@ -27,12 +29,38 @@ public class DashBoardController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            
+
+        // ====================================
+        // Get period parameter
+        // ====================================
+        String period = request.getParameter("period");
+
+        if (period == null || period.isEmpty()) {
+            period = "today";
         }
+
+        // ====================================
+        // Call Service
+        // ====================================
+        DashBoardService service = new DashBoardService();
+
+        Map<String, Object> dashboardData
+                = service.getDashboardData(period);
+
+        // ====================================
+        // Send data to JSP
+        // ====================================
+        request.setAttribute("dashboardData", dashboardData);
+        request.setAttribute("period", period);
+
+        // ====================================
+        // Forward to dashboard.jsp
+        // ====================================
+        request.getRequestDispatcher("/dashboard/dashboard.jsp")
+                .forward(request, response);
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

@@ -14,7 +14,7 @@ import service.DashBoardService;
  *
  * @author admin
  */
-@WebServlet(name = "DashBoardController", urlPatterns = {"/DashBoardController"})
+@WebServlet(name = "DashBoardController", urlPatterns = {"/dashboard"})
 public class DashBoardController extends HttpServlet {
 
     /**
@@ -26,6 +26,13 @@ public class DashBoardController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    private DashBoardService service;
+
+    @Override
+    public void init() throws ServletException {
+        service = new DashBoardService();
+    }
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -40,12 +47,9 @@ public class DashBoardController extends HttpServlet {
         }
 
         // ====================================
-        // Call Service
+        // Get dashboard data
         // ====================================
-        DashBoardService service = new DashBoardService();
-
-        Map<String, Object> dashboardData
-                = service.getDashboardData(period);
+        Map<String, Object> dashboardData = service.getDashboardData(period);
 
         // ====================================
         // Send data to JSP
@@ -54,7 +58,7 @@ public class DashBoardController extends HttpServlet {
         request.setAttribute("period", period);
 
         // ====================================
-        // Forward to dashboard.jsp
+        // Forward to JSP
         // ====================================
         request.getRequestDispatcher("/WEB-INF/dashboard.jsp")
                 .forward(request, response);

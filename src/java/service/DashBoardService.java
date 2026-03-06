@@ -18,25 +18,36 @@ public class DashBoardService {
     private ShiftDAO shiftDAO = new ShiftDAO();
     private UserDAO userDAO = new UserDAO();
 
-    // ==========================================================
-    // MAIN DASHBOARD METHOD (Today / Week / Month)
-    // ==========================================================
-    public Map<String, Object> getDashboardData(String period) {
+    public static class DateRange {
 
-        Map<String, Object> data = new HashMap<>();
+        private LocalDate start;
+        private LocalDate end;
+
+        public DateRange(LocalDate start, LocalDate end) {
+            this.start = start;
+            this.end = end;
+        }
+
+        public LocalDate getStart() {
+            return start;
+        }
+
+        public LocalDate getEnd() {
+            return end;
+        }
+    }
+
+    private DateRange calculateDateRange(String period) {
 
         if (period == null) {
             period = "today";
         }
 
-        // ------------------------------------------------------
-        // 1️⃣ Calculate Date Range
-        // ------------------------------------------------------
-
         LocalDate start;
         LocalDate end = LocalDate.now();
 
         switch (period.toLowerCase()) {
+
             case "week":
                 start = LocalDate.now().with(DayOfWeek.MONDAY);
                 break;
@@ -49,21 +60,35 @@ public class DashBoardService {
                 start = LocalDate.now();
         }
 
+        return new DateRange(start, end);
+    }
+
+    // ==========================================================
+    // MAIN DASHBOARD METHOD (Today / Week / Month)
+    // ==========================================================
+    public Map<String, Object> getDashboardData(String period) {
+
+        Map<String, Object> data = new HashMap<>();
+
+        DateRange range = calculateDateRange(period);
+
+        LocalDate start = range.getStart();
+        LocalDate end = range.getEnd();
+
         // ------------------------------------------------------
-        // 2️⃣ BUSINESS METRICS
+        // BUSINESS METRICS
         // ------------------------------------------------------
+        BigDecimal totalRevenue
+                = invoiceDAO.getRevenueBetween(start, end);
 
-        BigDecimal totalRevenue =
-                invoiceDAO.getRevenueBetween(start, end);
+        int totalInvoice
+                = invoiceDAO.countInvoiceBetween(start, end);
 
-        int totalInvoice =
-                invoiceDAO.countInvoiceBetween(start, end);
+        BigDecimal avgInvoice
+                = invoiceDAO.getAverageInvoiceBetween(start, end);
 
-        BigDecimal avgInvoice =
-                invoiceDAO.getAverageInvoiceBetween(start, end);
-
-        int invoiceWithAlert =
-                invoiceDAO.countInvoiceWithAlertBetween(start, end);
+        int invoiceWithAlert
+                = invoiceDAO.countInvoiceWithAlertBetween(start, end);
 
         double riskRate = 0;
         if (totalInvoice > 0) {
@@ -71,38 +96,35 @@ public class DashBoardService {
         }
 
         // ------------------------------------------------------
-        // 3️⃣ ALERT METRICS
+        // ALERT METRICS
         // ------------------------------------------------------
+        int totalAlert
+                = alertDAO.countAlertBetween(start, end);
 
-        int totalAlert =
-                alertDAO.countAlertBetween(start, end);
+        int newAlert
+                = alertDAO.countAlertByStatusBetween("NEW", start, end);
 
-        int newAlert =
-                alertDAO.countAlertByStatusBetween("NEW", start, end);
+        int investigatingAlert
+                = alertDAO.countAlertByStatusBetween("INVESTIGATING", start, end);
 
-        int investigatingAlert =
-                alertDAO.countAlertByStatusBetween("INVESTIGATING", start, end);
-
-        int resolvedAlert =
-                alertDAO.countAlertByStatusBetween("RESOLVED", start, end);
+        int resolvedAlert
+                = alertDAO.countAlertByStatusBetween("RESOLVED", start, end);
 
         // ------------------------------------------------------
-        // 4️⃣ OPERATION METRICS
+        // OPERATION METRICS
         // ------------------------------------------------------
+        int totalShift
+                = shiftDAO.countShiftBetween(start, end);
 
-        int totalShift =
-                shiftDAO.countShiftBetween(start, end);
+        int totalStaff
+                = userDAO.countAllStaff();
 
-        int totalStaff =
-                userDAO.countAllStaff();
-
-        int activeStaff =
-                userDAO.countActiveStaff();
+        int activeStaff
+                = userDAO.countActiveStaff();
 
         // ------------------------------------------------------
         // 5️⃣ Put all into Map
         // ------------------------------------------------------
-
         data.put("START_DATE", start);
         data.put("END_DATE", end);
 

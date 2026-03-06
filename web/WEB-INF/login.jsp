@@ -85,7 +85,7 @@
         <div class="text-center mb-4">
             <i class="fa-solid fa-shield-halved brand-icon"></i>
             <h3 class="fw-bold text-dark">Welcome Back!</h3>
-            <p class="text-muted">Đăng nhập vào hệ thống BillManager</p>
+            <p class="text-muted">Đăng nhập vào hệ thống quản lý hoá đơn</p>
         </div>
 
         <%
@@ -114,7 +114,7 @@
                 <label class="form-label fw-medium text-dark">Tên đăng nhập / ID</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                    <input type="text" name="userID" class="form-control form-control-lg" placeholder="Nhập UserID của bạn" required autofocus>
+                    <input type="text" name="userID" class="form-control form-control-lg" placeholder="Nhập UserName của bạn" required autofocus>
                 </div>
             </div>
 

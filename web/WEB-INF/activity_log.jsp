@@ -13,7 +13,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Nhật Ký Hoạt Động - BillManager</title>
+    <title>Activity Log - Bill Manager</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -47,10 +47,10 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center">
                 <button id="sidebarToggle" title="Đóng/Mở thanh công cụ"><i class="fa-solid fa-bars"></i></button>
-                <h2 class="text-primary mb-0 fw-bold"><i class="fa-solid fa-clipboard-list me-2"></i>Nhật Ký Hoạt Động (Ca #<%= shiftId %>)</h2>
+                <h2 class="text-primary mb-0 fw-bold"><i class="fa-solid fa-clipboard-list me-2"></i>Activity Log (Shift #<%= shiftId %>)</h2>
             </div>
             <a href="<%=request.getContextPath()%>/ShiftController?action=list" class="btn btn-secondary">
-                <i class="fa-solid fa-arrow-left me-1"></i> Quay lại Danh sách Ca
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to shift list
             </a>
         </div>
 
@@ -60,10 +60,10 @@
                     <thead class="table-dark">
                         <tr>
                             <th class="ps-4 py-3">Log ID</th>
-                            <th>Thời Gian (Time)</th>
+                            <th>Time</th>
                             <th>User ID</th>
-                            <th>Hành Động (Action)</th>
-                            <th>Đối Tượng (Entity)</th>
+                            <th>Action</th>
+                            <th>Entity</th>
                             <th>Entity ID</th>
                         </tr>
                     </thead>

@@ -85,7 +85,7 @@
         <div class="text-center mb-4">
             <i class="fa-solid fa-shield-halved brand-icon"></i>
             <h3 class="fw-bold text-dark">Welcome Back!</h3>
-            <p class="text-muted">Đăng nhập vào hệ thống quản lý hoá đơn</p>
+            <p class="text-muted">Login into bill management</p>
         </div>
 
         <%
@@ -111,15 +111,15 @@
         <form action="MenuController" method="POST">
             
             <div class="mb-3">
-                <label class="form-label fw-medium text-dark">Tên đăng nhập / ID</label>
+                <label class="form-label fw-medium text-dark">Username</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                    <input type="text" name="userID" class="form-control form-control-lg" placeholder="Nhập UserName của bạn" required autofocus>
+                    <input type="text" name="userID" class="form-control form-control-lg" placeholder="Enter your Username" required autofocus>
                 </div>
             </div>
 
             <div class="mb-4">
-                <label class="form-label fw-medium text-dark">Mật khẩu</label>
+                <label class="form-label fw-medium text-dark">Password</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
                     <input type="password" name="pass" class="form-control form-control-lg" placeholder="••••••••" required>
@@ -127,13 +127,13 @@
             </div>
 
             <button type="submit" name="action" value="Login" class="btn btn-login w-100">
-                <i class="fa-solid fa-right-to-bracket me-2"></i> Đăng nhập
+                <i class="fa-solid fa-right-to-bracket me-2"></i> Login
             </button>
 
         </form>
         
         <div class="text-center mt-4">
-            <small class="text-muted">© 2026 BillManager System. All rights reserved.</small>
+            <small class="text-muted">© 2026 Bill Manager System. All rights reserved.</small>
         </div>
     </div>
 

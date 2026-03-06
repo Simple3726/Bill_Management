@@ -2,6 +2,7 @@ package controller;
 
 import entity.ActivityLog;
 import entity.Shift;
+import entity.User;
 import repository.ActivityLogDAO;
 import repository.ShiftDAO;
 import service.ShiftService;
@@ -39,15 +40,24 @@ public class ShiftController extends HttpServlet {
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
         
-        // GIẢ LẬP: Fix cứng ID người dùng
-        Long userId = 1L; 
+        // LẤY THÔNG TIN USER TỪ SESSION (Đã xóa dòng giả lập ID)
+        User currentUser = (User) session.getAttribute("user");
+        
+        // Nếu chưa đăng nhập thì đẩy về trang Login
+        if (currentUser == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
+        
+        // Lấy ID thật của người đang thao tác
+        Long currentUserId = currentUser.getUserId();
         
         try {
-            // 1. HIỂN THỊ GIAO DIỆN
+            // ================== 1. GIAO DIỆN CHÍNH (MỞ/ĐÓNG CA) ==================
             if (action == null || action.isEmpty()) {
                 boolean isShiftOpen = false;
                 try {
-                    Shift currentShift = shiftService.getCurrentShift(userId); 
+                    Shift currentShift = shiftService.getCurrentShift(currentUserId); 
                     isShiftOpen = true;
                     session.setAttribute("CURRENT_SHIFT_ID", currentShift.getShiftId());
                 } catch (RuntimeException e) {
@@ -55,43 +65,43 @@ public class ShiftController extends HttpServlet {
                     session.removeAttribute("CURRENT_SHIFT_ID");
                 }
                 request.setAttribute("isShiftOpen", isShiftOpen);
-                // GỌI FILE TỪ WEB-INF
                 request.getRequestDispatcher("/WEB-INF/shift.jsp").forward(request, response);
                 return; 
             }
 
-            // 2. MỞ CA
+            // ================== 2. NHÂN VIÊN TỰ MỞ CA ==================
             if ("open".equals(action)) {
                 try {
-                    shiftService.getCurrentShift(userId);
-                    session.setAttribute("error", "You have a shift that has not been closed yet.");
+                    shiftService.getCurrentShift(currentUserId);
+                    session.setAttribute("error", "Bạn đang có một ca làm việc chưa đóng!");
                 } catch (RuntimeException e) {
                     Shift newShift = new Shift();
-                    newShift.setUserId(userId);
+                    newShift.setUserId(currentUserId);
                     newShift.setStartTime(LocalDateTime.now());
                     newShift.setStatus("OPEN");
                     
                     Long newShiftId = shiftDAO.insert(newShift);
                     if (newShiftId != null) {
                         session.setAttribute("CURRENT_SHIFT_ID", newShiftId);
-                        ghiLog(userId, newShiftId, "OPEN_SHIFT", "SHIFT", newShiftId);
-                        session.setAttribute("message", "Open shift successfull!");
+                        ghiLog(currentUserId, newShiftId, "OPEN_SHIFT", "SHIFT", newShiftId);
+                        session.setAttribute("message", "Mở ca thành công!");
                     } else {
                         session.setAttribute("error", "Error while opening new shift!");
                     }
                 }
                 response.sendRedirect(request.getContextPath() + "/ShiftController");
 
-            // 3. ĐÓNG CA
+            // ================== 3. NHÂN VIÊN TỰ ĐÓNG CA ==================
             } else if ("close".equals(action)) {
                 try {
-                    Shift currentShift = shiftService.getCurrentShift(userId);
+                    Shift currentShift = shiftService.getCurrentShift(currentUserId);
                     currentShift.setEndTime(LocalDateTime.now());
                     currentShift.setStatus("CLOSED");
+                    
                     if (shiftDAO.update(currentShift)) {
                         session.removeAttribute("CURRENT_SHIFT_ID");
-                        ghiLog(userId, currentShift.getShiftId(), "CLOSE_SHIFT", "SHIFT", currentShift.getShiftId());
-                        session.setAttribute("message", "Close shift successfully!");
+                        ghiLog(currentUserId, currentShift.getShiftId(), "CLOSE_SHIFT", "SHIFT", currentShift.getShiftId());
+                        session.setAttribute("message", "Đóng ca thành công!");
                     } else {
                         session.setAttribute("error", "Error while closing this shift!");
                     }
@@ -100,35 +110,71 @@ public class ShiftController extends HttpServlet {
                 }
                 response.sendRedirect(request.getContextPath() + "/ShiftController");
 
-            // 4. DANH SÁCH CA
+            // ================== 4. DANH SÁCH CA (ADMIN) ==================
             } else if ("list".equals(action)) {
                 List<Shift> shiftList = shiftService.getAllShifts();
                 request.setAttribute("shiftList", shiftList);
-                // GỌI FILE TỪ WEB-INF
                 request.getRequestDispatcher("/WEB-INF/shift_list.jsp").forward(request, response);
                 return;
 
-            // 5. XÓA CA
+            // ================== 5. ADMIN ÉP ĐÓNG CA ==================
+            } else if ("admin_force_close".equals(action)) {
+                if ("ADMIN".equals(currentUser.getRole())) {
+                    Long shiftIdToClose = Long.parseLong(request.getParameter("id"));
+                    Shift shiftToClose = shiftService.getShiftById(shiftIdToClose);
+                    if(shiftToClose != null && "OPEN".equals(shiftToClose.getStatus())) {
+                        shiftToClose.setEndTime(LocalDateTime.now());
+                        shiftToClose.setStatus("CLOSED");
+                        shiftService.updateShiftInfo(shiftToClose);
+                        
+                        ghiLog(currentUserId, shiftToClose.getShiftId(), "ADMIN_FORCE_CLOSE", "SHIFT", shiftToClose.getShiftId());
+                        session.setAttribute("message", "Đã ép đóng ca #" + shiftIdToClose + " thành công!");
+                    }
+                }
+                response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
+                return;
+
+            // ================== 6. ADMIN MỞ CA HỘ NHÂN VIÊN ==================
+            } else if ("admin_open_shift".equals(action)) {
+                if ("ADMIN".equals(currentUser.getRole())) {
+                    Long targetUserId = Long.parseLong(request.getParameter("targetUserId"));
+                    try {
+                        shiftService.getCurrentShift(targetUserId);
+                        session.setAttribute("error", "Nhân viên ID " + targetUserId + " hiện đang có một ca làm việc mở rồi!");
+                    } catch (RuntimeException e) {
+                        Shift newShift = new Shift();
+                        newShift.setUserId(targetUserId);
+                        newShift.setStartTime(LocalDateTime.now());
+                        newShift.setStatus("OPEN");
+                        Long newId = shiftDAO.insert(newShift);
+                        
+                        ghiLog(currentUserId, newId, "ADMIN_OPEN_FOR_USER", "SHIFT", newId);
+                        session.setAttribute("message", "Đã mở ca thành công cho Nhân viên ID " + targetUserId);
+                    }
+                }
+                response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
+                return;
+
+            // ================== 7. XÓA CA LÀM VIỆC ==================
             } else if ("delete".equals(action)) {
                 Long idToDelete = Long.parseLong(request.getParameter("id"));
                 if (shiftService.deleteShift(idToDelete)) {
                     session.setAttribute("message", "Delete shift successfully!");
                 } else {
-                    session.setAttribute("error", "Error while deleting shift!");
+                    session.setAttribute("error", "Lỗi khi xóa ca! (Dữ liệu có thể đang bị ràng buộc khóa ngoại)");
                 }
                 response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
                 return;
 
-            // 6. FORM SỬA CA
+            // ================== 8. FORM SỬA CA ==================
             } else if ("edit".equals(action)) {
                 Long idToEdit = Long.parseLong(request.getParameter("id"));
                 Shift shiftToEdit = shiftService.getShiftById(idToEdit);
                 request.setAttribute("shiftToEdit", shiftToEdit);
-                // GỌI FILE TỪ WEB-INF
                 request.getRequestDispatcher("/WEB-INF/shift_form.jsp").forward(request, response);
                 return;
 
-            // 7. CẬP NHẬT CA
+            // ================== 9. CẬP NHẬT CA TỪ FORM ==================
             } else if ("update".equals(action)) {
                 Long idToUpdate = Long.parseLong(request.getParameter("shiftId"));
                 String newStatus = request.getParameter("status");
@@ -141,13 +187,12 @@ public class ShiftController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
                 return;
 
-            // 8. NHẬT KÝ HOẠT ĐỘNG
+            // ================== 10. XEM NHẬT KÝ HOẠT ĐỘNG ==================
             } else if ("view_log".equals(action)) {
                 Long shiftId = Long.parseLong(request.getParameter("id"));
                 List<ActivityLog> logList = activityLogDAO.findByShift(shiftId);
                 request.setAttribute("logList", logList);
                 request.setAttribute("currentShiftId", shiftId); 
-                // GỌI FILE TỪ WEB-INF
                 request.getRequestDispatcher("/WEB-INF/activity_log.jsp").forward(request, response);
                 return;
             }

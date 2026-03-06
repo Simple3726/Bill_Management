@@ -101,8 +101,8 @@ public class InvoiceController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace(); // In ra console của Netbeans/Eclipse
         response.setContentType("text/html;charset=UTF-8");
-        response.getWriter().print("<h2 style='color:red;'>Server bị lỗi: " + e.getMessage() + "</h2>");
-        response.getWriter().print("<p>Chi tiết lỗi (Xem kỹ dòng này): " + e.toString() + "</p>");
+        response.getWriter().print("<h2 style='color:red;'>Sever Error: " + e.getMessage() + "</h2>");
+        response.getWriter().print("<p>Error detail: " + e.toString() + "</p>");
         }
     }
 

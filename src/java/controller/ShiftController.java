@@ -179,11 +179,27 @@ public class ShiftController extends HttpServlet {
                 Long idToUpdate = Long.parseLong(request.getParameter("shiftId"));
                 String newStatus = request.getParameter("status");
                 Shift shiftToUpdate = shiftService.getShiftById(idToUpdate);
+                
                 if(shiftToUpdate != null) {
+                    // LOGIC THÊM VÀO: Nếu đổi từ OPEN sang CLOSED -> Ghi nhận giờ kết thúc
+                    if ("CLOSED".equals(newStatus) && "OPEN".equals(shiftToUpdate.getStatus())) {
+                        shiftToUpdate.setEndTime(LocalDateTime.now());
+                    } 
+                    // LOGIC THÊM VÀO: Nếu Admin lỡ tay đóng nhầm, muốn mở lại (từ CLOSED sang OPEN) -> Xóa giờ kết thúc
+                    else if ("OPEN".equals(newStatus) && "CLOSED".equals(shiftToUpdate.getStatus())) {
+                        shiftToUpdate.setEndTime(null);
+                    }
+                    
                     shiftToUpdate.setStatus(newStatus);
                     shiftService.updateShiftInfo(shiftToUpdate);
+                    
+                    // Ghi lại Log cho thao tác sửa từ Form
+                    ghiLog(currentUserId, shiftToUpdate.getShiftId(), "ADMIN_EDIT_SHIFT_STATUS", "SHIFT", shiftToUpdate.getShiftId());
+                    
+                    session.setAttribute("message", "Cập nhật ca thành công!");
                     session.setAttribute("message", "Update shift successfully!");
                 }
+   
                 response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
                 return;
 

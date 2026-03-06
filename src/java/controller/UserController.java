@@ -30,8 +30,6 @@ public class UserController extends HttpServlet {
      */
     private UserService service = new UserService();
 
-    
-
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, Exception {
         response.setContentType("text/html;charset=UTF-8");
@@ -100,6 +98,8 @@ public class UserController extends HttpServlet {
     private void showCreateForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        request.setAttribute("mode", "create");
+
         request.getRequestDispatcher("/WEB-INF/user_form.jsp")
                 .forward(request, response);
     }
@@ -108,21 +108,41 @@ public class UserController extends HttpServlet {
     // CREATE USER
     // ======================================
     private void createUser(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, Exception, Exception, Exception, Exception {
+            throws ServletException, IOException {
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String role = request.getParameter("role");
+        try {
 
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setRole(role);
-        user.setStatus("ACTIVE");
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            String role = request.getParameter("role");
+            String status = request.getParameter("status");
 
-        service.createUser(user);
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(password);
+            user.setRole(role);
+            user.setStatus(status);
 
-        response.sendRedirect(request.getContextPath() + "/UserController/List");
+            service.createUser(user);
+
+            response.sendRedirect(request.getContextPath() + "/UserController/List");
+
+        } catch (Exception e) {
+
+            request.setAttribute("error", e.getMessage());
+            request.setAttribute("mode", "create");
+
+            User user = new User();
+            user.setUsername(request.getParameter("username"));
+            user.setPassword(request.getParameter("password"));
+            user.setRole(request.getParameter("role"));
+            user.setStatus(request.getParameter("status"));
+
+            request.setAttribute("user", user);
+
+            request.getRequestDispatcher("/WEB-INF/user_form.jsp")
+                    .forward(request, response);
+        }
     }
 
     // ======================================
@@ -136,6 +156,7 @@ public class UserController extends HttpServlet {
         User user = service.getUserById(id);
 
         request.setAttribute("user", user);
+        request.setAttribute("mode", "edit");
 
         request.getRequestDispatcher("/WEB-INF/user_form.jsp")
                 .forward(request, response);

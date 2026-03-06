@@ -1,9 +1,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="entity.User" %>
 
+
 <%
     User user = (User) request.getAttribute("user");
-    boolean isEdit = user != null;
+    String mode = (String) request.getAttribute("mode");
+    boolean isEdit = "edit".equals(mode);
 %>
 
 <!DOCTYPE html>
@@ -67,14 +69,18 @@
                 background:#1f6feb;
                 color:white;
             }
-            .btn-save:hover { background: #155bc2; }
+            .btn-save:hover {
+                background: #155bc2;
+            }
 
             /* Thiết kế nút Hủy bỏ */
             .btn-cancel {
                 background: #e4e6eb;
                 color: #333;
             }
-            .btn-cancel:hover { background: #d0d2d6; }
+            .btn-cancel:hover {
+                background: #d0d2d6;
+            }
         </style>
     </head>
 
@@ -82,42 +88,50 @@
         <div class="container">
             <div class="card">
                 <h2><%=isEdit ? "Edit User" : "Create User"%></h2>
+                <%
+                    String error = (String) request.getAttribute("error");
+                    if (error != null) {
+                %>
+                <div style="color:red; margin-bottom:15px;">
+                    <%= error%>
+                </div>
+                <% }%>
+                <form action="<%=request.getContextPath()%>/UserController/<%=isEdit ? "Update" : "Create"%>" method="post">
 
-                <form action="<%=request.getContextPath()%>/UserController/<%=isEdit?"Update":"Create"%>" method="post">
-
-                    <% if(isEdit){ %>
-                        <input type="hidden" name="id" value="<%=user.getUserId()%>">
-                    <% } %>
+                    <% if (isEdit) {%>
+                    <input type="hidden" name="id" value="<%=user.getUserId()%>">
+                    <% }%>
 
                     <label>Username</label>
-                    <input type="text" name="username" value="<%=isEdit?user.getUsername():""%>" required>
+                    <input type="text" name="username" value="<%=isEdit ? user.getUsername() : ""%>" required>
 
-                    <% if(!isEdit){ %>
-                        <label>Password</label>
-                        <input type="password" name="password" required>
-                    <% } %>
+                    <% if (!isEdit) { %>
+                    <label>Password</label>
+                    <input type="password" name="password" minlength = 4 required>
+                    <% }%>
 
                     <label>Role</label>
                     <select name="role">
                         <option value="STAFF">STAFF</option>
-                        <option value="AUDITOR" <%=isEdit && "AUDITOR".equals(user.getRole())?"selected":""%>>AUDITOR</option>
-                        <option value="ADMIN" <%=isEdit && "ADMIN".equals(user.getRole())?"selected":""%>>ADMIN</option>
+                        <option value="AUDITOR" <%=isEdit && "AUDITOR".equals(user.getRole()) ? "selected" : ""%>>AUDITOR</option>
+                        <option value="ADMIN" <%=isEdit && "ADMIN".equals(user.getRole()) ? "selected" : ""%>>ADMIN</option>
                     </select>
 
                     <label>Status</label>
                     <select name="status">
-                        <option value="ACTIVE">ACTIVE</option>
-                        <option value="LOCKED" <%=isEdit && "LOCKED".equals(user.getStatus())?"selected":""%>>LOCKED</option>
+                        <option value="ACTIVE" <%=isEdit && "ACTIVE".equals(user.getStatus()) ? "selected" : ""%>>ACTIVE</option>
+                        <option value="LOCKED" <%=isEdit && "LOCKED".equals(user.getStatus()) ? "selected" : ""%>>LOCKED</option>
                     </select>
 
                     <div class="action-buttons">
                         <a href="<%=request.getContextPath()%>/UserController/List" class="btn btn-cancel">Cancel</a>
-                        
+
                         <button type="submit" class="btn btn-save">Save</button>
                     </div>
 
                 </form>
             </div>
+
         </div>
     </body>
 </html>

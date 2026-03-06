@@ -9,19 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
+
     public User login(String username, String password) throws SQLException, ClassNotFoundException {
         String sql = "select * from Users where username = ? and password = ?";
         User acc = null;
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        
+
         try {
             conn = DBConnection.getConnection();
             ps = conn.prepareStatement(sql);
             ps.setString(1, username);
             ps.setString(2, password);
-            
+
             rs = ps.executeQuery();
             if (rs.next()) {
                 long userId = rs.getInt("user_id");
@@ -30,10 +31,16 @@ public class UserDAO {
                 LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
                 acc = new User(userId, username, password, role, status, createdAt);
             }
-        }finally {
-            if (rs != null) rs.close();
-            if (ps != null) ps.close();
-            if (conn != null) conn.close();
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (ps != null) {
+                ps.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
         return acc;
     }
@@ -42,8 +49,8 @@ public class UserDAO {
     // CREATE
     // ===============================
     public boolean insert(User user) {
-        String sql = "INSERT INTO Users(username, password_hash, role, status, created_at) "
-                + "VALUES (?, ?, ?, ?, NOW())";
+
+        String sql = "INSERT INTO Users(username, password, role, status) VALUES (?, ?, ?, ?)";
 
         try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -57,6 +64,7 @@ public class UserDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return false;
     }
 

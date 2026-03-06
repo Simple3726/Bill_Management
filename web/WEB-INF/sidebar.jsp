@@ -32,7 +32,7 @@
 
         <% if ("STAFF".equals(roleSidebar) || "ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar)) { %>
             <a href="<%=request.getContextPath()%>/ShiftController" class="sidebar-link mb-2">
-                <i class="fa-solid fa-clock-rotate-left me-2"></i> Quản lý Ca
+                <i class="fa-solid fa-clock-rotate-left me-2"></i> Shift
             </a>
             <a href="<%=request.getContextPath()%>/InvoiceController/List" class="sidebar-link mb-2">
                 <i class="fa-solid fa-file-invoice-dollar me-2"></i> Invoice Management
@@ -46,11 +46,11 @@
         <% } %>
 
         <% if ("ADMIN".equals(roleSidebar)) { %>
-            <a href="<%=request.getContextPath()%>/UserController/List" class="sidebar-link mb-2 text-warning">
-                <i class="fa-solid fa-users-gear me-2"></i> Quản lý User
+            <a href="<%=request.getContextPath()%>/UserController/List" class="sidebar-link mb-2">
+                <i class="fa-solid fa-users-gear me-2"></i> User Management
             </a>
             <a href="<%=request.getContextPath()%>/ShiftController?action=list" class="sidebar-link mb-2">
-                <i class="fa-solid fa-list-check me-2"></i> Lịch sử Ca (Admin)
+                <i class="fa-solid fa-list-check me-2"></i> Shift Management
             </a>
         <% } %>
     </div>

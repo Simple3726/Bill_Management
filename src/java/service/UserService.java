@@ -32,10 +32,6 @@ public class UserService {
             throw new Exception("Username already exists");
         }
 
-        // Default status
-        if (user.getStatus() == null) {
-            user.setStatus("ACTIVE");
-        }
 
         return userDAO.insert(user);
     }

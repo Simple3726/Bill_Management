@@ -127,7 +127,7 @@
 
         <div class="sidebar d-flex flex-column p-3 shadow" id="sidebar">
             <div class="text-center mb-4 mt-2 text-nowrap">
-                <h4 class="fw-bold text-white"><i class="fa-solid fa-shield-halved text-primary me-2"></i>BillManager</h4>
+                <h4 class="fw-bold text-white"><i class="fa-solid fa-shield-halved text-primary me-2"></i>Bill Manager</h4>
             </div>
             <hr class="text-secondary mb-4">
 

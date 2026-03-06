@@ -7,9 +7,11 @@ import entity.Shift;
 import entity.User;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import repository.InvoiceDAO;
 import repository.InvoiceHistoryDAO;
+import utils.Constants;
 
 /**
  *
@@ -27,33 +29,46 @@ public class InvoiceService {
     private AlertService alertService = new AlertService();
     private DetectionEngine engine = new DetectionEngine();
 
-    private InvoiceDAO dao = new InvoiceDAO();
 
     public boolean createInvoice(Invoice invoice) throws Exception {
         boolean checkCreate = false;
-        //khi create can truyen vao InvoiceCode, amount, status, createBy
+        //khi create can truyen vao status, createBy
 
         if (invoice.getAmount().compareTo(new BigDecimal(0)) <= 0) {
             throw new Exception("Amount must be larger than 0");
         }
-        invoice.setInvoiceCode(invoice.generateInvoiceCode());
+        
+        Shift currentShift = shiftService.getCurrentShift(invoice.getCreatedBy());
         invoice.setCreatedAt(LocalDateTime.now());
-        invoice.setStatus("COMPLETED");
-
-//        if(invoice.getAmount().compareTo(new BigDecimal(5000000)) >= 0){
-//            
-//        }
-//         Call alertDAO to make an outlier alert
-        dao.insert(invoice);
-        checkCreate = true;
+        DetectionEngine.RiskResult rs = engine.analyzeCreate(invoice.getAmount(), invoice.getCreatedAt(), currentShift.getStartTime().toLocalTime(), currentShift.getEndTime().toLocalTime());
+        int riskScore =rs.getScore();
+        String message = rs.getMessage();
+        if(riskScore > Constants.RISK_MEDIUM_THRESHOLD){
+            invoice.setStatus("PENDING");
+            invoiceDAO.insert(invoice);
+            Invoice invCheck = invoiceDAO.findByCode(invoice.getInvoiceCode());
+            alertService.createAlert("INVOICE", invCheck.getInvoiceId(), riskScore, message);
+        }
+        else{
+            invoice.setStatus("COMPLETED");
+            invoiceDAO.insert(invoice);
+        }
+        
         return checkCreate;
     }
 
     public List<Invoice> getAllInvoice() {
-        List<Invoice> rs = dao.findAll();
+        List<Invoice> rs = invoiceDAO.findAll();
         return rs;
     }
-
+    
+    public List<Invoice> getInvoiceByUserId(User user){
+        return invoiceDAO.findInvoiceByUserId(user.getUserId());
+    }
+    public Invoice getInvoiceById(Long invoiceId){
+        Invoice invoice = invoiceDAO.findById(invoiceId);
+        return invoice;
+    }
     public void approveInvoice(Long invoiceId, User currentUser) {
 
         // =========================

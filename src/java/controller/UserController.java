@@ -16,7 +16,7 @@ import service.UserService;
  *
  * @author admin
  */
-@WebServlet(name = "UserController", urlPatterns = {"/UserController"})
+@WebServlet(name = "UserController", urlPatterns = {"/UserController/*"})
 public class UserController extends HttpServlet {
 
     /**
@@ -28,12 +28,9 @@ public class UserController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    private UserService service;
+    private UserService service = new UserService();
 
-    @Override
-    public void init() throws ServletException {
-        service = new UserService();
-    }
+    
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, Exception {

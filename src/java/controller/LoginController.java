@@ -33,19 +33,47 @@ public class LoginController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException, ClassNotFoundException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            String userID = request.getParameter("userID");
-            String pass = request.getParameter("pass");
-            UserDAO dao = new UserDAO();
-            User user = dao.login(userID, pass);
-            if (user != null) {
-                HttpSession session = request.getSession();
-                session.setAttribute("user", user);
-                request.getRequestDispatcher("/WEB-INF/invoice_list.jsp").forward(request, response);
-            } else {
-                request.setAttribute("MSG", "Incorrect UserID or Password");
+        String action = request.getParameter("action");
+        String userID = request.getParameter("userID");
+        String pass = request.getParameter("pass");
+
+        // 1. Nếu bị "đá" từ trang khác về đây (bắt được tín hiệu required)
+        if ("required".equals(action)) {
+            request.setAttribute("MSG", "Session Time Out! Please log in to continue.");
+            request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+            return; // Dừng lại, không chạy code login bên dưới nữa
+        }
+
+        // 2. Nếu người dùng chỉ vừa mới gõ URL hoặc click Menu để mở trang Login (chưa submit form)
+        if (userID == null && pass == null) {
+            request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+            return;
+        }
+        UserDAO dao = new UserDAO();
+        User user = dao.login(userID, pass);
+        if (user != null) {
+            HttpSession session = request.getSession();
+            if(user.getStatus().equals("LOCKED")){
+                request.setAttribute("MSG", "This account had been Locked");
                 request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+                return;
             }
+            session.setAttribute("user", user);
+            switch (user.getRole()){
+                case "STAFF":
+                    response.sendRedirect(request.getContextPath() + "/InvoiceController/List");
+                    break;
+                case "ADMIN":
+                    request.getRequestDispatcher("DashBoardController").forward(request, response);
+                    break;
+                case "AUDITOR":
+                    request.getRequestDispatcher("AlertController").forward(request, response);
+                    break;
+            }
+            
+        } else {
+            request.setAttribute("MSG", "Incorrect UserID or Password");
+            request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
         }
     }
 
@@ -63,30 +91,24 @@ public class LoginController extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            // Ép xuất lỗi ra màn hình trình duyệt
+            response.setContentType("text/html;charset=UTF-8");
+            response.getWriter().print("<h3 style='color:red;'>Lỗi Database tại LoginController: " + ex.getMessage() + "</h3>");
+            ex.printStackTrace(); 
         }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            // Ép xuất lỗi ra màn hình trình duyệt
+            response.setContentType("text/html;charset=UTF-8");
+            response.getWriter().print("<h3 style='color:red;'>Lỗi Database tại LoginController: " + ex.getMessage() + "</h3>");
+            ex.printStackTrace();
         }
     }
 

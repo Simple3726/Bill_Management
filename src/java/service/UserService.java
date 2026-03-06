@@ -44,7 +44,8 @@ public class UserService {
     // GET ALL USERS
     // ================================
     public List<User> getAllUsers() {
-        return userDAO.findAll();
+        List<User> list = userDAO.findAll();
+        return list;
     }
 
     // ================================

@@ -38,7 +38,22 @@ public class InvoiceDAO {
             e.printStackTrace();
         }
     }
-
+    
+    public List<Invoice> findInvoiceByUserId(Long id){
+        String sql = "SELECT * FROM Invoices WHERE created_by = ?";
+        List<Invoice> list = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()){
+                list.add(mapResultSet(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
     // =========================
     // FIND BY ID
     // =========================

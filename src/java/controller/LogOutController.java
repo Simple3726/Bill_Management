@@ -33,8 +33,8 @@ public class LogOutController extends HttpServlet {
             if (session != null) {
                 session.invalidate();
             }
-            request.setAttribute("MSG_LOGOUT", "logout successfully");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.setAttribute("MSG_LOGOUT", "Logout Successfully");
+            request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
         }
     }
 

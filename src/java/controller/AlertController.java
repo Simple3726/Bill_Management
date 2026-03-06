@@ -37,7 +37,7 @@ public class AlertController extends HttpServlet {
 
             request.setAttribute("alertList", alertList);
 
-            request.getRequestDispatcher("alert_list.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/alert_list.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -24,7 +24,7 @@ public class UserDAO {
             
             rs = ps.executeQuery();
             if (rs.next()) {
-                long userId = rs.getInt("userId");
+                long userId = rs.getInt("user_id");
                 String role = rs.getString("role");
                 String status = rs.getString("status");
                 LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
@@ -205,7 +205,7 @@ public class UserDAO {
         User user = new User();
         user.setUserId(rs.getLong("user_id"));
         user.setUsername(rs.getString("username"));
-        user.setPassword(rs.getString("password_hash"));
+        user.setPassword(rs.getString("password"));
         user.setRole(rs.getString("role"));
         user.setStatus(rs.getString("status"));
         Timestamp ts = rs.getTimestamp("created_at");

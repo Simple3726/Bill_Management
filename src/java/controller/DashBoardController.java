@@ -56,7 +56,7 @@ public class DashBoardController extends HttpServlet {
         // ====================================
         // Forward to dashboard.jsp
         // ====================================
-        request.getRequestDispatcher("/dashboard/dashboard.jsp")
+        request.getRequestDispatcher("/WEB-INF/dashboard.jsp")
                 .forward(request, response);
     }
 

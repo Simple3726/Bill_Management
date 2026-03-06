@@ -33,7 +33,37 @@ public class DetectionEngine {
             return message;
         }
     }
+    
+    public RiskResult analyzeCreate(
+            BigDecimal amount,
+            LocalDateTime actionTime,
+            LocalTime shiftStart,
+            LocalTime shiftEnd
+    ){
+        int score = 0;
+        StringBuilder reason = new StringBuilder();
+        
+        //gia nam ngoai outlier
+        score+=calculateHighValueRisk(amount, reason);
+        
+        //Ngoai ca lam viec
+        score+=calculateShiftRisk(actionTime, shiftStart, shiftEnd, reason);
+        
+        String level;
+        if (score >= Constants.RISK_HIGH_THRESHOLD) {
+            level = "HIGH";
+        } else if (score >= Constants.RISK_MEDIUM_THRESHOLD) {
+            level = "MEDIUM";
+        } else {
+            level = "LOW";
+        }
 
+        if (reason.length() == 0) {
+            reason.append("No abnormal behavior detected.");
+        }
+        return new RiskResult(score, level, reason.toString());
+    }
+    
     public RiskResult analyze(
             BigDecimal oldAmount,
             BigDecimal newAmount,

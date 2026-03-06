@@ -4,6 +4,7 @@ import entity.Invoice;
 import entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,12 +29,7 @@ public class InvoiceController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    private InvoiceService service;
-
-    @Override
-    public void init() throws ServletException {
-        service = new InvoiceService();
-    }
+    private InvoiceService service = new InvoiceService();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -51,14 +47,15 @@ public class InvoiceController extends HttpServlet {
             case "/List":
                 listInvoice(request, response);
                 break;
-            case "/Add":
-                showCreateForm(request, response);
+            case "/Form":
+                showForm(request, response);
                 break;
             case "/Create":
                 createInvoice(request, response);
                 break;
             case "/Approve":
                 approveInvoice(request, response);
+                break;
             default:
                 // Nên có một trang 404 hoặc báo lỗi ở đây thay vì để trắng
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -67,8 +64,20 @@ public class InvoiceController extends HttpServlet {
     }
 
     private void listInvoice(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("invoiceList", service.getAllInvoice());
-        request.getRequestDispatcher("/WEB-INF/invoice_list.jsp").forward(request, response);
+        try {
+            HttpSession session = request.getSession(false);
+            if(session != null && session.getAttribute("user") != null){
+                request.setAttribute("invoiceList", service.getInvoiceByUserId((User) session.getAttribute("user")));
+                request.getRequestDispatcher("/WEB-INF/invoice_list.jsp").forward(request, response);
+            }
+            else{
+                response.sendRedirect(request.getContextPath() + "/LoginController?action=required");
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
     }
 
     private void createInvoice(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -77,26 +86,61 @@ public class InvoiceController extends HttpServlet {
             if (currentSession != null && currentSession.getAttribute("user") != null) {
                 User currentUser = (User) currentSession.getAttribute("user");
                 Invoice invoice = new Invoice();
+                invoice.setInvoiceCode(request.getParameter("invoiceCode"));
+                invoice.setAmount(new BigDecimal(request.getParameter("amount")));
                 invoice.setCreatedBy(currentUser.getUserId());
-                request.setAttribute("Create_MSG", service.createInvoice(invoice));
+                service.createInvoice(invoice);
+                response.sendRedirect(request.getContextPath()+"/InvoiceController/List");
             } else {
-                request.getRequestDispatcher("LogOutController");
+                response.sendRedirect(request.getContextPath()+ "/LoginController?action=required");
+                return;
             }
         } catch (Exception e) {
-
+            e.printStackTrace(); // In ra console của Netbeans/Eclipse
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().print("<h2 style='color:red;'>Server bị lỗi: " + e.getMessage() + "</h2>");
+        response.getWriter().print("<p>Chi tiết lỗi (Xem kỹ dòng này): " + e.toString() + "</p>");
         }
     }
 
-    private void showCreateForm(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // Kiểm tra login trước khi cho xem form
+    private void showForm(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    
         HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("user") != null) {
-            request.getRequestDispatcher("/WEB-INF/invoice_form.jsp").forward(request, response);
-        } else {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+
+        // LỖI 1 ĐÃ SỬA: Phải dùng DẤU HOẶC (||) thay vì DẤU VÀ (&&). 
+        // Nếu session == null mà dùng && thì nó gọi tiếp .getAttribute sẽ bị NullPointerException ngay tại Controller.
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/LoginController?action=required");
+            return; // Đừng quên return để dừng luồng chạy
         }
+
+        String idParam = request.getParameter("invoiceId");
+        Invoice invoice = null;
+
+        try {
+            if (idParam != null && !idParam.trim().isEmpty()) {
+                Long invoiceId = Long.parseLong(idParam);
+                invoice = service.getInvoiceById(invoiceId);
+
+                // LỖI 2 ĐÃ SỬA: Lỡ ID không có thật thì đá về trang danh sách, không cho mở Form
+                if (invoice == null) {
+                    response.sendRedirect(request.getContextPath() + "/InvoiceController/List");
+                    return;
+                }
+            } else {
+                invoice = new Invoice();
+                invoice.setInvoiceCode(invoice.generateInvoiceCode());
+            }
+
+            request.setAttribute("invoice", invoice);
+            request.getRequestDispatcher("/WEB-INF/invoice_form.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/InvoiceController/List");
     }
+}
 
     private void approveInvoice(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Danh sách Hóa đơn</title>
+    <title>Invoice List</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -37,7 +37,7 @@
     <div class="flex-grow-1 p-4 bg-light main-content">
         <div class="d-flex align-items-center mb-4">
             <button id="sidebarToggle" title="Đóng/Mở thanh công cụ"><i class="fa-solid fa-bars"></i></button>
-            <h2 class="text-primary mb-0">Danh sách Hóa đơn</h2>
+            <h2 class="text-primary mb-0">Invoice List</h2>
         </div>
         
         <div style="margin-bottom: 20px;">
@@ -50,11 +50,11 @@
                     <thead class="table-dark">
                         <tr>
                             <th class="ps-4 py-3">ID</th>
-                            <th>Mã Hóa Đơn</th>
-                            <th>Số Tiền</th>
-                            <th>Trạng Thái</th>
-                            <th>Ngày Tạo</th>
-                            <th class="text-center pe-4">Hành Động</th>
+                            <th>Invoice ID</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Create At</th>
+                            <th class="text-center pe-4">Action</th>
                         </tr>
                     </thead>
                     <tbody>

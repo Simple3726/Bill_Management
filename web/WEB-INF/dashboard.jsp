@@ -238,7 +238,7 @@
                     </div>
 
                     <div>
-                        <form method="get" action="dashboard" class="m-0">
+                        <form method="get" action="<%=request.getContextPath()%>/DashBoardController" class="m-0">
                             <select name="period" class="filter-select shadow-sm" onchange="this.form.submit()">
                                 <option value="today" <%= period.equals("today") ? "selected" : ""%>>📅 Today</option>
                                 <option value="week" <%= period.equals("week") ? "selected" : ""%>>📅 This Week</option>

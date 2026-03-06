@@ -14,7 +14,7 @@ import service.DashBoardService;
  *
  * @author admin
  */
-@WebServlet(name = "DashBoardController", urlPatterns = {"/dashboard"})
+@WebServlet(name = "DashBoardController", urlPatterns = {"/DashBoardController"})
 public class DashBoardController extends HttpServlet {
 
     /**

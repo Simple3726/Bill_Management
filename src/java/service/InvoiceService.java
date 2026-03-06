@@ -33,7 +33,7 @@ public class InvoiceService {
     public void createInvoice(Invoice invoice) throws Exception {
         boolean checkCreate = false;
         //khi create can truyen vao status, createBy
-
+            
         if (invoice.getAmount().compareTo(new BigDecimal(0)) <= 0) {
             throw new Exception("Amount must be larger than 0");
         }
@@ -57,7 +57,7 @@ public class InvoiceService {
         
         // 3. CHỐT CHẶN BẢO VỆ: Nếu insert xịt, ném lỗi ra trình duyệt ngay!
         if (invCheck == null) {
-            throw new Exception("Không thể lưu hóa đơn vào Database! Mã hóa đơn '" + invoice.getInvoiceCode() + "' có thể đã bị trùng. Hãy check màn hình Console.");
+            throw new Exception("Cannot save invoice into Database! Invoice Id: '" + invoice.getInvoiceCode() + "' can be duplicated. Please check console.");
         }
         
         // 4. Đảo ngược chuỗi để chống NullPointerException (Yoda Condition)

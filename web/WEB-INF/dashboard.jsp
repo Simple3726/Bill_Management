@@ -219,6 +219,11 @@
                         <i class="fa-solid fa-users-gear me-2"></i> Quản lý User
                     </a>
                     <% }%>
+                    <div class="mt-auto pt-3 border-top border-secondary overflow-hidden">
+                    <a href="<%=request.getContextPath()%>/MenuController?action=Logout" class="btn btn-danger w-100 fw-bold text-nowrap">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                    </a>
+                </div>
                 </div>
 
                 <div class="mt-auto pt-3 border-top border-secondary overflow-hidden">

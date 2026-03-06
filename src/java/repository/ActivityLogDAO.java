@@ -135,5 +135,5 @@ public class ActivityLogDAO {
         log.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
 
         return log;
-    }
+    }  
 }

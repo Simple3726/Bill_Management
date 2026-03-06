@@ -235,6 +235,7 @@
                     <input type="text" name="invoiceCode" class="form-control" 
                            placeholder="INV-2024-001" 
                            value="<%= invoice.getInvoiceCode() %>" readonly>
+                    <input type="hidden" name="status" value="<%=invoice.getStatus()%>">
                 </div>
 
                 <div class="col-12 mt-4">
@@ -244,6 +245,10 @@
                                step="0.01" min="0" placeholder="0.00" 
                                value="<%= (isEdit && invoice.getAmount() != null) ? invoice.getAmount() : "" %>" required>
                         <span class="input-group-text">VND</span>
+                        <% if(isEdit && invoice.getAmount() != null){ %>
+                        <input type="hidden" name="oldAmount" value="<%= (isEdit && invoice.getAmount() != null) ? invoice.getAmount() : "" %>">
+                        
+                        <%}%>
                     </div>
                     <span class="form-text">Sử dụng dấu chấm (.) cho phần thập phân.</span>
                 </div>
@@ -260,7 +265,7 @@
             </div>
 
             <hr>
-
+            
             <div class="actions">
                 <a href="<%=request.getContextPath()%>/InvoiceController/List" class="btn btn-light">Hủy bỏ</a>
                 <button type="submit" class="btn btn-save">

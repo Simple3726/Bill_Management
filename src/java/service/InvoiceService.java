@@ -30,7 +30,7 @@ public class InvoiceService {
     private DetectionEngine engine = new DetectionEngine();
 
 
-    public boolean createInvoice(Invoice invoice) throws Exception {
+    public void createInvoice(Invoice invoice) throws Exception {
         boolean checkCreate = false;
         //khi create can truyen vao status, createBy
 
@@ -43,20 +43,49 @@ public class InvoiceService {
         DetectionEngine.RiskResult rs = engine.analyzeCreate(invoice.getAmount(), invoice.getCreatedAt(), currentShift.getStartTime().toLocalTime(), currentShift.getEndTime().toLocalTime());
         int riskScore =rs.getScore();
         String message = rs.getMessage();
-        if(riskScore > Constants.RISK_MEDIUM_THRESHOLD){
+        if(riskScore >= Constants.RISK_MEDIUM_THRESHOLD){
             invoice.setStatus("PENDING");
-            invoiceDAO.insert(invoice);
-            Invoice invCheck = invoiceDAO.findByCode(invoice.getInvoiceCode());
-            alertService.createAlert("INVOICE", invCheck.getInvoiceId(), riskScore, message);
-        }
-        else{
+        } else {
             invoice.setStatus("COMPLETED");
-            invoiceDAO.insert(invoice);
         }
         
-        return checkCreate;
+        // 1. Thực hiện Insert
+        invoiceDAO.insert(invoice);
+        
+        // 2. Query lại để lấy Invoice_ID do DB tự sinh ra
+        Invoice invCheck = invoiceDAO.findByCode(invoice.getInvoiceCode());
+        
+        // 3. CHỐT CHẶN BẢO VỆ: Nếu insert xịt, ném lỗi ra trình duyệt ngay!
+        if (invCheck == null) {
+            throw new Exception("Không thể lưu hóa đơn vào Database! Mã hóa đơn '" + invoice.getInvoiceCode() + "' có thể đã bị trùng. Hãy check màn hình Console.");
+        }
+        
+        // 4. Đảo ngược chuỗi để chống NullPointerException (Yoda Condition)
+        if("PENDING".equals(invCheck.getStatus())){
+            alertService.createAlert("INVOICE", invCheck.getInvoiceId(), riskScore, message);
+        }
+        logService.addLog(invoice.getCreatedBy(), currentShift.getShiftId(), "Create Invoice", "INVOICE", invoice.getInvoiceId(), message);
     }
-
+    
+    public void updateInvoice(Long invoiceId, BigDecimal newAmount, BigDecimal oldAmount, Long modified_by){
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceId(invoiceId);
+        invoice.setAmount(newAmount);
+        invoice.setStatus("PENDING");
+        invoice.setUpdatedAt(LocalDateTime.now());
+        Shift currentShift = shiftService.getCurrentShift(modified_by);
+        int editCount = historyDAO.countEditInShift(invoiceId, currentShift.getShiftId());
+        DetectionEngine.RiskResult rs = engine.analyze(oldAmount, newAmount, editCount, invoice.getUpdatedAt(), currentShift.getStartTime().toLocalTime(), currentShift.getEndTime().toLocalTime());
+        
+        int riskScore = rs.getScore();
+        String message = rs.getMessage();
+        
+        alertService.createAlert("INVOICE", invoiceId, riskScore, message);
+        
+        historyDAO.addHistory(invoiceId, oldAmount, newAmount, modified_by, currentShift.getShiftId(), "UPDATE", invoice.getUpdatedAt());
+        invoiceDAO.update(invoice);
+    }
+    
     public List<Invoice> getAllInvoice() {
         List<Invoice> rs = invoiceDAO.findAll();
         return rs;

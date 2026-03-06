@@ -1,9 +1,11 @@
 package repository;
 
 import entity.InvoiceHistory;
+import java.math.BigDecimal;
 import utils.DBConnection;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 
 public class InvoiceHistoryDAO {
 
@@ -46,7 +48,25 @@ public class InvoiceHistoryDAO {
 
         return null;
     }
-
+    
+    public void addHistory(Long invoiceId, BigDecimal oldAmount, BigDecimal newAmount, Long modified_by, Long shift_id, String reason, LocalDateTime modified_at){
+        String sql = "INSERT INTO Invoice_History(invoice_id, old_Amount, new_Amount, modified_by, shift_id, reason, modified_at) VALUES(?, ?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setLong(1, invoiceId);
+            ps.setBigDecimal(2, oldAmount);
+            ps.setBigDecimal(3, newAmount);
+            ps.setLong(4, modified_by);
+            ps.setLong(5, shift_id);
+            ps.setString(6, reason);
+            ps.setTimestamp(7, Timestamp.valueOf(modified_at));
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    
     // =========================================
     // Count number of edited shift
     // =========================================

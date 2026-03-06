@@ -53,6 +53,9 @@ public class InvoiceController extends HttpServlet {
             case "/Create":
                 createInvoice(request, response);
                 break;
+            case "/Update":
+                updateInvoice(request, response);
+                break;
             case "/Approve":
                 approveInvoice(request, response);
                 break;
@@ -103,6 +106,29 @@ public class InvoiceController extends HttpServlet {
         }
     }
 
+    public void updateInvoice(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        try {
+            HttpSession currentSession = request.getSession(false); //false de web khong tu tao moi session khi ko co session san
+            if (currentSession != null && currentSession.getAttribute("user") != null) {
+                User user = (User) currentSession.getAttribute("user");
+                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
+                BigDecimal newAmount = new BigDecimal(request.getParameter("amount"));
+                BigDecimal oldAmount = new BigDecimal(request.getParameter("oldAmount"));
+                Long modified_by = user.getUserId();
+                service.updateInvoice(invoiceId, newAmount, oldAmount, modified_by);
+                response.sendRedirect(request.getContextPath()+"/InvoiceController/List");
+            } else {
+                response.sendRedirect(request.getContextPath()+ "/LoginController?action=required");
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // In ra console của Netbeans/Eclipse
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().print("<h2 style='color:red;'>Server bị lỗi: " + e.getMessage() + "</h2>");
+        response.getWriter().print("<p>Chi tiết lỗi (Xem kỹ dòng này): " + e.toString() + "</p>");
+        }
+    }
+    
     private void showForm(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
     

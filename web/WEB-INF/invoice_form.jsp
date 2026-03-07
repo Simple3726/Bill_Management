@@ -219,7 +219,7 @@
         <div class="card-header-flex">
             <h2 class="header-title"><i class="fa-solid fa-file-invoice-dollar"></i>Invoice Information</h2>
             <span class="badge">
-                ID: <%= (isEdit && invoice.getInvoiceId() != null) ? invoice.getInvoiceId() : "Mới" %>
+                ID: <%= (isEdit && invoice.getInvoiceId() != null) ? invoice.getInvoiceId() : "New" %>
             </span>
         </div>
 

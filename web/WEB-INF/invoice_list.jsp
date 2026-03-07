@@ -78,8 +78,8 @@
                             <tr>
                                 <td colspan="6" class="text-center text-muted py-5">
                                     <i class="fa-solid fa-folder-open mb-3" style="font-size: 40px; color: #dee2e6;"></i><br>
-                                    <h5>No Data</h5>
-                                    <p class="mb-0">Create new with "New Invoice".</p>
+                                    <h5>Chưa có hóa đơn nào</h5>
+                                    <p class="mb-0">Bấm "New Invoice" để tạo mới.</p>
                                 </td>
                             </tr>
                         <% } %>

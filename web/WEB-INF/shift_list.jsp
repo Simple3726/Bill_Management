@@ -116,7 +116,14 @@
                 background-color: #e3a903;
                 color: white;
             }
-            
+            .btn-delete {
+                background-color: #d93025;
+                color: white;
+            }
+            .btn-delete:hover {
+                background-color: #c02a20;
+                color: white;
+            }
         </style>
     </head>
     <body>
@@ -167,6 +174,7 @@
                                     <td class="text-center pe-4">
                                         <a href="<%=request.getContextPath()%>/ShiftController?action=view_log&id=<%=s.getShiftId()%>" class="action-btn btn-log me-1"><i class="fa-solid fa-clipboard-list"></i> Logs</a>
                                         <a href="<%=request.getContextPath()%>/ShiftController?action=edit&id=<%=s.getShiftId()%>" class="action-btn btn-edit me-1"><i class="fa-solid fa-pen"></i> Edit</a>
+                                        <a href="<%=request.getContextPath()%>/ShiftController?action=delete&id=<%=s.getShiftId()%>" class="action-btn btn-delete" onclick="return confirm('Noice: Are you sure you want to delete shift? #<%=s.getShiftId()%> ?');"><i class="fa-solid fa-trash"></i> Delete</a>
                                     </td>
                                 </tr>
                                 <% }

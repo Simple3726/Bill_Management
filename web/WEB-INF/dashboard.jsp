@@ -65,9 +65,9 @@
                 </div>
 
                 <div class="row g-3 mb-4">
-                    <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Total Revenue</h4><h3 class="text-success"><%= formatter.format(data.get("TOTAL_REVENUE")) %> VNĐ</h3><i class="fa-solid fa-sack-dollar bg-icon"></i></div></div>
+                    <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Total Revenue</h4><h3 class="text-success">$<%= formatter.format(data.get("TOTAL_REVENUE")) %></h3><i class="fa-solid fa-sack-dollar bg-icon"></i></div></div>
                     <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Total Invoices</h4><h3 class="text-primary"><%= formatter.format(data.get("TOTAL_INVOICE")) %></h3><i class="fa-solid fa-file-invoice-dollar bg-icon"></i></div></div>
-                    <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Average Invoice</h4><h3><%= formatter.format(data.get("AVG_INVOICE")) %> VNĐ</h3><i class="fa-solid fa-chart-line bg-icon"></i></div></div>
+                    <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Average Invoice</h4><h3>$<%= formatter.format(data.get("AVG_INVOICE")) %></h3><i class="fa-solid fa-chart-line bg-icon"></i></div></div>
                     <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Risk Rate</h4><h3 class="text-danger"><%= String.format("%.2f", data.get("RISK_RATE"))%>%</h3><i class="fa-solid fa-triangle-exclamation bg-icon"></i></div></div>
                     <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Total Alerts</h4><h3 class="text-warning"><%= data.get("TOTAL_ALERT")%></h3><i class="fa-solid fa-bell bg-icon"></i></div></div>
                     <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>New Alerts</h4><h3 class="text-danger"><%= data.get("NEW_ALERT")%></h3><i class="fa-solid fa-circle-exclamation bg-icon"></i></div></div>

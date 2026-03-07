@@ -15,44 +15,45 @@
         <div class="user-avatar shadow">
             <i class="fa-solid fa-user-tie"></i>
         </div>
-        <% if (currentUserSidebar != null) { %>
-            <h6 class="mb-1 fw-bold"><%= currentUserSidebar.getUsername() %></h6>
-            <small class="text-white-50"><i class="fa-solid fa-circle text-success" style="font-size: 8px;"></i> Online</small>
+        <% if (currentUserSidebar != null) {%>
+        <h6 class="mb-1 fw-bold"><%= currentUserSidebar.getUsername()%></h6>
+        <small class="text-white-50"><i class="fa-solid fa-circle text-success" style="font-size: 8px;"></i> Online</small>
         <% } else { %>
-            <h6 class="mb-1 fw-bold">Guest</h6>
+        <h6 class="mb-1 fw-bold">Guest</h6>
         <% } %>
     </div>
 
     <div class="flex-grow-1 overflow-hidden">
-        <% if ("ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar)) { %>
-            <a href="<%=request.getContextPath()%>/DashBoardController" class="sidebar-link mb-2">
-                <i class="fa-solid fa-chart-pie me-2"></i> Dashboard
-            </a>
+        <% if ("ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar)) {%>
+        <a href="<%=request.getContextPath()%>/DashBoardController" class="sidebar-link mb-2">
+            <i class="fa-solid fa-chart-pie me-2"></i> Dashboard
+        </a>
         <% } %>
 
-        <% if ("STAFF".equals(roleSidebar) || "ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar)) { %>
-            <a href="<%=request.getContextPath()%>/ShiftController" class="sidebar-link mb-2">
-                <i class="fa-solid fa-clock-rotate-left me-2"></i> Shift
-            </a>
-            <a href="<%=request.getContextPath()%>/InvoiceController/List" class="sidebar-link mb-2">
-                <i class="fa-solid fa-file-invoice-dollar me-2"></i> Invoice Management
-            </a>
+        <% if ("STAFF".equals(roleSidebar) || "ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar)) {%>
+        <a href="<%=request.getContextPath()%>/ShiftController" class="sidebar-link mb-2">
+            <i class="fa-solid fa-clock-rotate-left me-2"></i> Shift
+        </a>
+        <a href="<%=request.getContextPath()%>/InvoiceController/List" class="sidebar-link mb-2">
+            <i class="fa-solid fa-file-invoice-dollar me-2"></i> Invoice Management
+        </a>
         <% } %>
 
-        <% if ("AUDITOR".equals(roleSidebar) || "ADMIN".equals(roleSidebar)) { %>
-            <a href="<%=request.getContextPath()%>/AlertController" class="sidebar-link mb-2">
-                <i class="fa-solid fa-bell me-2"></i> Alert Management
-            </a>
+        <% if ("AUDITOR".equals(roleSidebar) || "ADMIN".equals(roleSidebar)) {%>
+        <a href="<%=request.getContextPath()%>/AlertController" class="sidebar-link mb-2">
+            <i class="fa-solid fa-bell me-2"></i> Alert Management
+        </a>
         <% } %>
 
-        <% if ("ADMIN".equals(roleSidebar)) { %>
-            <a href="<%=request.getContextPath()%>/UserController/List" class="sidebar-link mb-2">
-                <i class="fa-solid fa-users-gear me-2"></i> User Management
-            </a>
-            <a href="<%=request.getContextPath()%>/ShiftController?action=list" class="sidebar-link mb-2">
-                <i class="fa-solid fa-list-check me-2"></i> Shift Management
-            </a>
-        <% } %>
+        <% if ("ADMIN".equals(roleSidebar)) {%>
+
+        <a href="<%=request.getContextPath()%>/ShiftController?action=list" class="sidebar-link mb-2">
+            <i class="fa-solid fa-list-check me-2"></i> Shift Management
+        </a>
+        <a href="<%=request.getContextPath()%>/UserController/List" class="sidebar-link mb-2">
+            <i class="fa-solid fa-users-gear me-2"></i> User Management
+        </a>
+        <% }%>
     </div>
 
     <div class="mt-auto pt-3 border-top border-secondary overflow-hidden">

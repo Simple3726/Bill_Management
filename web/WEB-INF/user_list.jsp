@@ -77,12 +77,12 @@
                             <td class="text-muted"><%=u.getCreatedAt()%></td>
                             <td class="text-center pe-4">
                                 <a href="<%=request.getContextPath()%>/UserController/Edit?id=<%=u.getUserId()%>" class="action-btn btn-edit me-1"><i class="fa-solid fa-pen"></i> Edit</a>
-                                <a href="<%=request.getContextPath()%>/UserController/Delete?id=<%=u.getUserId()%>" class="action-btn btn-delete" onclick="return confirm('⚠️ Cảnh báo: Bạn có chắc chắn muốn xóa tài khoản <%=u.getUsername()%> không? Hành động này không thể hoàn tác!');"><i class="fa-solid fa-trash"></i> Delete</a>
+                                <a href="<%=request.getContextPath()%>/UserController/Delete?id=<%=u.getUserId()%>" class="action-btn btn-delete" onclick="return confirm('⚠️ Warning: Are you sure you want to delete this account <%=u.getUsername()%> ? This action cannot be undone!');"><i class="fa-solid fa-trash"></i> Delete</a>
                             </td>
                         </tr>
                         <% } } else { %>
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-5"><i class="fa-solid fa-users-slash mb-3" style="font-size: 40px; color: #dee2e6;"></i><br><h5>Không có dữ liệu</h5><p class="mb-0">Hệ thống chưa có người dùng nào được tạo.</p></td>
+                            <td colspan="6" class="text-center text-muted py-5"><i class="fa-solid fa-users-slash mb-3" style="font-size: 40px; color: #dee2e6;"></i><br><h5>No Data</h5><p class="mb-0">No users have been created in the system yet.</p></td>
                         </tr>
                         <% } %>
                     </tbody>

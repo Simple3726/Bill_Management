@@ -88,8 +88,8 @@
                         <tr>
                             <td colspan="6" class="text-center text-muted py-5">
                                 <i class="fa-solid fa-box-open mb-3" style="font-size: 40px; color: #dee2e6;"></i><br>
-                                <h5>Chưa có hoạt động nào</h5>
-                                <p class="mb-0">Ca làm việc này chưa có sự kiện nào được ghi nhận.</p>
+                                <h5>No action have been recorded yet.</h5>
+                                <p class="mb-0">No events have been recorded for this shift yet.</p>
                             </td>
                         </tr>
                         <% } %>

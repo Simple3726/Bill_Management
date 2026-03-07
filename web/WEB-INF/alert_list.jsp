@@ -95,7 +95,7 @@
                         <tr>
                             <td colspan="7" class="text-center text-muted py-5">
                                 <i class="fa-solid fa-shield-check mb-3" style="font-size: 40px; color: #2ea44f;"></i><br>
-                                <h5>Hệ thống an toàn</h5><p class="mb-0">Không có cảnh báo (Alert) nào cần xử lý.</p>
+                                <h5>The system is secure</h5><p class="mb-0">No alert need to investigate.</p>
                             </td>
                         </tr>
                         <% } %>

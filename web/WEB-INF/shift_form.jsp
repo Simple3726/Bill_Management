@@ -13,7 +13,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Edit Shift - BillManager</title>
+    <title>Edit Shift - Bill Manager</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -68,13 +68,13 @@
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="shiftId" value="<%= (isEdit) ? s.getShiftId() : "" %>">
 
-                <label>Mã Ca (Shift ID)</label>
+                <label>Shift ID </label>
                 <input type="text" value="#<%= (isEdit) ? s.getShiftId() : "" %>" disabled>
 
-                <label>Bắt đầu lúc</label>
+                <label>Start At </label>
                 <input type="text" value="<%= (isEdit) ? s.getStartTime() : "" %>" disabled>
 
-                <label>Trạng Thái</label>
+                <label>Status </label>
                 <select name="status">
                     <option value="OPEN" <%= (isEdit && "OPEN".equals(s.getStatus())) ? "selected" : "" %>>🟢 OPEN</option>
                     <option value="CLOSED" <%= (isEdit && "CLOSED".equals(s.getStatus())) ? "selected" : "" %>>🔴 CLOSED</option>

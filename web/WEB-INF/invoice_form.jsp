@@ -217,7 +217,7 @@
     <div class="invoice-card">
         
         <div class="card-header-flex">
-            <h2 class="header-title"><i class="fa-solid fa-file-invoice-dollar"></i>Thông tin Hóa đơn</h2>
+            <h2 class="header-title"><i class="fa-solid fa-file-invoice-dollar"></i>Invoice Information</h2>
             <span class="badge">
                 ID: <%= (isEdit && invoice.getInvoiceId() != null) ? invoice.getInvoiceId() : "Mới" %>
             </span>
@@ -231,7 +231,7 @@
 
             <div class="row">
                 <div class="col-6">
-                    <label class="form-label">Mã hóa đơn</label>
+                    <label class="form-label">Invoice Id</label>
                     <input type="text" name="invoiceCode" class="form-control" 
                            placeholder="INV-2024-001" 
                            value="<%= invoice.getInvoiceCode() %>" readonly>
@@ -239,7 +239,7 @@
                 </div>
 
                 <div class="col-12 mt-4">
-                    <label class="form-label">Tổng tiền (VNĐ)</label>
+                    <label class="form-label">Total (VNĐ)</label>
                     <div class="input-group">
                         <input type="number" name="amount" class="form-control form-control-lg text-end" 
                                step="0.01" min="0" placeholder="0.00" 
@@ -250,16 +250,16 @@
                         
                         <%}%>
                     </div>
-                    <span class="form-text">Sử dụng dấu chấm (.) cho phần thập phân.</span>
+                    <span class="form-text">Use a dot (.) as the decimal separator.</span>
                 </div>
 
                 <% if(hasCreatedAt) { %>
                     <div class="col-6 mt-4 meta-text">
-                        <small>Người tạo: <strong><%= invoice.getCreatedBy() %></strong></small>
-                        <small>Ngày tạo: <%= invoice.getCreatedAt() %></small>
+                        <small>Create By: <strong><%= invoice.getCreatedBy() %></strong></small>
+                        <small>Create At: <%= invoice.getCreatedAt() %></small>
                     </div>
                     <div class="col-6 mt-4 meta-text text-end">
-                        <small>Cập nhật cuối: <%= (invoice.getUpdatedAt() != null) ? invoice.getUpdatedAt() : "" %></small>
+                        <small>Last Update: <%= (invoice.getUpdatedAt() != null) ? invoice.getUpdatedAt() : "" %></small>
                     </div>
                 <% } %>
             </div>
@@ -267,9 +267,9 @@
             <hr>
             
             <div class="actions">
-                <a href="<%=request.getContextPath()%>/InvoiceController/List" class="btn btn-light">Hủy bỏ</a>
+                <a href="<%=request.getContextPath()%>/InvoiceController/List" class="btn btn-light">Cancel</a>
                 <button type="submit" class="btn btn-save">
-                    <i class="fa-solid fa-save me-2"></i> Lưu hóa đơn
+                    <i class="fa-solid fa-save me-2"></i> Save
                 </button>
             </div>
             

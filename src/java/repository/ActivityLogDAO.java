@@ -9,7 +9,7 @@ import java.util.List;
 public class ActivityLogDAO {
 
     public void insert(ActivityLog log) {
-        
+        // ĐÃ SỬA: Đổi tên bảng thành Activity_Logs và cột thành action_type
         String sql = "INSERT INTO Activity_Logs(user_id, shift_id, action_type, entity_type, entity_id, created_at) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

@@ -14,7 +14,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Invoice Management</title>
+    <title>Quản lý Hóa đơn</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -217,7 +217,10 @@
     <div class="invoice-card">
         
         <div class="card-header-flex">
-            <h2 class="header-title"><i class="fa-solid fa-file-invoice-dollar"></i>Invoice Information</h2>
+            <h2 class="header-title"><i class="fa-solid fa-file-invoice-dollar"></i>Thông tin Hóa đơn</h2>
+            <span class="badge">
+                ID: <%= (isEdit && invoice.getInvoiceId() != null) ? invoice.getInvoiceId() : "Mới" %>
+            </span>
         </div>
 
         <form action="<%=request.getContextPath()%>/InvoiceController/<%=isEdit?"Update":"Create"%>" method="get">
@@ -228,7 +231,7 @@
 
             <div class="row">
                 <div class="col-6">
-                    <label class="form-label">Invoice Id</label>
+                    <label class="form-label">Mã hóa đơn</label>
                     <input type="text" name="invoiceCode" class="form-control" 
                            placeholder="INV-2024-001" 
                            value="<%= invoice.getInvoiceCode() %>" readonly>
@@ -236,27 +239,27 @@
                 </div>
 
                 <div class="col-12 mt-4">
-                    <label class="form-label">Total </label>
+                    <label class="form-label">Tổng tiền (VNĐ)</label>
                     <div class="input-group">
                         <input type="number" name="amount" class="form-control form-control-lg text-end" 
                                step="0.01" min="0" placeholder="0.00" 
                                value="<%= (isEdit && invoice.getAmount() != null) ? invoice.getAmount() : "" %>" required>
-                        <span class="input-group-text"> VNĐ </span>
+                        <span class="input-group-text">VND</span>
                         <% if(isEdit && invoice.getAmount() != null){ %>
                         <input type="hidden" name="oldAmount" value="<%= (isEdit && invoice.getAmount() != null) ? invoice.getAmount() : "" %>">
                         
                         <%}%>
                     </div>
-                    <span class="form-text">Use a dot (.) as the decimal separator.</span>
+                    <span class="form-text">Sử dụng dấu chấm (.) cho phần thập phân.</span>
                 </div>
 
                 <% if(hasCreatedAt) { %>
                     <div class="col-6 mt-4 meta-text">
-                        <small>Create By: <strong><%= invoice.getCreatedBy() %></strong></small>
-                        <small>Create At: <%= invoice.getCreatedAt() %></small>
+                        <small>Người tạo: <strong><%= invoice.getCreatedBy() %></strong></small>
+                        <small>Ngày tạo: <%= invoice.getCreatedAt() %></small>
                     </div>
                     <div class="col-6 mt-4 meta-text text-end">
-                        <small>Last Update: <%= (invoice.getUpdatedAt() != null) ? invoice.getUpdatedAt() : "" %></small>
+                        <small>Cập nhật cuối: <%= (invoice.getUpdatedAt() != null) ? invoice.getUpdatedAt() : "" %></small>
                     </div>
                 <% } %>
             </div>
@@ -264,9 +267,9 @@
             <hr>
             
             <div class="actions">
-                <a href="<%=request.getContextPath()%>/InvoiceController/List" class="btn btn-light">Cancel</a>
+                <a href="<%=request.getContextPath()%>/InvoiceController/List" class="btn btn-light">Hủy bỏ</a>
                 <button type="submit" class="btn btn-save">
-                    <i class="fa-solid fa-save me-2"></i> Save
+                    <i class="fa-solid fa-save me-2"></i> Lưu hóa đơn
                 </button>
             </div>
             

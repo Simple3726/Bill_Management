@@ -73,7 +73,10 @@ public class InvoiceService {
         invoice.setStatus("PENDING");
         invoice.setUpdatedAt(LocalDateTime.now());
         Shift currentShift = shiftService.getCurrentShift(modified_by);
-        int editCount = historyDAO.countEditInShift(invoiceId, currentShift.getShiftId());
+        int editCount = 0;
+        if(currentShift != null){
+            editCount = historyDAO.countEditInShift(invoiceId, currentShift.getShiftId());
+        }
         DetectionEngine.RiskResult rs = engine.analyze(oldAmount, newAmount, editCount, currentShift);
         
         int riskScore = rs.getScore();
@@ -81,7 +84,8 @@ public class InvoiceService {
         
         alertService.createAlert("INVOICE", invoiceId, riskScore, message);
         
-        historyDAO.addHistory(invoiceId, oldAmount, newAmount, modified_by, currentShift.getShiftId(), "UPDATE", invoice.getUpdatedAt());
+        historyDAO.addHistory(invoiceId, oldAmount, newAmount, modified_by, currentShift != null ? currentShift.getShiftId() : null
+                , "UPDATE", invoice.getUpdatedAt());
         invoiceDAO.update(invoice);
     }
     

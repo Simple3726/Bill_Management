@@ -92,15 +92,6 @@ public class ShiftDAO {
         return null;
     }
 
-    public boolean delete(Long shiftId) {
-        String sql = "DELETE FROM Shifts WHERE shift_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, shiftId);
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) { e.printStackTrace(); }
-        return false;
-    }
 
     public int countShiftBetween(LocalDate start, LocalDate end) {
         String sql = "SELECT COUNT(*) FROM Shifts WHERE CAST(start_time AS DATE) >= ? AND CAST(start_time AS DATE) <= ?";

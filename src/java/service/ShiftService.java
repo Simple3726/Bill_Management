@@ -55,9 +55,4 @@ public class ShiftService {
     public boolean updateShiftInfo(Shift shift) { 
         return shiftDAO.update(shift); 
     }
-
-    // Gọi DAO xóa 1 ca
-    public boolean deleteShift(Long shiftId) { 
-        return shiftDAO.delete(shiftId); 
-    }
 }

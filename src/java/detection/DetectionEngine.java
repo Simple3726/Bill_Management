@@ -167,7 +167,7 @@ public class DetectionEngine {
         if (shiftStart == null || shiftEnd == null) {
             return 0;
         }
-
+        
         LocalTime actionLocalTime = actionTime.toLocalTime();
 
         if (actionLocalTime.isBefore(shiftStart)

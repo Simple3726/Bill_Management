@@ -84,7 +84,7 @@ public class ShiftController extends HttpServlet {
                     if (newShiftId != null) {
                         session.setAttribute("CURRENT_SHIFT_ID", newShiftId);
                         ghiLog(currentUserId, newShiftId, "OPEN_SHIFT", "SHIFT", newShiftId);
-                        session.setAttribute("message", "Mở ca thành công!");
+                        session.setAttribute("message", "Open shift successfully!");
                     } else {
                         session.setAttribute("error", "Error while opening new shift!");
                     }
@@ -101,7 +101,7 @@ public class ShiftController extends HttpServlet {
                     if (shiftDAO.update(currentShift)) {
                         session.removeAttribute("CURRENT_SHIFT_ID");
                         ghiLog(currentUserId, currentShift.getShiftId(), "CLOSE_SHIFT", "SHIFT", currentShift.getShiftId());
-                        session.setAttribute("message", "Đóng ca thành công!");
+                        session.setAttribute("message", "Close shift successfully!");
                     } else {
                         session.setAttribute("error", "Error while closing this shift!");
                     }
@@ -128,7 +128,7 @@ public class ShiftController extends HttpServlet {
                         shiftService.updateShiftInfo(shiftToClose);
                         
                         ghiLog(currentUserId, shiftToClose.getShiftId(), "ADMIN_FORCE_CLOSE", "SHIFT", shiftToClose.getShiftId());
-                        session.setAttribute("message", "Đã ép đóng ca #" + shiftIdToClose + " thành công!");
+                        session.setAttribute("message", "Close shift #" + shiftIdToClose + " successfully!");
                     }
                 }
                 response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
@@ -140,7 +140,7 @@ public class ShiftController extends HttpServlet {
                     Long targetUserId = Long.parseLong(request.getParameter("targetUserId"));
                     try {
                         shiftService.getCurrentShift(targetUserId);
-                        session.setAttribute("error", "Nhân viên ID " + targetUserId + " hiện đang có một ca làm việc mở rồi!");
+                        session.setAttribute("error", "Staff ID " + targetUserId + " already have an open shift!");
                     } catch (RuntimeException e) {
                         Shift newShift = new Shift();
                         newShift.setUserId(targetUserId);
@@ -149,19 +149,8 @@ public class ShiftController extends HttpServlet {
                         Long newId = shiftDAO.insert(newShift);
                         
                         ghiLog(currentUserId, newId, "ADMIN_OPEN_FOR_USER", "SHIFT", newId);
-                        session.setAttribute("message", "Đã mở ca thành công cho Nhân viên ID " + targetUserId);
+                        session.setAttribute("message", "Open shift successfully for staff with ID: " + targetUserId);
                     }
-                }
-                response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
-                return;
-
-            // ================== 7. XÓA CA LÀM VIỆC ==================
-            } else if ("delete".equals(action)) {
-                Long idToDelete = Long.parseLong(request.getParameter("id"));
-                if (shiftService.deleteShift(idToDelete)) {
-                    session.setAttribute("message", "Delete shift successfully!");
-                } else {
-                    session.setAttribute("error", "Lỗi khi xóa ca! (Dữ liệu có thể đang bị ràng buộc khóa ngoại)");
                 }
                 response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
                 return;
@@ -195,8 +184,6 @@ public class ShiftController extends HttpServlet {
                     
                     // Ghi lại Log cho thao tác sửa từ Form
                     ghiLog(currentUserId, shiftToUpdate.getShiftId(), "ADMIN_EDIT_SHIFT_STATUS", "SHIFT", shiftToUpdate.getShiftId());
-                    
-                    session.setAttribute("message", "Cập nhật ca thành công!");
                     session.setAttribute("message", "Update shift successfully!");
                 }
    

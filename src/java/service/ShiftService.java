@@ -35,6 +35,7 @@ public class ShiftService {
                 shift.setStatus(rs.getString("status"));
                 return shift;
             }
+            return null;
         } catch (Exception e) { e.printStackTrace(); }
         throw new RuntimeException("No active shift found!");
     }

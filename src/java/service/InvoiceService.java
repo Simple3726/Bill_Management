@@ -40,7 +40,7 @@ public class InvoiceService {
         
         Shift currentShift = shiftService.getCurrentShift(invoice.getCreatedBy());
         invoice.setCreatedAt(LocalDateTime.now());
-        DetectionEngine.RiskResult rs = engine.analyzeCreate(invoice.getAmount(), invoice.getCreatedAt(), currentShift.getStartTime().toLocalTime(), currentShift.getEndTime().toLocalTime());
+        DetectionEngine.RiskResult rs = engine.analyzeCreate(invoice.getAmount(), currentShift);
         int riskScore =rs.getScore();
         String message = rs.getMessage();
         if(riskScore >= Constants.RISK_MEDIUM_THRESHOLD){
@@ -64,7 +64,7 @@ public class InvoiceService {
         if("PENDING".equals(invCheck.getStatus())){
             alertService.createAlert("INVOICE", invCheck.getInvoiceId(), riskScore, message);
         }
-        logService.addLog(invoice.getCreatedBy(), currentShift.getShiftId(), "Create Invoice", "INVOICE", invoice.getInvoiceId(), LocalDateTime.now());
+        logService.addLog(invoice.getCreatedBy(), currentShift != null ? currentShift.getShiftId() : null , "Create Invoice", "INVOICE", invoice.getInvoiceId(), LocalDateTime.now());
     }
     
     public void updateInvoice(Long invoiceId, BigDecimal newAmount, BigDecimal oldAmount, Long modified_by){
@@ -75,7 +75,7 @@ public class InvoiceService {
         invoice.setUpdatedAt(LocalDateTime.now());
         Shift currentShift = shiftService.getCurrentShift(modified_by);
         int editCount = historyDAO.countEditInShift(invoiceId, currentShift.getShiftId());
-        DetectionEngine.RiskResult rs = engine.analyze(oldAmount, newAmount, editCount, invoice.getUpdatedAt(), currentShift.getStartTime().toLocalTime(), currentShift.getEndTime().toLocalTime());
+        DetectionEngine.RiskResult rs = engine.analyze(oldAmount, newAmount, editCount, currentShift);
         
         int riskScore = rs.getScore();
         String message = rs.getMessage();
@@ -154,7 +154,7 @@ public class InvoiceService {
         // =========================
         logService.addLog(
                 currentUser.getUserId(),
-                shift.getShiftId(),
+                shift != null ? shift.getShiftId() : null,
                 "APPROVE_INVOICE",
                 "INVOICE",
                 invoiceId,
@@ -169,9 +169,7 @@ public class InvoiceService {
                         oldAmount,
                         newAmount,
                         editCount,
-                        LocalDateTime.now(),
-                        shift.getStartTime().toLocalTime(),
-                        shift.getEndTime().toLocalTime()
+                        shift
                 );
 
         int riskScore = result.getScore();

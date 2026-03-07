@@ -158,7 +158,7 @@ public class InvoiceService {
                 "APPROVE_INVOICE",
                 "INVOICE",
                 invoiceId,
-                LocalDateTime.now()
+                "Invoice approved"
         );
 
         // =========================

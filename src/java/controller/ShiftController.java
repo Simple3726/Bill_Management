@@ -155,17 +155,6 @@ public class ShiftController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
                 return;
 
-            // ================== 7. XÓA CA LÀM VIỆC ==================
-            } else if ("delete".equals(action)) {
-                Long idToDelete = Long.parseLong(request.getParameter("id"));
-                if (shiftService.deleteShift(idToDelete)) {
-                    session.setAttribute("message", "Delete shift successfully!");
-                } else {
-                    session.setAttribute("error", "Lỗi khi xóa ca! (Dữ liệu có thể đang bị ràng buộc khóa ngoại)");
-                }
-                response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
-                return;
-
             // ================== 8. FORM SỬA CA ==================
             } else if ("edit".equals(action)) {
                 Long idToEdit = Long.parseLong(request.getParameter("id"));

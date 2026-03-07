@@ -1,5 +1,6 @@
 package detection;
 
+import entity.Shift;
 import utils.Constants;
 
 import java.math.BigDecimal;
@@ -36,18 +37,17 @@ public class DetectionEngine {
     
     public RiskResult analyzeCreate(
             BigDecimal amount,
-            LocalDateTime actionTime,
-            LocalTime shiftStart,
-            LocalTime shiftEnd
+            Shift currShifft
     ){
         int score = 0;
         StringBuilder reason = new StringBuilder();
         
         //gia nam ngoai outlier
+
         score+=calculateHighValueRisk(amount, reason);
         
         //Ngoai ca lam viec
-        score+=calculateShiftRisk(actionTime, shiftStart, shiftEnd, reason);
+            score+=calculateShiftRisk(currShifft, reason);
         
         String level;
         if (score >= Constants.RISK_HIGH_THRESHOLD) {
@@ -68,9 +68,7 @@ public class DetectionEngine {
             BigDecimal oldAmount,
             BigDecimal newAmount,
             int editCount,
-            LocalDateTime actionTime,
-            LocalTime shiftStart,
-            LocalTime shiftEnd
+            Shift currShift
     ) {
 
         int score = 0;
@@ -86,7 +84,7 @@ public class DetectionEngine {
         // RULE 2: Action Outside Shift
         // =========================================
         score += calculateShiftRisk(
-                actionTime, shiftStart, shiftEnd, reason);
+                currShift, reason);
 
         // =========================================
         // RULE 3: Multiple Edits
@@ -159,20 +157,10 @@ public class DetectionEngine {
     }
 
     private int calculateShiftRisk(
-            LocalDateTime actionTime,
-            LocalTime shiftStart,
-            LocalTime shiftEnd,
+            Shift currShift,
             StringBuilder reason) {
 
-        if (shiftStart == null || shiftEnd == null) {
-            return 0;
-        }
-
-        LocalTime actionLocalTime = actionTime.toLocalTime();
-
-        if (actionLocalTime.isBefore(shiftStart)
-                || actionLocalTime.isAfter(shiftEnd)) {
-
+        if (currShift == null) {
             reason.append("Action performed outside shift time. ");
             return Constants.SCORE_OUTSIDE_SHIFT;
         }

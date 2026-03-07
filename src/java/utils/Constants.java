@@ -18,7 +18,7 @@ public class Constants {
     // ================================
     // SHIFT RULE
     // ================================
-    public static final int SCORE_OUTSIDE_SHIFT = 30;
+    public static final int SCORE_OUTSIDE_SHIFT = 40;
 
     // ================================
     // EDIT RULE

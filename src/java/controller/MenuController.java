@@ -42,7 +42,7 @@ public class MenuController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-       String url= "login.jsp";
+       String url= "/WEB-INF/login.jsp";
         try {
             String action= request.getParameter("action");
             if(LOGIN.equals(action)){

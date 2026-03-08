@@ -24,7 +24,7 @@ public class UserDAO {
             ps.setString(2, password);
 
             rs = ps.executeQuery();
-            if (rs.next()) {
+            while (rs.next()) {
                 long userId = rs.getInt("user_id");
                 String role = rs.getString("role");
                 String status = rs.getString("status");

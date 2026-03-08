@@ -1,5 +1,6 @@
 package controller;
 
+import ai.PredictFraud;
 import entity.Alert;
 import java.io.IOException;
 import java.util.List;
@@ -9,6 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import repository.AlertDAO;
+import weka.classifiers.Classifier;
+import weka.core.Instances;
+import weka.core.SerializationHelper;
+import weka.core.converters.ConverterUtils.DataSource;
 
 /**
  *
@@ -34,8 +39,27 @@ public class AlertController extends HttpServlet {
             AlertDAO alertDAO = new AlertDAO();
 
             List<Alert> alertList = alertDAO.findAll();
-
+            
             request.setAttribute("alertList", alertList);
+            // load dataset (.arff)
+            DataSource source = new DataSource(
+                    getServletContext().getRealPath("/WEB-INF/fraud_dataset.arff")
+            );
+
+            Instances dataset = source.getDataSet();
+            dataset.setClassIndex(dataset.numAttributes() - 1);
+
+            // load model đã train
+            Classifier model = (Classifier) SerializationHelper.read(
+                    getServletContext().getRealPath("/WEB-INF/fraud_model.model")
+            );
+
+            // predict fraud
+            String fraudResult = PredictFraud.predict(model, dataset);
+            // chỗ này để chiến sử lý giúp in ra thông tin chuỗi 
+            // fraudPrediction là "String" á
+            request.setAttribute("fraudPrediction", fraudResult);
+
 
             request.getRequestDispatcher("/WEB-INF/alert_list.jsp").forward(request, response);
 

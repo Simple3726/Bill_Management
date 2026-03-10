@@ -35,34 +35,6 @@ public class DetectionEngine {
         }
     }
     
-    public RiskResult analyzeCreate(
-            BigDecimal amount,
-            Shift currShifft
-    ){
-        int score = 0;
-        StringBuilder reason = new StringBuilder();
-        
-        //gia nam ngoai outlier
-
-        score+=calculateHighValueRisk(amount, reason);
-        
-        //Ngoai ca lam viec
-            score+=calculateShiftRisk(currShifft, reason);
-        
-        String level;
-        if (score >= Constants.RISK_HIGH_THRESHOLD) {
-            level = "HIGH";
-        } else if (score >= Constants.RISK_MEDIUM_THRESHOLD) {
-            level = "MEDIUM";
-        } else {
-            level = "LOW";
-        }
-
-        if (reason.length() == 0) {
-            reason.append("No abnormal behavior detected.");
-        }
-        return new RiskResult(score, level, reason.toString());
-    }
     
     public RiskResult analyze(
             BigDecimal oldAmount,
@@ -124,7 +96,54 @@ public class DetectionEngine {
 
         return new RiskResult(score, level, reason.toString());
     }
+    
+    public RiskResult analyzeCreate(
+            BigDecimal amount,
+            Shift currShifft
+    ){
+        int score = 0;
+        StringBuilder reason = new StringBuilder();
+        
+        //gia nam ngoai outlier
 
+        score+=calculateHighValueRisk(amount, reason);
+        
+        //Ngoai ca lam viec
+            score+=calculateShiftRisk(currShifft, reason);
+        
+        String level;
+        if (score >= Constants.RISK_HIGH_THRESHOLD) {
+            level = "HIGH";
+        } else if (score >= Constants.RISK_MEDIUM_THRESHOLD) {
+            level = "MEDIUM";
+        } else {
+            level = "LOW";
+        }
+
+        if (reason.length() == 0) {
+            reason.append("No abnormal behavior detected.");
+        }
+        return new RiskResult(score, level, reason.toString());
+    }
+    
+    public RiskResult analyzeDelete(Shift currShift){
+        StringBuilder reason = new StringBuilder();
+        
+        int score = 0;
+        score += calculateShiftRisk(currShift, reason);
+        
+        String level;
+        if (score >= Constants.RISK_HIGH_THRESHOLD) {
+            level = "HIGH";
+        } else if (score >= Constants.RISK_MEDIUM_THRESHOLD) {
+            level = "MEDIUM";
+        } else {
+            level = "LOW";
+        }
+        
+        return new RiskResult(score, level, reason.toString());
+    }
+    
     // ==================================================
     // PRIVATE RULE METHODS
     // ==================================================

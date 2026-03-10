@@ -59,6 +59,9 @@ public class InvoiceController extends HttpServlet {
             case "/Approve":
                 approveInvoice(request, response);
                 break;
+            case "/Delete":
+                deleteInvoice(request, response);
+                break;
             default:
                 // Nên có một trang 404 hoặc báo lỗi ở đây thay vì để trắng
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -127,6 +130,21 @@ public class InvoiceController extends HttpServlet {
         response.getWriter().print("<h2 style='color:red;'>Server bị lỗi: " + e.getMessage() + "</h2>");
         response.getWriter().print("<p>Chi tiết lỗi (Xem kỹ dòng này): " + e.toString() + "</p>");
         }
+    }
+    
+    private void deleteInvoice(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException{
+        
+        HttpSession session = request.getSession(false);
+        if(session == null || session.getAttribute("user") == null){
+            response.sendRedirect(request.getContextPath() + "/LoginController?action=required");
+            return;
+        }
+        Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
+        User curUser  = (User) session.getAttribute("user");
+        service.delete(invoiceId, curUser.getUserId());
+        
+        response.sendRedirect(request.getContextPath()+"/InvoiceController/List");
     }
     
     private void showForm(HttpServletRequest request, HttpServletResponse response)

@@ -91,6 +91,20 @@
                 background-color: #495057;
                 color: white;
             }
+            .btn-delete { 
+                background-color: #d93025; 
+                color: white; 
+                padding: 6px 12px;
+                font-size: 0.875rem;
+                border-radius: 6px;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
+            }
+            .btn-delete:hover { background-color: #c02a20; color: white; }
             .btn-update {
                 background-color: #f59f00;
                 color: #fff;
@@ -157,6 +171,7 @@
                                     <td><%= (item.getCreatedAt() != null) ? item.getCreatedAt() : ""%></td>
                                     <td class="text-center pe-4">
                                         <a href="<%=request.getContextPath()%>/InvoiceController/Form?invoiceId=<%= item.getInvoiceId()%>" class="btn-update"><i class="fa-solid fa-pen-to-square"></i> Update</a>
+                                        <a href="<%=request.getContextPath()%>/InvoiceController/Delete?invoiceId=<%= item.getInvoiceId()%>" class="btn-delete" onclick="return confirm('Are you sure want to delete this invoice: <%= item.getInvoiceId()%>? This action cannot be undo!')"><i class="fa-solid fa-trash"></i> Delete</a>
                                     </td>
                                 </tr>
                                 <% }

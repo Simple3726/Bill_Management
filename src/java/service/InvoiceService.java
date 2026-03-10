@@ -89,13 +89,33 @@ public class InvoiceService {
         invoiceDAO.update(invoice);
     }
     
+    public void delete(Long invoiceId, Long user){
+        Invoice invoice = invoiceDAO.findById(invoiceId);
+        invoice.setStatus("DELETED");
+        invoice.setUpdatedAt(LocalDateTime.now());
+        Shift currShift = shiftService.getCurrentShift(user);
+        invoiceDAO.cancel(invoice);
+        historyDAO.addHistory(invoiceId, invoice.getAmount(), invoice.getAmount(), user, currShift != null ? currShift.getShiftId() : null, "DELETE", invoice.getUpdatedAt());
+        int editCount = 0;
+        if(currShift != null){
+            editCount = historyDAO.countEditInShift(invoiceId, currShift.getShiftId());
+        }
+        DetectionEngine.RiskResult rs = engine.analyzeDelete(currShift);
+        int riskScore = rs.getScore();
+        String message = rs.getMessage();
+        if(riskScore > Constants.RISK_MEDIUM_THRESHOLD){
+            alertService.createAlert("INVOICE", invoiceId, riskScore, message);
+        }
+        logService.addLog(user, currShift != null ? currShift.getShiftId() : null, "DELETE_INVOICE", "INVOICE", invoiceId, invoice.getUpdatedAt());
+    }
+    
     public List<Invoice> getAllInvoice() {
         List<Invoice> rs = invoiceDAO.findAll();
         return rs;
     }
     
     public List<Invoice> getInvoiceByUserId(User user){
-        return invoiceDAO.findInvoiceByUserId(user.getUserId());
+        return invoiceDAO.findInvoiceByUserIdAndStatus(user.getUserId());
     }
     public Invoice getInvoiceById(Long invoiceId){
         Invoice invoice = invoiceDAO.findById(invoiceId);

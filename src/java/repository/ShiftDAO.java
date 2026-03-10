@@ -104,4 +104,32 @@ public class ShiftDAO {
         } catch (Exception e) { e.printStackTrace(); }
         return 0;
     }
+    
+    public List<Shift> filterByDate(LocalDate startDate, LocalDate endDate) {
+        List<Shift> list = new ArrayList<>();
+        String sql = "SELECT * FROM Shifts WHERE CAST(start_time AS DATE) >= ? AND CAST(start_time AS DATE) <= ? ORDER BY start_time DESC";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setDate(1, java.sql.Date.valueOf(startDate));
+            ps.setDate(2, java.sql.Date.valueOf(endDate));
+            
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Shift s = new Shift();
+                s.setShiftId(rs.getLong("shift_id"));
+                s.setUserId(rs.getLong("user_id"));
+                s.setStartTime(rs.getTimestamp("start_time").toLocalDateTime());
+                if (rs.getTimestamp("end_time") != null) {
+                    s.setEndTime(rs.getTimestamp("end_time").toLocalDateTime());
+                }
+                s.setStatus(rs.getString("status"));
+                list.add(s);
+            }
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+        }
+        return list;
+    }
 }

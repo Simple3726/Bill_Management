@@ -139,6 +139,34 @@
                     </div>
                 </div>
 
+                <div class="card shadow-sm border-0 mb-4 p-3 rounded-4 bg-white">
+                    <form action="<%=request.getContextPath()%>/ShiftController" method="GET" class="row g-3 align-items-center m-0">
+                        <input type="hidden" name="action" value="list">
+                        
+                        <div class="col-auto">
+                            <label class="col-form-label fw-bold text-secondary"><i class="fa-regular fa-calendar-days me-1"></i> From Date:</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="date" name="startDate" class="form-control" 
+                                   value="<%= request.getAttribute("startDate") != null ? request.getAttribute("startDate") : "" %>" required>
+                        </div>
+                        
+                        <div class="col-auto">
+                            <label class="col-form-label fw-bold text-secondary">To Date:</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="date" name="endDate" class="form-control" 
+                                   value="<%= request.getAttribute("endDate") != null ? request.getAttribute("endDate") : "" %>" required>
+                        </div>
+                        
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary fw-bold px-4"><i class="fa-solid fa-filter me-1"></i> Search</button>
+                            <a href="<%=request.getContextPath()%>/ShiftController?action=list" class="btn btn-light border px-3" title="Clear Filter">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
                 <% String msg = (String) session.getAttribute("message");
             if (msg != null) {%>
                 <div class="alert alert-success d-flex align-items-center" role="alert"><i class="fa-solid fa-check-circle me-2"></i><div><%= msg%></div></div>

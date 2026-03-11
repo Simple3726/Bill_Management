@@ -5,8 +5,6 @@ import utils.Constants;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class DetectionEngine {
 
@@ -41,12 +39,10 @@ public class DetectionEngine {
     ){
         int score = 0;
         StringBuilder reason = new StringBuilder();
-        
-        //gia nam ngoai outlier
+       
 
         score+=calculateHighValueRisk(amount, reason);
         
-        //Ngoai ca lam viec
             score+=calculateShiftRisk(currShifft, reason);
         
         String level;

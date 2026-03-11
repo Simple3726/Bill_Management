@@ -14,9 +14,9 @@ public class AlertService {
     // Create Alert
     // =========================================
     public void createAlert(String entityType,
-                            Long entityId,
-                            int riskScore,
-                            String message) {
+            Long entityId,
+            int riskScore,
+            String message) {
 
         Alert alert = new Alert();
         alert.setEntityType(entityType);
@@ -55,5 +55,9 @@ public class AlertService {
     // =========================================
     public void resolveAlert(Long alertId) {
         alertDAO.updateStatus(alertId, "RESOLVED");
+    }
+
+    public Alert getAlertById(Long id) {
+        return alertDAO.findById(id);
     }
 }

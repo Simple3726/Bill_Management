@@ -83,7 +83,7 @@ public class InvoiceService {
         String message = rs.getMessage();
         
         alertService.createAlert("INVOICE", invoiceId, riskScore, message);
-        
+        logService.addLog(invoiceId, currentShift != null ? currentShift.getShiftId() : null, "UPDATE_INVOICE", "INVOICE", invoiceId, invoice.getUpdatedAt());
         historyDAO.addHistory(invoiceId, oldAmount, newAmount, modified_by, currentShift != null ? currentShift.getShiftId() : null
                 , "UPDATE", invoice.getUpdatedAt());
         invoiceDAO.update(invoice);
@@ -94,7 +94,7 @@ public class InvoiceService {
         invoice.setStatus("DELETED");
         invoice.setUpdatedAt(LocalDateTime.now());
         Shift currShift = shiftService.getCurrentShift(user);
-        invoiceDAO.cancel(invoice);
+        
         historyDAO.addHistory(invoiceId, invoice.getAmount(), invoice.getAmount(), user, currShift != null ? currShift.getShiftId() : null, "DELETE", invoice.getUpdatedAt());
         int editCount = 0;
         if(currShift != null){
@@ -107,6 +107,8 @@ public class InvoiceService {
             alertService.createAlert("INVOICE", invoiceId, riskScore, message);
         }
         logService.addLog(user, currShift != null ? currShift.getShiftId() : null, "DELETE_INVOICE", "INVOICE", invoiceId, invoice.getUpdatedAt());
+        
+        invoiceDAO.cancel(invoice);
     }
     
     public List<Invoice> getAllInvoice() {

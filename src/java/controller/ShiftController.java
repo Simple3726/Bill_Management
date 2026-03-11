@@ -45,7 +45,7 @@ public class ShiftController extends HttpServlet {
         
         // Nếu chưa đăng nhập thì đẩy về trang Login
         if (currentUser == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/LoginController?action=required");
             return;
         }
         

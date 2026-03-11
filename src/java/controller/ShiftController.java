@@ -76,7 +76,7 @@ public class ShiftController extends HttpServlet {
 
                 if (existingShift != null) {
                     // Đã có ca đang mở -> Báo lỗi
-                    session.setAttribute("error", "Bạn đang có một ca làm việc chưa đóng!");
+                    session.setAttribute("error", "You having a opened shift!");
                 } else {
                     // Không có ca nào -> Tạo mới hoàn toàn bình thường (Không dùng catch)
                     Shift newShift = new Shift();
@@ -92,9 +92,9 @@ public class ShiftController extends HttpServlet {
                     if (newShiftId != null) {
                         session.setAttribute("CURRENT_SHIFT_ID", newShiftId);
                         addLog(currentUserId, newShiftId, "OPEN_SHIFT", "SHIFT", newShiftId);
-                        session.setAttribute("message", "Mở ca thành công!");
+                        session.setAttribute("message", "Open Shift Completed!");
                     } else {
-                        session.setAttribute("error", "Lỗi trong quá trình mở ca mới!");
+                        session.setAttribute("error", "Error in open new shift!");
                     }
                 }
                 response.sendRedirect(request.getContextPath() + "/ShiftController");
@@ -111,13 +111,13 @@ public class ShiftController extends HttpServlet {
                     if (shiftDAO.update(currentShift)) {
                         session.removeAttribute("CURRENT_SHIFT_ID");
                         addLog(currentUserId, currentShift.getShiftId(), "CLOSE_SHIFT", "SHIFT", currentShift.getShiftId());
-                        session.setAttribute("message", "Đóng ca thành công!");
+                        session.setAttribute("message", "Close Shift Completed!");
                     } else {
-                        session.setAttribute("error", "Lỗi: Không thể lưu thông tin đóng ca vào Database!");
+                        session.setAttribute("error", "Error: Can't load the information of Close shift to database!");
                     }
                 } else {
                     // Trả về null -> Không có ca nào để đóng
-                    session.setAttribute("error", "Hệ thống không tìm thấy ca làm việc nào đang mở để đóng!");
+                    session.setAttribute("error", "System can not find a shift opened to close!");
                 }
                 response.sendRedirect(request.getContextPath() + "/ShiftController");
 
@@ -138,7 +138,7 @@ public class ShiftController extends HttpServlet {
                         request.setAttribute("endDate", endDateStr);
                     } catch (Exception e) {
                         shiftList = shiftService.getAllShifts(); // Nếu lỗi format thì lấy tất cả
-                        session.setAttribute("error", "Định dạng ngày không hợp lệ!");
+                        session.setAttribute("error", "Wrong Format!");
                     }
                 } else {
                     // Nếu không lọc, mặc định lấy tất cả
@@ -160,7 +160,7 @@ public class ShiftController extends HttpServlet {
                         shiftService.updateShiftInfo(shiftToClose);
                         
                         addLog(currentUserId, shiftToClose.getShiftId(), "ADMIN_FORCE_CLOSE", "SHIFT", shiftToClose.getShiftId());
-                        session.setAttribute("message", "Đã ép đóng ca #" + shiftIdToClose + " thành công!");
+                        session.setAttribute("message", "FORCED CLOSED SHIFT #" + shiftIdToClose + " COMPLETED!");
                     }
                 }
                 response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
@@ -172,7 +172,7 @@ public class ShiftController extends HttpServlet {
                     Long targetUserId = Long.parseLong(request.getParameter("targetUserId"));
                     try {
                         shiftService.getCurrentShift(targetUserId);
-                        session.setAttribute("error", "Nhân viên ID " + targetUserId + " hiện đang có một ca làm việc mở rồi!");
+                        session.setAttribute("error", "STAFF ID " + targetUserId + " THERE IS ALREADY A SHIFT OPENED!");
                     } catch (RuntimeException e) {
                         Shift newShift = new Shift();
                         newShift.setUserId(targetUserId);
@@ -181,7 +181,7 @@ public class ShiftController extends HttpServlet {
                         Long newId = shiftDAO.insert(newShift);
                         
                         addLog(currentUserId, newId, "ADMIN_OPEN_FOR_USER", "SHIFT", newId);
-                        session.setAttribute("message", "Đã mở ca thành công cho Nhân viên ID " + targetUserId);
+                        session.setAttribute("message", "OPEN SHIFT COMLETED FOR STAFF WITH ID " + targetUserId);
                     }
                 }
                 response.sendRedirect(request.getContextPath() + "/ShiftController?action=list");
@@ -216,7 +216,7 @@ public class ShiftController extends HttpServlet {
                     // Ghi lại Log cho thao tác sửa từ Form
                     addLog(currentUserId, shiftToUpdate.getShiftId(), "ADMIN_EDIT_SHIFT_STATUS", "SHIFT", shiftToUpdate.getShiftId());
                     
-                    session.setAttribute("message", "Cập nhật ca thành công!");
+                    session.setAttribute("message", "Update shift completed!");
                     session.setAttribute("message", "Update shift successfully!");
                 }
    

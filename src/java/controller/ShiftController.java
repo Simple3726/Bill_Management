@@ -45,7 +45,7 @@ public class ShiftController extends HttpServlet {
         
         // Nếu chưa đăng nhập thì đẩy về trang Login
         if (currentUser == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/LoginController?action=required");
             return;
         }
         
@@ -123,11 +123,32 @@ public class ShiftController extends HttpServlet {
 
             // ================== 4. DANH SÁCH CA (ADMIN) ==================
             } else if ("list".equals(action)) {
-                List<Shift> shiftList = shiftService.getAllShifts();
+               String startDateStr = request.getParameter("startDate");
+                String endDateStr = request.getParameter("endDate");
+                List<Shift> shiftList;
+
+                if (startDateStr != null && !startDateStr.isEmpty() && endDateStr != null && !endDateStr.isEmpty()) {
+                    try {
+                        java.time.LocalDate startDate = java.time.LocalDate.parse(startDateStr);
+                        java.time.LocalDate endDate = java.time.LocalDate.parse(endDateStr);
+                        
+                        shiftList = shiftService.filterShiftsByDate(startDate, endDate);
+                        
+                        request.setAttribute("startDate", startDateStr);
+                        request.setAttribute("endDate", endDateStr);
+                    } catch (Exception e) {
+                        shiftList = shiftService.getAllShifts(); // Nếu lỗi format thì lấy tất cả
+                        session.setAttribute("error", "Định dạng ngày không hợp lệ!");
+                    }
+                } else {
+                    // Nếu không lọc, mặc định lấy tất cả
+                    shiftList = shiftService.getAllShifts();
+                }
+
                 request.setAttribute("shiftList", shiftList);
                 request.getRequestDispatcher("/WEB-INF/shift_list.jsp").forward(request, response);
                 return;
-
+              
             // ================== 5. ADMIN ÉP ĐÓNG CA ==================
             } else if ("admin_force_close".equals(action)) {
                 if ("ADMIN".equals(currentUser.getRole())) {

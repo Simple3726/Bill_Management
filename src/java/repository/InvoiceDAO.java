@@ -39,8 +39,8 @@ public class InvoiceDAO {
         }
     }
     
-    public List<Invoice> findInvoiceByUserId(Long id){
-        String sql = "SELECT * FROM Invoices WHERE created_by = ?";
+    public List<Invoice> findInvoiceByUserIdAndStatus(Long id){
+        String sql = "SELECT * FROM Invoices WHERE created_by = ? AND status != 'DELETED'";
         List<Invoice> list = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)){
             ps.setLong(1, id);
@@ -118,7 +118,23 @@ public class InvoiceDAO {
             e.printStackTrace();
         }
     }
+    
+    public void cancel(Invoice invoice) {
+        String sql = "UPDATE Invoices SET status = ?, updated_at = ? "
+                + "WHERE invoice_id = ?";
 
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, invoice.getStatus());
+            ps.setTimestamp(2, Timestamp.valueOf(invoice.getUpdatedAt()));
+            ps.setLong(3, invoice.getInvoiceId());
+
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     // =========================
     // DELETE
     // =========================
@@ -136,11 +152,11 @@ public class InvoiceDAO {
     }
 
     // =========================
-    // FIND ALL
+    // FIND ALL INVOICE EXCEPT DELETED ONE
     // =========================
     public List<Invoice> findAll() {
         List<Invoice> list = new ArrayList<>();
-        String sql = "SELECT * FROM Invoices";
+        String sql = "SELECT * FROM Invoices WHERE status != 'DELETED'";
 
         try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 

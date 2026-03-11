@@ -63,7 +63,7 @@ public class InvoiceService {
         if("PENDING".equals(invCheck.getStatus())){
             alertService.createAlert("INVOICE", invCheck.getInvoiceId(), riskScore, message);
         }
-        logService.addLog(invoice.getCreatedBy(), currentShift != null ? currentShift.getShiftId() : null , "Create Invoice", "INVOICE", invoice.getInvoiceId(), LocalDateTime.now());
+        logService.addLog(invoice.getCreatedBy(), currentShift != null ? currentShift.getShiftId() : null , "CREATE_INVOICE", "INVOICE", invCheck.getInvoiceId(), LocalDateTime.now());
     }
     
     public void updateInvoice(Long invoiceId, BigDecimal newAmount, BigDecimal oldAmount, Long modified_by){

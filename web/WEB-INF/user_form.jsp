@@ -52,6 +52,7 @@
                 display: flex;
                 gap: 12px; /* Khoảng cách giữa 2 nút */
                 margin-top: 10px;
+                padding-left: 350px;
             }
 
             .btn{

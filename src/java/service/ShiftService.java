@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import utils.DBConnection;
 
 /**
@@ -40,20 +41,19 @@ public class ShiftService {
         throw new RuntimeException("No active shift found!");
     }
 
-    // --- CÁC HÀM BỔ SUNG CHO CRUD ---
-
-    // Gọi DAO lấy toàn bộ danh sách
     public List<Shift> getAllShifts() { 
         return shiftDAO.findAll(); 
     }
 
-    // Gọi DAO lấy 1 ca theo ID để đưa lên form Sửa
     public Shift getShiftById(Long shiftId) { 
         return shiftDAO.findById(shiftId); 
     }
 
-    // Gọi DAO để update dữ liệu từ form Sửa xuống DB
     public boolean updateShiftInfo(Shift shift) { 
         return shiftDAO.update(shift); 
+    }
+    
+    public List<Shift> filterShiftsByDate(LocalDate startDate, LocalDate endDate) {
+        return shiftDAO.filterByDate(startDate, endDate);
     }
 }

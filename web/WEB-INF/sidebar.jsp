@@ -56,9 +56,24 @@
         <% }%>
     </div>
 
-    <div class="mt-auto pt-3 border-top border-secondary overflow-hidden">
-        <a href="<%=request.getContextPath()%>/MenuController?action=Logout" class="btn btn-danger w-100 fw-bold text-nowrap">
-            <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
-        </a>
+    <%
+        String alert = (String) session.getAttribute("logoutAlert");
+        if (alert != null) {
+    %>
+    <div class="alert alert-danger" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+        <%= alert%>
     </div>
+    <%
+            session.removeAttribute("logoutAlert");
+        }
+    %>
+    <form action="<%=request.getContextPath()%>/LogOutController" method="post">
+        <button type="submit" class="btn btn-danger w-100 fw-bold text-nowrap">
+            <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+        </button>
+    </form>
+
+    <!-- in thông báo không thể logout khi chưa tắt ca trong shift-->
+
 </div>

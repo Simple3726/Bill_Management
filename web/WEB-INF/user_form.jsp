@@ -122,6 +122,7 @@
                     <select name="status">
                         <option value="ACTIVE" <%=isEdit && "ACTIVE".equals(user.getStatus()) ? "selected" : ""%>>ACTIVE</option>
                         <option value="LOCKED" <%=isEdit && "LOCKED".equals(user.getStatus()) ? "selected" : ""%>>LOCKED</option>
+                        <option value="OFFLINE" <%=isEdit && "OFFLINE".equals(user.getStatus()) ? "selected" : ""%>>OFFLINE</option>
                     </select>
 
                     <div class="action-buttons">

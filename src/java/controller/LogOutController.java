@@ -1,5 +1,7 @@
 package controller;
 
+import entity.Shift;
+import entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -8,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import service.ShiftService;
 
 /**
  *
@@ -15,6 +18,13 @@ import javax.servlet.http.HttpSession;
  */
 @WebServlet(name = "LogOutController", urlPatterns = {"/LogOutController"})
 public class LogOutController extends HttpServlet {
+
+    private ShiftService shiftService;
+
+    @Override
+    public void init() throws ServletException {
+        shiftService = new ShiftService();
+    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -27,15 +37,31 @@ public class LogOutController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                session.invalidate();
-            }
-            request.setAttribute("MSG_LOGOUT", "Logout Successfully");
-            request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+
+        HttpSession session = request.getSession(false);
+
+        if (session == null) {
+            response.sendRedirect(request.getContextPath() + "/LoginController");
+            return;
         }
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            response.sendRedirect(request.getContextPath() + "/LoginController?action=required");
+            return;
+        }
+        Long currentUserId = currentUser.getUserId();
+        Shift currentShift = shiftService.getCurrentShift(currentUserId);
+        
+        if (currentShift != null) {
+            session.setAttribute("logoutAlert", "Must end Shift first!!!");
+            response.sendRedirect(request.getContextPath() + "/ShiftController");
+            return;
+        }else {
+            session.invalidate();
+            request.setAttribute("MSG_LOGOUT", "Logout successfully");
+            response.sendRedirect(request.getContextPath() + "/LoginController");
+            return;
+            }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

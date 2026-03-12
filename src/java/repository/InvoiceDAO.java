@@ -38,15 +38,15 @@ public class InvoiceDAO {
             e.printStackTrace();
         }
     }
-    
-    public List<Invoice> findInvoiceByUserIdAndStatus(Long id){
+
+    public List<Invoice> findInvoiceByUserIdAndStatus(Long id) {
         String sql = "SELECT * FROM Invoices WHERE created_by = ? AND status != 'DELETED'";
         List<Invoice> list = new ArrayList<>();
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)){
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
-            
-            while(rs.next()){
+
+            while (rs.next()) {
                 list.add(mapResultSet(rs));
             }
         } catch (Exception e) {
@@ -54,6 +54,7 @@ public class InvoiceDAO {
         }
         return list;
     }
+
     // =========================
     // FIND BY ID
     // =========================
@@ -118,7 +119,25 @@ public class InvoiceDAO {
             e.printStackTrace();
         }
     }
-    
+
+    public boolean updateStatus(Long invoiceId, String status) {
+
+        String sql = "UPDATE Invoices SET status=? WHERE invoice_id=?";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ps.setLong(2, invoiceId);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public void cancel(Invoice invoice) {
         String sql = "UPDATE Invoices SET status = ?, updated_at = ? "
                 + "WHERE invoice_id = ?";
@@ -134,7 +153,7 @@ public class InvoiceDAO {
             e.printStackTrace();
         }
     }
-    
+
     // =========================
     // DELETE
     // =========================
@@ -229,7 +248,7 @@ public class InvoiceDAO {
     // ============
     private Invoice mapResultSet(ResultSet rs) throws SQLException {
         Invoice invoice = new Invoice();
-        
+
         invoice.setInvoiceId(rs.getLong("invoice_id"));
         invoice.setInvoiceCode(rs.getString("invoice_code"));
         invoice.setAmount(rs.getBigDecimal("amount")); // BigDecimal đúng
@@ -331,6 +350,7 @@ public class InvoiceDAO {
 
         return 0;
     }
+
     // =====================================
     // get Average invoice in range of time
     // =====================================

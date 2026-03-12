@@ -12,16 +12,14 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <style>
             body, html {
-                height: 100%;
+                height: 100vh;
                 margin: 0;
-                background-color: #f8f9fa;
-                overflow-x: hidden;
+                font-family: 'Inter', sans-serif;
+                background-color: #f4f6f9;
+                overflow: hidden;
             }
-            body{
-                font-family:'Inter', sans-serif;
-                background:#f4f6f9;
-            }
-            /* SIDEBAR STYLES */
+
+            /* --- SIDEBAR STYLES (Nguyên bản 100% của bạn) --- */
             .sidebar {
                 width: 260px;
                 background-color: #212529;
@@ -60,6 +58,10 @@
                 margin: 0 auto 10px auto;
                 color: white;
             }
+            .glow-online {
+                color: #198754;
+                text-shadow: 0 0 5px #198754, 0 0 10px #198754;
+            }
             #sidebarToggle {
                 background: none;
                 border: none;
@@ -72,11 +74,50 @@
             #sidebarToggle:hover {
                 color: #0d6efd;
             }
+            /* --- END SIDEBAR STYLES --- */
+
+            /* Main Content Flexbox Layout */
             .main-content {
                 transition: all 0.3s ease-in-out;
                 width: 100%;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
             }
 
+            /* BẢNG & THANH CUỘN (SCROLLBAR) */
+            .table-container {
+                flex-grow: 1; 
+                overflow-y: auto; 
+                max-height: calc(100vh - 160px);
+            }
+            .table-container::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            .table-container::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 8px;
+            }
+            .table-container::-webkit-scrollbar-thumb {
+                background: #c1c1c1;
+                border-radius: 8px;
+            }
+            .table-container::-webkit-scrollbar-thumb:hover {
+                background: #a8a8a8;
+            }
+
+            /* Sticky Header */
+            .table-dark th {
+                position: sticky;
+                top: 0;
+                z-index: 2;
+                background-color: #212529;
+                box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+            }
+
+            /* BUTTONS & BADGES */
             .btn-create-new {
                 display: inline-block;
                 padding: 10px 25px;
@@ -91,60 +132,71 @@
                 background-color: #155bc2;
                 color: white;
             }
-            .btn-delete { 
-                background-color: #d93025; 
-                color: white; 
+
+            .action-btn {
                 padding: 6px 12px;
-                font-size: 0.875rem;
                 border-radius: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                border: none;
+                transition: 0.2s;
                 text-decoration: none;
                 display: inline-flex;
                 align-items: center;
-                border: none;
-                cursor: pointer;
-                transition: all 0.2s ease-in-out;
             }
+            .btn-update { background-color: #f59f00; color: white; }
+            .btn-update:hover { background-color: #e67e22; box-shadow: 0 4px 8px rgba(245, 159, 0, 0.3); color: white; }
+            .btn-delete { background-color: #d93025; color: white; }
             .btn-delete:hover { background-color: #c02a20; color: white; }
-            .btn-update {
-                background-color: #f59f00;
-                color: #fff;
+
+            .custom-badge {
                 padding: 6px 12px;
-                font-size: 0.875rem;
-                border-radius: 6px;
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                border: none;
-                cursor: pointer;
-                transition: all 0.2s ease-in-out;
+                border-radius: 50px;
+                font-size: 12px;
+                font-weight: 600;
+                display: inline-block;
             }
-            .btn-update i {
-                margin-right: 5px;
-            }
-            .btn-update:hover {
-                background-color: #e67e22;
-                box-shadow: 0 4px 8px rgba(245, 159, 0, 0.3);
-                color: #fff;
-            }
+            .badge-active { background-color: #e6f4ea; color: #188038; }
+            .badge-inactive { background-color: #ffecec; color: #d93025; }
+
+            .search-box { min-width: 250px; }
         </style>
     </head>
     <body>
 
-        <div class="d-flex min-vh-100">
+        <div class="d-flex w-100 vh-100 overflow-hidden">
             <jsp:include page="/WEB-INF/sidebar.jsp" />
 
-            <div class="flex-grow-1 p-4 bg-light main-content">
-                <div class="d-flex align-items-center mb-4">
-                    <button id="sidebarToggle" title="Đóng/Mở thanh công cụ"><i class="fa-solid fa-bars"></i></button>
-                    <h2 class="text-primary mb-0">Product List</h2>
+            <div class="p-4 main-content">
+
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-shrink-0">
+                    <div class="d-flex align-items-center">
+                        <button id="sidebarToggle" title="Đóng/Mở thanh công cụ"><i class="fa-solid fa-bars"></i></button>
+                        <h2 class="text-primary mb-0 fw-bold"><i class="fa-solid fa-box-open me-2"></i>Product List</h2>
+                    </div>
+                    <a href="<%=request.getContextPath()%>/ProductController/Form" class="btn-create-new shadow-sm">
+                        <i class="fa-solid fa-plus me-1"></i> New Product
+                    </a>
                 </div>
 
-                <div style="margin-bottom: 20px;">
-                    <a href="<%=request.getContextPath()%>/ProductController/Form" class="btn-create-new"><i class="fa-solid fa-plus me-1"></i> New Product</a>
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0">
+                    <div class="input-group search-box shadow-sm w-auto">
+                        <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                        <input type="text" id="productSearch" class="form-control border-start-0 ps-0" placeholder="Search Product Name...">
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="statusFilter" class="fw-semibold text-secondary mb-0">Filter by Status:</label>
+                        <select id="statusFilter" class="form-select w-auto shadow-sm border-0">
+                            <option value="ALL">All Status</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="INACTIVE">Inactive</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="card shadow border-0">
-                    <div class="card-body p-0 table-responsive">
+                <div class="card shadow border-0 rounded-4 flex-grow-1 overflow-hidden">
+                    <div class="card-body p-0 table-container">
                         <table class="table table-hover align-middle mb-0 text-nowrap">
                             <thead class="table-dark">
                                 <tr>
@@ -156,41 +208,55 @@
                                     <th class="text-center pe-4">Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="productTableBody">
                                 <%
                                     List<Product> list = (List<Product>) request.getAttribute("productList");
                                     DecimalFormat formatter = new DecimalFormat("#,### VNĐ");
-                                    
+
                                     if (list != null && !list.isEmpty()) {
                                         for (Product item : list) {
+                                            String status = item.getStatus() != null ? item.getStatus().toUpperCase() : "INACTIVE";
                                 %>
-                                <tr>
-                                    <td class="ps-4"><%= item.getProductId()%></td>
-                                    <td><strong class="text-primary"><%= (item.getProductName() != null) ? item.getProductName() : ""%></strong></td>
-                                    <td class="fw-bold"><%= (item.getPrice() != null) ? formatter.format(item.getPrice()) : "0 VNĐ"%></td>
-                                    
+                                <tr class="product-row" data-status="<%= status%>">
+                                    <td class="ps-4 text-muted fw-bold">#<%= item.getProductId()%></td>
+
                                     <td>
-                                        <% String statusClass = "ACTIVE".equalsIgnoreCase(item.getStatus()) ? "bg-success" : "bg-danger"; %>
-                                        <span class="badge <%= statusClass %> px-2 py-1"><%= (item.getStatus() != null) ? item.getStatus() : "N/A"%></span>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-light rounded d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px;">
+                                                <i class="fa-solid fa-cube text-secondary"></i>
+                                            </div>
+                                            <strong class="text-primary product-name"><%= (item.getProductName() != null) ? item.getProductName() : ""%></strong>
+                                        </div>
                                     </td>
-                                    
-                                    <td><%= (item.getCreatedAt() != null) ? item.getCreatedAt() : ""%></td>
+
+                                    <td class="fw-bold text-success"><%= (item.getPrice() != null) ? formatter.format(item.getPrice()) : "0 VNĐ"%></td>
+
+                                    <td>
+                                        <% if ("ACTIVE".equals(status)) { %>
+                                        <span class="custom-badge badge-active"><i class="fa-solid fa-check-circle me-1"></i>ACTIVE</span>
+                                        <% } else {%>
+                                        <span class="custom-badge badge-inactive"><i class="fa-solid fa-ban me-1"></i><%= status%></span>
+                                        <% }%>
+                                    </td>
+
+                                    <td class="text-muted"><%= (item.getCreatedAt() != null) ? item.getCreatedAt() : ""%></td>
+
                                     <td class="text-center pe-4">
-                                        <a href="<%=request.getContextPath()%>/ProductController/Form?productId=<%= item.getProductId()%>" class="btn-update"><i class="fa-solid fa-pen-to-square"></i> Update</a>
-                                        <a href="<%=request.getContextPath()%>/ProductController/Delete?productId=<%= item.getProductId()%>" class="btn-delete" onclick="return confirm('Are you sure want to delete product: <%= item.getProductName()%>? This action cannot be undo!')"><i class="fa-solid fa-trash"></i> Delete</a>
+                                        <a href="<%=request.getContextPath()%>/ProductController/Form?productId=<%= item.getProductId()%>" class="action-btn btn-update me-1"><i class="fa-solid fa-pen-to-square me-1"></i> Update</a>
+                                        <a href="<%=request.getContextPath()%>/ProductController/Delete?productId=<%= item.getProductId()%>" class="action-btn btn-delete" onclick="return confirm('Are you sure want to delete product: <%= item.getProductName()%>? This action cannot be undone!')"><i class="fa-solid fa-trash me-1"></i> Delete</a>
                                     </td>
                                 </tr>
                                 <%      }
-                                    } else { 
+                                } else {
                                 %>
-                                <tr>
+                                <tr id="noDataRow">
                                     <td colspan="6" class="text-center text-muted py-5">
                                         <i class="fa-solid fa-box-open mb-3" style="font-size: 40px; color: #dee2e6;"></i><br>
                                         <h5>No products have been created yet!</h5>
                                         <p class="mb-0">Create a new product by clicking "New Product".</p>
                                     </td>
                                 </tr>
-                                <% } %>
+                                <%  }%>
                             </tbody>
                         </table>
                     </div>
@@ -199,7 +265,6 @@
         </div>
 
         <script>
-            // Script đóng mở Sidebar giữ nguyên
             document.addEventListener("DOMContentLoaded", function () {
                 const toggleBtn = document.getElementById("sidebarToggle");
                 const sidebar = document.getElementById("sidebar");
@@ -208,6 +273,32 @@
                         sidebar.classList.toggle("collapsed");
                     });
                 }
+
+                const searchInput = document.getElementById("productSearch");
+                const statusFilter = document.getElementById("statusFilter");
+                const productRows = document.querySelectorAll(".product-row");
+
+                function filterTable() {
+                    const searchTerm = searchInput.value.toLowerCase().trim();
+                    const selectedStatus = statusFilter.value;
+
+                    productRows.forEach(row => {
+                        const rowStatus = row.getAttribute("data-status");
+                        const productName = row.querySelector(".product-name").innerText.toLowerCase();
+
+                        const matchStatus = (selectedStatus === "ALL" || rowStatus === selectedStatus);
+                        const matchSearch = productName.includes(searchTerm);
+
+                        if (matchStatus && matchSearch) {
+                            row.style.display = "";
+                        } else {
+                            row.style.display = "none";
+                        }
+                    });
+                }
+
+                if (searchInput) searchInput.addEventListener("keyup", filterTable);
+                if (statusFilter) statusFilter.addEventListener("change", filterTable);
             });
         </script>
     </body>

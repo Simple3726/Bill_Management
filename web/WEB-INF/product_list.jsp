@@ -80,7 +80,7 @@
             .btn-create-new {
                 display: inline-block;
                 padding: 10px 25px;
-                background-color: #212529;
+                background-color: #1f6feb;
                 color: white;
                 text-decoration: none;
                 border-radius: 4px;
@@ -88,7 +88,7 @@
                 transition: 0.3s;
             }
             .btn-create-new:hover {
-                background-color: #495057;
+                background-color: #155bc2;
                 color: white;
             }
             .btn-delete { 

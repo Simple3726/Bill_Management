@@ -134,20 +134,21 @@ public class UserDAO {
     // UPDATE USER INFO
     // ===============================
     public boolean update(User user) {
-        String sql = "UPDATE Users SET username=?, role=?, status=? WHERE user_id=?";
+
+        String sql = "UPDATE Users SET username=?, password=? WHERE user_id=?";
 
         try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getUsername());
-            ps.setString(2, user.getRole());
-            ps.setString(3, user.getStatus());
-            ps.setLong(4, user.getUserId());
+            ps.setString(2, user.getPassword());
+            ps.setLong(3, user.getUserId());
 
             return ps.executeUpdate() > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return false;
     }
 
@@ -155,7 +156,7 @@ public class UserDAO {
     // UPDATE PASSWORD
     // ===============================
     public boolean updatePassword(long userId, String newHash) {
-        String sql = "UPDATE Users SET password_hash=? WHERE user_id=?";
+        String sql = "UPDATE Users SET password=? WHERE user_id=?";
 
         try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 

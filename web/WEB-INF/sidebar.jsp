@@ -12,15 +12,30 @@
     <hr class="text-secondary mb-4">
 
     <div class="text-center mb-4 text-nowrap">
-        <div class="user-avatar shadow">
-            <i class="fa-solid fa-user-tie"></i>
-        </div>
+
+        <a href="<%=request.getContextPath()%>/UserController/Profile" style="text-decoration:none;color:inherit;">
+
+            <div class="user-avatar shadow">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+
+        </a>
+
         <% if (currentUserSidebar != null) {%>
+
         <h6 class="mb-1 fw-bold"><%= currentUserSidebar.getUsername()%></h6>
-        <small class="text-white-50"><i class="fa-solid fa-circle text-success" style="font-size: 8px;"></i> Online</small>
+
+        <small class="text-white-50">
+            <i class="fa-solid fa-circle text-success" style="font-size: 8px;"></i>
+            Online
+        </small>
+
         <% } else { %>
+
         <h6 class="mb-1 fw-bold">Guest</h6>
+
         <% } %>
+
     </div>
 
     <div class="flex-grow-1 overflow-hidden">
@@ -44,7 +59,7 @@
             <i class="fa-solid fa-bell me-2"></i> Alert Management
         </a>
         <% } %>
-        
+
         <% if ("ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar)) {%>
         <a href="<%=request.getContextPath()%>/ProductController/List" class="sidebar-link mb-2">
             <i class="fa-solid fa-chart-pie me-2"></i> Product List

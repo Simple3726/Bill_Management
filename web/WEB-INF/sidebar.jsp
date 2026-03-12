@@ -44,6 +44,12 @@
             <i class="fa-solid fa-bell me-2"></i> Alert Management
         </a>
         <% } %>
+        
+        <% if ("ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar)) {%>
+        <a href="<%=request.getContextPath()%>/ProductController/List" class="sidebar-link mb-2">
+            <i class="fa-solid fa-chart-pie me-2"></i> Product List
+        </a>
+        <% } %>
 
         <% if ("ADMIN".equals(roleSidebar)) {%>
 

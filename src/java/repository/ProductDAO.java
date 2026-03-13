@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import utils.DBConnection;
@@ -34,11 +35,57 @@ public class ProductDAO {
             e.printStackTrace();
         }
     }
-
-    // Lấy tất cả sản phẩm đang bán để đổ ra giao diện POS
-    public List<Product> findAllActive() {
+    
+    public void update(Product product) {
+        String sql = "UPDATE Products SET product_name = ?, price = ?, status = ?, updated_at = ? WHERE product_id = ?";
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, product.getProductName());
+            ps.setBigDecimal(2, product.getPrice());
+            ps.setString(3, product.getStatus());
+            ps.setTimestamp(4, Timestamp.valueOf(product.getUpdatedAt()));
+            ps.setLong(5, product.getProductId());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void delete(Long productId, LocalDateTime updateAt){
+        String sql = "UPDATE Products SET status = 'DELETED' , updated_at = ? WHERE product_id = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setTimestamp(1, Timestamp.valueOf(updateAt));
+            ps.setLong(2, productId);
+            
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public boolean checkExistProduct(String productName, Long excludeProductId){
+        String sql = "SELECT COUNT(*) FROM Products WHERE product_name = ? AND status != 'DELETED' ";
+        if(excludeProductId != null){
+            sql += "AND product_id != ?";
+        }
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setString(1, productName);
+            if(excludeProductId != null){
+                ps.setLong(2, excludeProductId);
+            }
+            ResultSet rs = ps.executeQuery();
+            
+            if(rs.next()){
+                return rs.getInt(1) > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public List<Product> findAllProduct() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT * FROM Products WHERE status = 'ACTIVE' ORDER BY product_name ASC";
+        String sql = "SELECT * FROM Products WHERE status != 'DELETED' ORDER BY product_name ASC";
 
         try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
@@ -67,7 +114,7 @@ public class ProductDAO {
     }
 
     public Product findProductByName(String productName) {
-        String sql = "SELECT * FROM Products WHERE product_name LIKE ?";
+        String sql = "SELECT * FROM Products WHERE product_name = ? AND status != 'DELETED'";
         try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, productName);
 

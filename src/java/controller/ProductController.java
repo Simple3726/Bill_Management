@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -115,6 +116,7 @@ public class ProductController extends HttpServlet {
                 }
             } else {
                 // TRƯỜNG HỢP CREATE: Tạo mới đối tượng rỗng
+                
                 product = new Product();
                 product.setStatus("ACTIVE"); // Set mặc định trạng thái đang bán
             }
@@ -142,6 +144,12 @@ public class ProductController extends HttpServlet {
             product.setPrice(new BigDecimal(request.getParameter("price")));
             product.setStatus(request.getParameter("status"));
             Product newProduct = service.createProduct(product);
+            //checking does product add completed? If not send notice and switch back to List page
+            if(newProduct == null){
+                currSession.setAttribute("actionAlert", "Cannot add:" + product.getProductName() + " is already active in system!");
+                response.sendRedirect(request.getContextPath() + "/ProductController/List");
+                return;
+            }
             User currUser = (User)currSession.getAttribute("user");
             Shift currShift = shiftService.getCurrentShift(currUser.getUserId());
             if(currShift != null){
@@ -161,6 +169,23 @@ public class ProductController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/LoginController?action=required");
                 return;
             }
+            Long productId = Long.parseLong(request.getParameter("productId"));
+            String productName = request.getParameter("productName");
+            BigDecimal price = new BigDecimal(request.getParameter("price"));
+            String status = request.getParameter("status");
+            Product updatedProduct = service.updateProduct(productId, productName, price, status);
+            if(updatedProduct == null){
+                currSession.setAttribute("actionAlert", "Cannot add:" + productName + " is already active in system!");
+                response.sendRedirect(request.getContextPath() + "/ProductController/List");
+                return;
+            }
+            User currUser = (User)currSession.getAttribute("user");
+            Shift currShift = shiftService.getCurrentShift(currUser.getUserId());
+            if(currShift != null){
+                logService.addLog(currUser.getUserId(), currShift.getShiftId(), "UPDATE_PRODUCT", "PRODUCT", updatedProduct.getProductId(), updatedProduct.getUpdatedAt());
+            }
+            response.sendRedirect(request.getContextPath() + "/ProductController/List");
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -173,6 +198,16 @@ public class ProductController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/LoginController?action=required");
                 return;
             }
+            Long productId = Long.parseLong(request.getParameter("productId"));
+            
+            LocalDateTime updateAt = service.deleteProduct(productId);
+            
+            User currUser = (User)currSession.getAttribute("user");
+            Shift currShift = shiftService.getCurrentShift(currUser.getUserId());
+            if(currShift != null){
+                logService.addLog(currUser.getUserId(), currShift.getShiftId(), "UPDATE_PRODUCT", "PRODUCT", productId, updateAt);
+            }
+            response.sendRedirect(request.getContextPath() + "/ProductController/List");
         } catch (Exception e) {
             e.printStackTrace();
         }

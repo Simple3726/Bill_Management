@@ -29,17 +29,15 @@ public class InvoiceService {
     private DetectionEngine engine = new DetectionEngine();
 
 
-    public void createInvoice(Invoice invoice) throws Exception {
+    public Invoice createInvoice(Invoice invoice, Shift currShift) throws Exception {
         boolean checkCreate = false;
         //khi create can truyen vao status, createBy
             
         if (invoice.getAmount().compareTo(new BigDecimal(0)) <= 0) {
             throw new Exception("Amount must be larger than 0");
         }
-        
-        Shift currentShift = shiftService.getCurrentShift(invoice.getCreatedBy());
         invoice.setCreatedAt(LocalDateTime.now());
-        DetectionEngine.RiskResult rs = engine.analyzeCreate(invoice.getAmount(), currentShift);
+        DetectionEngine.RiskResult rs = engine.analyzeCreate(invoice.getAmount(), currShift);
         int riskScore =rs.getScore();
         String message = rs.getMessage();
         if(riskScore >= Constants.RISK_MEDIUM_THRESHOLD){
@@ -54,16 +52,17 @@ public class InvoiceService {
         // 2. Query lại để lấy Invoice_ID do DB tự sinh ra
         Invoice invCheck = invoiceDAO.findByCode(invoice.getInvoiceCode());
         
-        // 3. CHỐT CHẶN BẢO VỆ: Nếu insert xịt, ném lỗi ra trình duyệt ngay!
-        if (invCheck == null) {
-            throw new Exception("Cannot save invoice into Database! Invoice Id: '" + invoice.getInvoiceCode() + "' can be duplicated. Please check console.");
+        if(invCheck == null){
+            return null;
         }
         
-        // 4. Đảo ngược chuỗi để chống NullPointerException (Yoda Condition)
         if("PENDING".equals(invCheck.getStatus())){
             alertService.createAlert("INVOICE", invCheck.getInvoiceId(), riskScore, message);
         }
-        logService.addLog(invoice.getCreatedBy(), currentShift != null ? currentShift.getShiftId() : null , "CREATE_INVOICE", "INVOICE", invCheck.getInvoiceId(), invCheck.getCreatedAt());
+        logService.addLog(invoice.getCreatedBy(), currShift.getShiftId(), "CREATE_INVOICE", "INVOICE", invCheck.getInvoiceId(), invCheck.getCreatedAt());
+        
+        
+        return invCheck;
     }
     
     public void updateInvoice(Long invoiceId, BigDecimal newAmount, BigDecimal oldAmount, Long modified_by){
@@ -83,7 +82,7 @@ public class InvoiceService {
         String message = rs.getMessage();
         
         alertService.createAlert("INVOICE", invoiceId, riskScore, message);
-        logService.addLog(invoiceId, currentShift != null ? currentShift.getShiftId() : null, "UPDATE_INVOICE", "INVOICE", invoiceId, invoice.getUpdatedAt());
+        logService.addLog(modified_by, currentShift != null ? currentShift.getShiftId() : null, "UPDATE_INVOICE", "INVOICE", invoiceId, invoice.getUpdatedAt());
         historyDAO.addHistory(invoiceId, oldAmount, newAmount, modified_by, currentShift != null ? currentShift.getShiftId() : null
                 , "UPDATE", invoice.getUpdatedAt());
         invoiceDAO.update(invoice);

@@ -7,31 +7,31 @@
 %>
 
 <%
-    String logoutAlert = (String) session.getAttribute("logoutAlert");
-    if (logoutAlert != null) {
+    String actionAlert = (String) session.getAttribute("actionAlert");
+    if (actionAlert != null) {
 %>
-<div id="globalLogoutAlert" class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-4 shadow-lg" 
+<div id="globalAlert" class="alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-4 shadow-lg" 
      style="z-index: 9999; min-width: 300px; text-align: center; border-radius: 10px;" role="alert">
     <i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i>
-    <strong>Action Failed!</strong> <br> <%= logoutAlert %>
+    <strong>Action Failed!</strong> <br> <%= actionAlert %>
 </div>
     
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const logoutAlertMsg = document.getElementById("globalLogoutAlert");
-        if (logoutAlertMsg) {
+        const actionAlertMsg = document.getElementById("globalAlert");
+        if (actionAlertMsg) {
             setTimeout(function () {
-                logoutAlertMsg.style.transition = "opacity 0.6s ease";
-                logoutAlertMsg.style.opacity = "0";
+                actionAlertMsg.style.transition = "opacity 0.6s ease";
+                actionAlertMsg.style.opacity = "0";
                 setTimeout(function () {
-                    logoutAlertMsg.remove();
+                    actionAlertMsg.remove();
                 }, 600); // Đợi 0.6s cho hiệu ứng mờ kết thúc rồi xóa hẳn khỏi DOM
             }, 2000); // 3000ms = 3 giây
         }
     });
 </script>
 <%
-        session.removeAttribute("logoutAlert");
+        session.removeAttribute("actionAlert");
     }
 %>
 <div class="sidebar d-flex flex-column p-3 shadow" id="sidebar">
@@ -82,7 +82,7 @@
         </a>
         <% } %>
 
-        <% if ("ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar)) {%>
+        <% if ("ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar) || "STAFF".equals(roleSidebar)) {%>
         <a href="<%=request.getContextPath()%>/ProductController/List" class="sidebar-link mb-2">
             <i class="fa-solid fa-box-open me-2"></i> Product List
         </a>

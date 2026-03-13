@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="entity.Invoice" %>
 <%@ page import="entity.Product" %>
+<%@ page import="entity.InvoiceDetail" %>
 <%@ page import="java.util.List" %>
 <%
     // Get invoice object from request
@@ -17,7 +18,12 @@
     <head>
         <meta charset="UTF-8">
         <title>Bill Management</title>
+
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
         <style>
             * {
@@ -36,7 +42,7 @@
                 max-width: 900px;
                 margin: 3rem auto;
                 padding: 0 15px;
-            } 
+            }
             .invoice-card {
                 background-color: #fff;
                 border-radius: 15px;
@@ -72,11 +78,23 @@
                 margin-right: -10px;
                 row-gap: 1rem;
             }
-            .col-4 { width: 33.33%; padding: 0 10px; }
-            .col-6 { width: 50%; padding: 0 10px; }
-            .col-8 { width: 66.66%; padding: 0 10px; }
-            .col-12 { width: 100%; padding: 0 10px; }
-            
+            .col-4 {
+                width: 33.33%;
+                padding: 0 10px;
+            }
+            .col-6 {
+                width: 50%;
+                padding: 0 10px;
+            }
+            .col-8 {
+                width: 66.66%;
+                padding: 0 10px;
+            }
+            .col-12 {
+                width: 100%;
+                padding: 0 10px;
+            }
+
             .form-label {
                 display: inline-block;
                 margin-bottom: 0.5rem;
@@ -106,7 +124,9 @@
                 font-weight: bold;
                 color: #0d6efd;
             }
-            .text-end { text-align: right; }
+            .text-end {
+                text-align: right;
+            }
             .input-group {
                 display: flex;
                 align-items: stretch;
@@ -138,7 +158,9 @@
                 font-size: 0.875em;
                 color: #6c757d;
             }
-            .mt-4 { margin-top: 1.5rem; }
+            .mt-4 {
+                margin-top: 1.5rem;
+            }
             hr {
                 margin: 2rem 0;
                 color: inherit;
@@ -179,7 +201,9 @@
                 color: white;
                 padding: 0.6rem 1.5rem;
             }
-            .btn-save:hover { background-color: #0b5ed7; }
+            .btn-save:hover {
+                background-color: #0b5ed7;
+            }
             .btn-add {
                 background-color: #198754;
                 color: white;
@@ -187,7 +211,9 @@
                 width: 100%;
                 height: 100%;
             }
-            .btn-add:hover { background-color: #157347; }
+            .btn-add:hover {
+                background-color: #157347;
+            }
             .btn-delete {
                 color: #dc3545;
                 background: none;
@@ -195,9 +221,10 @@
                 cursor: pointer;
                 font-size: 1.2rem;
             }
-            .btn-delete:hover { color: #a52834; }
+            .btn-delete:hover {
+                color: #a52834;
+            }
 
-            /* Style for cart section */
             .cart-section {
                 background-color: #f8f9fa;
                 border: 1px solid #dee2e6;
@@ -224,6 +251,21 @@
             .table td {
                 vertical-align: middle;
             }
+
+            /* THÊM MỚI 2: CSS để làm đẹp thanh Select2 cho giống Form Control của Bootstrap */
+            .select2-container .select2-selection--single {
+                height: 40px !important;
+                border: 1px solid #ced4da !important;
+                border-radius: 0.375rem !important;
+                padding: 5px 0;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 38px !important;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                color: #212529;
+                line-height: 28px;
+            }
         </style>
     </head>
     <body>
@@ -234,7 +276,7 @@
                 <div class="card-header-flex">
                     <h2 class="header-title">
                         <i class="fa-solid fa-file-invoice-dollar"></i> 
-                        <%= isEdit ? "Update Invoice" : "Create New Invoice" %>
+                        <%= isEdit ? "Update Invoice" : "Create New Invoice"%>
                     </h2>
                     <span class="badge">
                         ID: <%= (isEdit && invoice.getInvoiceId() != null) ? invoice.getInvoiceId() : "New"%>
@@ -247,7 +289,7 @@
                     <input type="hidden" name="invoiceId" value="<%=invoice.getInvoiceId()%>">
                     <% }%>
 
-                    <input type="hidden" name="cartData" id="cartDataInput">
+                    <div id="hiddenInputsContainer"></div>
 
                     <div class="row">
                         <div class="col-6">
@@ -264,7 +306,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <label class="form-label">Select Product</label>
-                                <select id="productSelect" class="form-control">
+                                <select id="productSelect" class="form-control" style="width: 100%;">
                                     <option value="" disabled selected>-- Select a product --</option>
                                     <%
                                         // Load dynamic products from the request attribute
@@ -272,11 +314,11 @@
                                         if (pList != null && !pList.isEmpty()) {
                                             for (Product p : pList) {
                                     %>
-                                                <option value="<%= p.getProductId() %>" 
-                                                        data-name="<%= p.getProductName() %>" 
-                                                        data-price="<%= p.getPrice() %>">
-                                                    <%= p.getProductName() %> - <%= String.format("%,.0f", p.getPrice()) %> VND
-                                                </option>
+                                    <option value="<%= p.getProductId()%>" 
+                                            data-name="<%= p.getProductName()%>" 
+                                            data-price="<%= p.getPrice()%>">
+                                        <%= p.getProductName()%> - <%= String.format("%,.0f", p.getPrice())%> VND
+                                    </option>
                                     <%
                                             }
                                         }
@@ -311,7 +353,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div class="row mt-4">
                         <div class="col-12">
                             <label class="form-label" style="font-size: 1.2rem; color: #dc3545;">TOTAL AMOUNT</label>
@@ -351,8 +393,43 @@
         </div>
 
         <script>
-            // Array to store selected items
+            // Mảng lưu trữ các mặt hàng đã chọn
             let cart = [];
+
+            // ==========================================
+            // THÊM MỚI 3: KÍCH HOẠT SELECT2 CHO Ô TÌM KIẾM
+            // ==========================================
+            $(document).ready(function () {
+                // Biến thẻ select bình thường thành ô tìm kiếm siêu việt
+                $('#productSelect').select2({
+                    placeholder: "-- Select a product --",
+                    allowClear: true // Hiện dấu X để xóa nhanh lựa chọn
+                });
+            });
+
+            // ==========================================
+            // PRE-FILL CART FOR EDIT MODE
+            // ==========================================
+            <%
+                if (isEdit && request.getAttribute("invoiceDetails") != null) {
+                    List<InvoiceDetail> detailList = (List<InvoiceDetail>) request.getAttribute("invoiceDetails");
+                    for (InvoiceDetail d : detailList) {
+            %>
+            cart.push({
+                productId: "<%= d.getProductId()%>",
+                productName: "<%= d.getProductName()%>",
+                price: <%= d.getUnitPrice()%>,
+                quantity: <%= d.getQuantity()%>
+            });
+            <%
+                    }
+                }
+            %>
+
+            // Trigger UI update when page loads
+            document.addEventListener("DOMContentLoaded", function () {
+                updateCartUI();
+            });
 
             // Function to format currency (e.g., 35000 -> 35,000)
             function formatCurrency(number) {
@@ -381,7 +458,7 @@
                 }
 
                 // Check if the product is already in the cart
-                let existingItem = cart.find(item => item.productId === productId);
+                let existingItem = cart.find(item => item.productId == productId);
                 if (existingItem) {
                     existingItem.quantity += quantity; // Accumulate quantity if already exists
                 } else {
@@ -394,9 +471,11 @@
                     });
                 }
 
-                // Reset quantity field to 1 after adding
+                // Reset số lượng về 1
                 quantityInput.value = 1;
-                selectBox.selectedIndex = 0;
+
+                // THÊM MỚI 4: Reset ô Select2 về trạng thái chưa chọn
+                $('#productSelect').val('').trigger('change');
 
                 // Update UI
                 updateCartUI();
@@ -408,13 +487,14 @@
                 updateCartUI();
             }
 
-            // Update UI (Redraw table, calculate total, push JSON to hidden input)
+            // Update UI (Redraw table, calculate total, generate hidden inputs)
             function updateCartUI() {
                 const tbody = document.getElementById('cartTableBody');
                 const totalAmountInput = document.getElementById('totalAmountInput');
-                const cartDataInput = document.getElementById('cartDataInput');
+                const hiddenInputsContainer = document.getElementById('hiddenInputsContainer');
 
                 tbody.innerHTML = ''; // Clear old table content
+                hiddenInputsContainer.innerHTML = ''; // XÓA SẠCH input ẩn cũ
                 let totalAmount = 0;
 
                 if (cart.length === 0) {
@@ -424,8 +504,8 @@
                         const itemTotal = item.price * item.quantity;
                         totalAmount += itemTotal;
 
+                        // 1. Vẽ giao diện hiển thị cho người dùng xem
                         const tr = document.createElement('tr');
-                        // IMPORTANT: Escaping the $ sign for JS template literals to prevent JSP EL conflicts
                         tr.innerHTML = `
                             <td><strong>\${item.productName}</strong></td>
                             <td style="text-align: center;">\${item.quantity}</td>
@@ -438,14 +518,19 @@
                             </td>
                         `;
                         tbody.appendChild(tr);
+
+                        // 2. TẠO CÁC THẺ INPUT ẨN (Để gửi về Java Servlet)
+                        hiddenInputsContainer.innerHTML += `
+                            <input type="hidden" name="productIds" value="\${item.productId}">
+                            <input type="hidden" name="productNames" value="\${item.productName}">
+                            <input type="hidden" name="unitPrices" value="\${item.price}">
+                            <input type="hidden" name="quantities" value="\${item.quantity}">
+                        `;
                     });
                 }
 
-                // Write total amount to the Total input
+                // Ghi tổng tiền vào ô Total
                 totalAmountInput.value = totalAmount;
-
-                // **MOST IMPORTANT**: Convert JS array to JSON string and insert into the hidden input
-                cartDataInput.value = JSON.stringify(cart);
             }
 
             // Block submit if the cart is empty
@@ -456,10 +541,6 @@
                 }
                 return true;
             }
-
-            // (For Edit Function) If editing, you can pass JSON string from Java into the `cart` array here
-            // Example: cart = <%= (isEdit) ? "call_java_function_returning_json_string" : "[]"%>;
-            // updateCartUI();
         </script>
 
     </body>

@@ -55,7 +55,7 @@ public class LogOutController extends HttpServlet {
         Shift currentShift = shiftService.getCurrentShift(currentUserId);
         
         if (currentShift != null) {
-            session.setAttribute("logoutAlert", "Must end Shift first!!!");
+            session.setAttribute("actionAlert", "Must end Shift first!!!");
             response.sendRedirect(request.getContextPath() + "/ShiftController");
             return;
         }else {

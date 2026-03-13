@@ -16,10 +16,8 @@ import utils.DBConnection;
  */
 public class ShiftService {
 
-    // Khởi tạo DAO để xài
     private ShiftDAO shiftDAO = new ShiftDAO();
 
-    // Fix lỗi cannot find symbol getCurrentShift ở InvoiceService và ShiftController
     public Shift getCurrentShift(Long userId) {
         String sql = "SELECT TOP 1 * FROM Shifts WHERE user_id = ? AND status = 'OPEN' ORDER BY start_time DESC";
         try (Connection conn = DBConnection.getConnection();  

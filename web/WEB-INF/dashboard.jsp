@@ -201,7 +201,7 @@
                     <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Total Alerts</h4><h3 class="text-warning"><%= data.get("TOTAL_ALERT")%></h3><i class="fa-solid fa-bell bg-icon"></i></div></div>
                     <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>New Alerts</h4><h3 class="text-danger"><%= data.get("NEW_ALERT")%></h3><i class="fa-solid fa-circle-exclamation bg-icon"></i></div></div>
                     <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Total Shifts</h4><h3><%= data.get("TOTAL_SHIFT")%></h3><i class="fa-solid fa-clock bg-icon"></i></div></div>
-                    <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Active Staff</h4><h3 class="text-info"><%= data.get("ACTIVE_STAFF")%> <span class="text-muted fs-6">/ <%= data.get("TOTAL_STAFF")%></span></h3><i class="fa-solid fa-users bg-icon"></i></div></div>
+                    <div class="col-xl-3 col-md-6"><div class="summary-box"><h4>Online Staff</h4><h3 class="text-info"><%= data.get("ACTIVE_STAFF")%> <span class="text-muted fs-6">/ <%= data.get("TOTAL_STAFF")%></span></h3><i class="fa-solid fa-users bg-icon"></i></div></div>
                 </div>
 
                 <div class="row g-2 flex-grow-1 m-0">
@@ -265,7 +265,7 @@
                 new Chart(document.getElementById('staffChart'), {
                     type: 'doughnut',
                     data: {
-                        labels: ['Active', 'Inactive'], 
+                        labels: ['Online', 'Offline'], 
                         datasets: [{data: [<%= data.get("ACTIVE_STAFF")%>, <%= (int) data.get("TOTAL_STAFF") - (int) data.get("ACTIVE_STAFF")%>], backgroundColor: ['#188038', '#e9ecef']}]
                     },
                     options: {maintainAspectRatio: false}

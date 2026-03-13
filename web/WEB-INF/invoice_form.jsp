@@ -14,7 +14,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Quản lý Hóa đơn</title>
+        <title>Bill Management</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
         <style>
@@ -252,7 +252,7 @@
             <div class="invoice-card">
 
                 <div class="card-header-flex">
-                    <h2 class="header-title"><i class="fa-solid fa-file-invoice-dollar"></i>Tạo Hóa Đơn Mới</h2>
+                    <h2 class="header-title"><i class="fa-solid fa-file-invoice-dollar"></i>Create Invoice</h2>
                     <span class="badge">
                         ID: <%= (isEdit && invoice.getInvoiceId() != null) ? invoice.getInvoiceId() : "New"%>
                     </span>
@@ -268,7 +268,7 @@
 
                     <div class="row">
                         <div class="col-6">
-                            <label class="form-label">Mã hóa đơn</label>
+                            <label class="form-label">Invoice ID</label>
                             <input type="text" name="invoiceCode" class="form-control" 
                                    value="<%= invoice.getInvoiceCode()%>" readonly>
                             <input type="hidden" name="status" value="<%=invoice.getStatus()%>">
@@ -276,25 +276,25 @@
                     </div>
 
                     <div class="cart-section">
-                        <h4 style="margin-bottom: 1rem; color: #495057;"><i class="fa-solid fa-cart-plus"></i> Chi tiết mặt hàng</h4>
+                        <h4 style="margin-bottom: 1rem; color: #495057;"><i class="fa-solid fa-cart-plus"></i> Item Details</h4>
 
                         <div class="row">
                             <div class="col-6">
-                                <label class="form-label">Chọn sản phẩm</label>
+                                <label class="form-label">Choose Item</label>
                                 <select id="productSelect" class="form-control">
-                                    <option value="" disabled selected>-- Chọn một sản phẩm --</option>
+                                    <option value="" disabled selected>-- Choose Item --</option>
                                     <option value="1" data-name="Cà phê đen đá" data-price="25000">Cà phê đen đá - 25,000đ</option>
                                     <option value="2" data-name="Bạc xỉu" data-price="35000">Bạc xỉu - 35,000đ</option>
                                     <option value="3" data-name="Trà đào cam sả" data-price="45000">Trà đào cam sả - 45,000đ</option>
                                 </select>
                             </div>
                             <div class="col-4">
-                                <label class="form-label">Số lượng</label>
+                                <label class="form-label">Amount</label>
                                 <input type="number" id="quantityInput" class="form-control" value="1" min="1">
                             </div>
                             <div class="col-12 mt-4" style="width: 100%; padding-top: 1.8rem;">
                                 <button type="button" class="btn btn-add" onclick="addToCart()">
-                                    <i class="fa-solid fa-plus"></i> Thêm vào hóa đơn
+                                    <i class="fa-solid fa-plus"></i> Add
                                 </button>
                             </div>
                         </div>
@@ -302,27 +302,27 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Tên sản phẩm</th>
-                                    <th style="text-align: center;">Số lượng</th>
-                                    <th style="text-align: right;">Đơn giá</th>
-                                    <th style="text-align: right;">Thành tiền</th>
-                                    <th style="text-align: center;">Xóa</th>
+                                    <th>Name</th>
+                                    <th style="text-align: center;">Amount</th>
+                                    <th style="text-align: right;">Price</th>
+                                    <th style="text-align: right;">Total</th>
+                                    <th style="text-align: center;">Delete</th>
                                 </tr>
                             </thead>
                             <tbody id="cartTableBody">
                                 <tr id="emptyRow">
-                                    <td colspan="5" style="text-align: center; color: #6c757d; font-style: italic;">Chưa có mặt hàng nào trong hóa đơn.</td>
+                                    <td colspan="5" style="text-align: center; color: #6c757d; font-style: italic;">No data.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="row mt-4">
                         <div class="col-12">
-                            <label class="form-label" style="font-size: 1.2rem; color: #dc3545;">TỔNG TIỀN THANH TOÁN</label>
+                            <label class="form-label" style="font-size: 1.2rem; color: #dc3545;">TOTAL</label>
                             <div class="input-group">
                                 <input type="number" name="amount" id="totalAmountInput" class="form-control form-control-lg text-end" 
                                        step="0.01" value="0" readonly style="background-color: #fff3f3; color: #dc3545;">
-                                <span class="input-group-text">VND</span>
+                                <span class="input-group-text">VNĐ</span>
 
                                 <% if (isEdit && invoice.getAmount() != null) {%>
                                 <input type="hidden" name="oldAmount" value="<%= invoice.getAmount()%>">
@@ -344,9 +344,9 @@
                     <hr>
 
                     <div class="actions">
-                        <a href="<%=request.getContextPath()%>/InvoiceController/List" class="btn btn-light">Hủy bỏ</a>
+                        <a href="<%=request.getContextPath()%>/InvoiceController/List" class="btn btn-light">Cancel</a>
                         <button type="submit" class="btn btn-save" onclick="return validateBeforeSubmit()">
-                            <i class="fa-solid fa-save me-2"></i> Lưu Hóa Đơn
+                            <i class="fa-solid fa-save me-2"></i> Save
                         </button>
                     </div>
 

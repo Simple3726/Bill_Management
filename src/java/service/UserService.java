@@ -89,7 +89,7 @@ public class UserService {
             user.setPassword(existing.getPassword());
         }
 
-        return userDAO.update(user);
+        return userDAO.updateInfor(user);
     }
 
     // ================================

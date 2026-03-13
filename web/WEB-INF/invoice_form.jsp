@@ -294,7 +294,7 @@
                             </div>
                             <div class="col-12 mt-4" style="width: 100%; padding-top: 1.8rem;">
                                 <button type="button" class="btn btn-add" onclick="addToCart()">
-                                    <i class="fa-solid fa-plus"></i> Add into invoice
+                                    <i class="fa-solid fa-plus"></i> Add
                                 </button>
                             </div>
                         </div>

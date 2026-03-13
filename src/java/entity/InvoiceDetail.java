@@ -11,13 +11,10 @@ public class InvoiceDetail {
     private Long detailId;
     private Long invoiceId;
     private Long productId;
+    private String productName;
     private Integer quantity;
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;
-
-    // chi dung de hien thi tren jsp
-    private String productName;
-
     public InvoiceDetail() {
     }
 

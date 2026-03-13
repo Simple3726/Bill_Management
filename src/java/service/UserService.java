@@ -32,7 +32,6 @@ public class UserService {
             throw new Exception("Username already exists");
         }
 
-
         return userDAO.insert(user);
     }
 
@@ -64,6 +63,30 @@ public class UserService {
 
         if (existing == null) {
             throw new Exception("User not found");
+        }
+
+        // Validate username
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+            throw new Exception("Username cannot be empty");
+        }
+
+        // Check duplicate username
+        User existUser = userDAO.findByUsername(user.getUsername());
+
+        if (existUser != null && !existUser.getUserId().equals(user.getUserId())) {
+            throw new Exception("Username already exists");
+        }
+
+        // Validate password (nếu có đổi)
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+
+            if (user.getPassword().length() < 4) {
+                throw new Exception("Password must be at least 4 characters");
+            }
+
+        } else {
+            // nếu không đổi password thì giữ password cũ
+            user.setPassword(existing.getPassword());
         }
 
         return userDAO.update(user);

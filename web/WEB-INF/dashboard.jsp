@@ -31,7 +31,7 @@
                 overflow: hidden;
             }
 
-            /* SIDEBAR STYLES */
+            /* --- SIDEBAR STYLES (Giữ nguyên gốc của bạn) --- */
             .sidebar {
                 width: 260px;
                 background-color: #212529;
@@ -86,6 +86,7 @@
             #sidebarToggle:hover {
                 color: #0d6efd;
             }
+            /* --- END SIDEBAR STYLES --- */
 
             /* Cấu hình main-content dùng flexbox để ép khung 1 màn hình */
             .main-content {
@@ -236,32 +237,46 @@
             document.addEventListener("DOMContentLoaded", function () {
                 const toggleBtn = document.getElementById("sidebarToggle");
                 const sidebar = document.getElementById("sidebar");
-                toggleBtn.addEventListener("click", function () {
-                    sidebar.classList.toggle("collapsed");
-                });
+                if (toggleBtn && sidebar) {
+                    toggleBtn.addEventListener("click", function () {
+                        sidebar.classList.toggle("collapsed");
+                    });
+                }
 
-                // Thêm maintainAspectRatio: false vào TẤT CẢ biểu đồ để chúng vừa với chiều cao của container
+                // Cấu hình biểu đồ Chart.js
                 new Chart(document.getElementById('alertChart'), {
                     type: 'pie',
-                    data: {labels: ['New', 'Investigating', 'Resolved'], datasets: [{data: [<%= data.get("NEW_ALERT")%>, <%= data.get("INVESTIGATING_ALERT")%>, <%= data.get("RESOLVED_ALERT")%>], backgroundColor: ['#d93025', '#f9a825', '#188038']}]},
+                    data: {
+                        labels: ['New', 'Investigating', 'Resolved'], 
+                        datasets: [{data: [<%= data.get("NEW_ALERT")%>, <%= data.get("INVESTIGATING_ALERT")%>, <%= data.get("RESOLVED_ALERT")%>], backgroundColor: ['#d93025', '#f9a825', '#188038']}]
+                    },
                     options: {maintainAspectRatio: false}
                 });
 
                 new Chart(document.getElementById('riskChart'), {
                     type: 'bar',
-                    data: {labels: ['Risk Rate'], datasets: [{label: 'Risk %', data: [<%= data.get("RISK_RATE")%>], backgroundColor: '#d93025'}]},
+                    data: {
+                        labels: ['Risk Rate'], 
+                        datasets: [{label: 'Risk %', data: [<%= data.get("RISK_RATE")%>], backgroundColor: '#d93025'}]
+                    },
                     options: {maintainAspectRatio: false, scales: {y: {beginAtZero: true, max: 100}}}
                 });
 
                 new Chart(document.getElementById('staffChart'), {
                     type: 'doughnut',
-                    data: {labels: ['Active', 'Inactive'], datasets: [{data: [<%= data.get("ACTIVE_STAFF")%>, <%= (int) data.get("TOTAL_STAFF") - (int) data.get("ACTIVE_STAFF")%>], backgroundColor: ['#188038', '#e9ecef']}]},
+                    data: {
+                        labels: ['Active', 'Inactive'], 
+                        datasets: [{data: [<%= data.get("ACTIVE_STAFF")%>, <%= (int) data.get("TOTAL_STAFF") - (int) data.get("ACTIVE_STAFF")%>], backgroundColor: ['#188038', '#e9ecef']}]
+                    },
                     options: {maintainAspectRatio: false}
                 });
 
                 new Chart(document.getElementById('invoiceChart'), {
                     type: 'bar',
-                    data: {labels: ['Invoices', 'With Alert'], datasets: [{label: 'Count', data: [<%= data.get("TOTAL_INVOICE")%>, <%= data.get("INVOICE_WITH_ALERT")%>], backgroundColor: ['#1f6feb', '#d93025']}]},
+                    data: {
+                        labels: ['Invoices', 'With Alert'], 
+                        datasets: [{label: 'Count', data: [<%= data.get("TOTAL_INVOICE")%>, <%= data.get("INVOICE_WITH_ALERT")%>], backgroundColor: ['#1f6feb', '#d93025']}]
+                    },
                     options: {maintainAspectRatio: false, scales: {y: {beginAtZero: true}}}
                 });
             });

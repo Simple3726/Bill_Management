@@ -80,7 +80,7 @@
             .btn-create-new {
                 display: inline-block;
                 padding: 10px 25px;
-                background-color: #212529;
+                background-color: #1f6feb;
                 color: white;
                 text-decoration: none;
                 border-radius: 4px;
@@ -88,12 +88,10 @@
                 transition: 0.3s;
             }
             .btn-create-new:hover {
-                background-color: #495057;
+                background-color: #155bc2;
                 color: white;
             }
-            .btn-delete { 
-                background-color: #d93025; 
-                color: white; 
+            .btn-delete, .btn-update { 
                 padding: 6px 12px;
                 font-size: 0.875rem;
                 border-radius: 6px;
@@ -104,23 +102,10 @@
                 cursor: pointer;
                 transition: all 0.2s ease-in-out;
             }
+            .btn-delete { background-color: #d93025; color: white; }
             .btn-delete:hover { background-color: #c02a20; color: white; }
-            .btn-update {
-                background-color: #f59f00;
-                color: #fff;
-                padding: 6px 12px;
-                font-size: 0.875rem;
-                border-radius: 6px;
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                border: none;
-                cursor: pointer;
-                transition: all 0.2s ease-in-out;
-            }
-            .btn-update i {
-                margin-right: 5px;
-            }
+            .btn-update { background-color: #f59f00; color: #fff; }
+            .btn-update i { margin-right: 5px; }
             .btn-update:hover {
                 background-color: #e67e22;
                 box-shadow: 0 4px 8px rgba(245, 159, 0, 0.3);
@@ -139,8 +124,22 @@
                     <h2 class="text-primary mb-0">Invoice List</h2>
                 </div>
 
-                <div style="margin-bottom: 20px;">
-                    <a href="<%=request.getContextPath()%>/InvoiceController/Form" class="btn-create-new"><i class="fa-solid fa-plus me-1"></i> New Invoice</a>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <a href="<%=request.getContextPath()%>/InvoiceController/Form" class="btn-create-new">
+                        <i class="fa-solid fa-plus me-1"></i> New Invoice
+                    </a>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="statusFilter" class="fw-semibold text-secondary mb-0">Filter by Status:</label>
+                        <select id="statusFilter" class="form-select w-auto shadow-sm border-0">
+                            <option value="ALL">All Statuses</option>
+                            <option value="COMPLETED">Completed</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="APPROVED">Approved</option>
+                            <option value="REJECTED">Rejected</option>
+                            <option value="DELETED">Deleted</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="card shadow border-0">
@@ -156,18 +155,27 @@
                                     <th class="text-center pe-4">Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="invoiceTableBody">
                                 <%
                                     List<Invoice> list = (List<Invoice>) request.getAttribute("invoiceList");
                                     DecimalFormat formatter = new DecimalFormat("#,### VNĐ");
                                     if (list != null && !list.isEmpty()) {
                                         for (Invoice item : list) {
+                                            
+                                            String status = item.getStatus() != null ? item.getStatus().toUpperCase() : "N/A";
+                                            String badgeClass = "bg-secondary"; 
+                                            
+                                            if (status.equals("COMPLETED")) { badgeClass = "bg-success"; } 
+                                            else if (status.equals("PENDING")) { badgeClass = "bg-warning text-dark"; } 
+                                            else if (status.equals("APPROVED")) { badgeClass = "bg-primary"; } 
+                                            else if (status.equals("REJECTED")) { badgeClass = "bg-danger"; } 
+                                            else if (status.equals("DELETED")) { badgeClass = "bg-dark"; }
                                 %>
-                                <tr>
+                                <tr class="invoice-row" data-status="<%= status %>">
                                     <td class="ps-4"><%= item.getInvoiceId()%></td>
                                     <td><strong class="text-primary"><%= (item.getInvoiceCode() != null) ? item.getInvoiceCode() : ""%></strong></td>
                                     <td class="fw-bold"><%= (item.getAmount() != null) ? formatter.format(item.getAmount()) : "0 VNĐ"%></td>
-                                    <td><span class="badge bg-secondary px-2 py-1"><%= (item.getStatus() != null) ? item.getStatus() : "N/A"%></span></td>
+                                    <td><span class="badge <%= badgeClass %> px-2 py-1"><%= status %></span></td>
                                     <td><%= (item.getCreatedAt() != null) ? item.getCreatedAt() : ""%></td>
                                     <td class="text-center pe-4">
                                         <a href="<%=request.getContextPath()%>/InvoiceController/Form?invoiceId=<%= item.getInvoiceId()%>" class="btn-update"><i class="fa-solid fa-pen-to-square"></i> Update</a>
@@ -175,8 +183,8 @@
                                     </td>
                                 </tr>
                                 <% }
-                        } else { %>
-                                <tr>
+                                } else { %>
+                                <tr id="noDataRow">
                                     <td colspan="6" class="text-center text-muted py-5">
                                         <i class="fa-solid fa-folder-open mb-3" style="font-size: 40px; color: #dee2e6;"></i><br>
                                         <h5>No invoice have been created yet!</h5>
@@ -193,11 +201,36 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
+                // Xử lý đóng mở Sidebar
                 const toggleBtn = document.getElementById("sidebarToggle");
                 const sidebar = document.getElementById("sidebar");
-                toggleBtn.addEventListener("click", function () {
-                    sidebar.classList.toggle("collapsed");
-                });
+                if(toggleBtn && sidebar) {
+                    toggleBtn.addEventListener("click", function () {
+                        sidebar.classList.toggle("collapsed");
+                    });
+                }
+
+                // Xử lý Lọc (Filter) Invoice theo Status
+                const statusFilter = document.getElementById("statusFilter");
+                const invoiceRows = document.querySelectorAll(".invoice-row");
+
+                if(statusFilter) {
+                    statusFilter.addEventListener("change", function() {
+                        const selectedStatus = this.value; // Lấy giá trị được chọn (ALL, PENDING, COMPLETED...)
+
+                        invoiceRows.forEach(row => {
+                            // Lấy trạng thái của từng dòng thông qua data-status attribute
+                            const rowStatus = row.getAttribute("data-status");
+
+                            // Nếu chọn ALL hoặc trạng thái dòng khớp với lựa chọn -> Hiển thị dòng đó
+                            if (selectedStatus === "ALL" || rowStatus === selectedStatus) {
+                                row.style.display = ""; // Xoá style display: none (nếu có)
+                            } else {
+                                row.style.display = "none"; // Ẩn dòng đi
+                            }
+                        });
+                    });
+                }
             });
         </script>
     </body>

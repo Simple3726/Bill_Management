@@ -33,7 +33,7 @@ public class Constants {
     // HIGH AMOUNT RULE
     // ================================
     public static final BigDecimal HIGH_VALUE_INVOICE
-            = new BigDecimal("200000000");
+            = new BigDecimal("100000000");
 
     public static final BigDecimal MEDIUM_VALUE_INVOICE
             = new BigDecimal("50000000");

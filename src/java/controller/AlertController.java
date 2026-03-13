@@ -8,6 +8,8 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import repository.InvoiceDAO;
+import service.InvoiceService;
 
 @WebServlet(name = "AlertController", urlPatterns = {"/AlertController"})
 public class AlertController extends HttpServlet {
@@ -41,9 +43,27 @@ public class AlertController extends HttpServlet {
             // nếu bấm resolve
             if ("resolve".equals(action)) {
 
+                InvoiceDAO invoiceDAO = new InvoiceDAO();
+
                 Long alertId = Long.parseLong(request.getParameter("alertId"));
+                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
 
                 alertDAO.updateStatus(alertId, "RESOLVED");
+                invoiceDAO.updateStatus(invoiceId, "APPROVED");
+
+                response.sendRedirect(request.getContextPath() + "/AlertController");
+
+                return;
+            }
+            if ("reject".equals(action)) {
+
+                InvoiceDAO invoiceDAO = new InvoiceDAO();
+
+                Long alertId = Long.parseLong(request.getParameter("alertId"));
+                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
+
+                alertDAO.updateStatus(alertId, "RESOLVED");
+                invoiceDAO.updateStatus(invoiceId, "REJECTED");
 
                 response.sendRedirect(request.getContextPath() + "/AlertController");
 
@@ -62,55 +82,6 @@ public class AlertController extends HttpServlet {
             e.printStackTrace();
             response.sendRedirect("error.jsp");
         }
-    }
-
-    private void list(HttpServletRequest request,
-            HttpServletResponse response)
-            throws ServletException, IOException {
-
-        try {
-
-            List<Alert> alertList = alertDAO.findAll();
-
-            request.setAttribute("alertList", alertList);
-
-            request.getRequestDispatcher("/WEB-INF/alert_list.jsp")
-                    .forward(request, response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendRedirect("error.jsp");
-        }
-    }
-
-    private void investigate(HttpServletRequest request,
-            HttpServletResponse response)
-            throws ServletException, IOException {
-
-        Long alertId = Long.parseLong(request.getParameter("alertId"));
-
-        Alert alert = alertDAO.findById(alertId);
-
-        if (alert != null && "NEW".equals(alert.getStatus())) {
-            alertDAO.updateStatus(alertId, "INVESTIGATING");
-            alert.setStatus("INVESTIGATING");
-        }
-
-        request.setAttribute("alert", alert);
-
-        request.getRequestDispatcher("/WEB-INF/investigate.jsp")
-                .forward(request, response);
-    }
-
-    private void resolve(HttpServletRequest request,
-            HttpServletResponse response)
-            throws IOException {
-
-        Long alertId = Long.parseLong(request.getParameter("alertId"));
-
-        alertDAO.updateStatus(alertId, "RESOLVED");
-
-        response.sendRedirect(request.getContextPath() + "/AlertController");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

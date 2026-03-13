@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import service.UserService;
 
 /**
@@ -71,6 +72,17 @@ public class UserController extends HttpServlet {
 
             case "/Delete":
                 deleteUser(request, response);
+                break;
+            case "/Profile":
+                showProfile(request, response);
+                break;
+
+            case "/UpdateProfile":
+                updateProfile(request, response);
+                break;
+
+            case "/ChangePassword":
+                changePassword(request, response);
                 break;
 
             default:
@@ -223,6 +235,98 @@ public class UserController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/UserController/List");
     }
 
+    private void showProfile(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        User sessionUser = (User) request.getSession().getAttribute("user");
+
+        if (sessionUser == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
+
+        User user = service.getUserById(sessionUser.getUserId());
+
+        request.setAttribute("user", user);
+
+        request.getRequestDispatcher("/WEB-INF/account.jsp")
+                .forward(request, response);
+    }
+
+    private void updateProfile(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        HttpSession session = request.getSession();
+
+        try {
+
+            User sessionUser = (User) session.getAttribute("user");
+
+            if (sessionUser == null) {
+                response.sendRedirect(request.getContextPath() + "/login.jsp");
+                return;
+            }
+
+            String username = request.getParameter("username");
+
+            User user = new User();
+            user.setUserId(sessionUser.getUserId());
+            user.setUsername(username);
+            user.setRole(sessionUser.getRole());
+            user.setStatus(sessionUser.getStatus());
+
+            service.updateUser(user);
+
+            session.setAttribute("message", "Account updated successfully");
+
+        } catch (Exception e) {
+
+            session.setAttribute("error", e.getMessage());
+
+        }
+
+        response.sendRedirect(request.getContextPath() + "/UserController/Profile");
+    }
+
+    private void changePassword(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        HttpSession session = request.getSession();
+
+        try {
+
+            User sessionUser = (User) session.getAttribute("user");
+
+            if (sessionUser == null) {
+                response.sendRedirect(request.getContextPath() + "/login.jsp");
+                return;
+            }
+
+            String currentPassword = request.getParameter("currentPassword");
+            String newPassword = request.getParameter("newPassword");
+            String confirmPassword = request.getParameter("confirmPassword");
+
+            if (!sessionUser.getPassword().equals(currentPassword)) {
+                throw new Exception("Current password incorrect");
+            }
+
+            if (!newPassword.equals(confirmPassword)) {
+                throw new Exception("Password confirmation does not match");
+            }
+
+            service.changePassword(sessionUser.getUserId(), newPassword);
+
+            session.setAttribute("message", "Password changed successfully");
+
+        } catch (Exception e) {
+
+            session.setAttribute("error", e.getMessage());
+
+        }
+
+        response.sendRedirect(request.getContextPath() + "/UserController/Profile");
+    }
+
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -253,10 +357,15 @@ public class UserController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         try {
+
             processRequest(request, response);
+
         } catch (Exception ex) {
+
             Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+
         }
     }
 

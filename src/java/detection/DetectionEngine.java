@@ -140,7 +140,27 @@ public class DetectionEngine {
         
         return new RiskResult(score, level, reason.toString());
     }
-    
+    public RiskResult analyzeCreateProduct(Shift currShift){
+        int score = 0;
+        StringBuilder reason = new StringBuilder();
+        
+        //Ngoai ca lam viec
+            score+=calculateShiftRisk(currShift, reason);
+        
+        String level;
+        if (score >= Constants.RISK_HIGH_THRESHOLD) {
+            level = "HIGH";
+        } else if (score >= Constants.RISK_MEDIUM_THRESHOLD) {
+            level = "MEDIUM";
+        } else {
+            level = "LOW";
+        }
+
+        if (reason.length() == 0) {
+            reason.append("No abnormal behavior detected.");
+        }
+        return new RiskResult(score, level, reason.toString());
+    }
     // ==================================================
     // PRIVATE RULE METHODS
     // ==================================================

@@ -1,18 +1,18 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
-<%@ page import="entity.User" %>
-<% List<User> userList = (List<User>) request.getAttribute("userList");%>
+<%@ page import="entity.Product" %>
+<%@ page import="java.text.DecimalFormat" %>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>User Management</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+        <title>Product List</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <style>
             body, html {
-                height: 100vh; /* Khóa cuộn toàn trang */
+                height: 100vh;
                 margin: 0;
                 font-family: 'Inter', sans-serif;
                 background-color: #f4f6f9;
@@ -83,13 +83,13 @@
                 height: 100vh;
                 display: flex;
                 flex-direction: column;
-                overflow: hidden; /* Tránh sinh ra thanh cuộn phụ ở nội dung */
+                overflow: hidden;
             }
 
             /* BẢNG & THANH CUỘN (SCROLLBAR) */
             .table-container {
-                flex-grow: 1;
-                overflow-y: auto;
+                flex-grow: 1; 
+                overflow-y: auto; 
                 max-height: calc(100vh - 160px);
             }
             .table-container::-webkit-scrollbar {
@@ -118,7 +118,7 @@
             }
 
             /* BUTTONS & BADGES */
-            .btn-add {
+            .btn-create-new {
                 display: inline-block;
                 padding: 10px 25px;
                 background-color: #1f6feb;
@@ -128,7 +128,7 @@
                 font-weight: 500;
                 transition: 0.3s;
             }
-            .btn-add:hover {
+            .btn-create-new:hover {
                 background-color: #155bc2;
                 color: white;
             }
@@ -141,24 +141,13 @@
                 border: none;
                 transition: 0.2s;
                 text-decoration: none;
-                display: inline-block;
+                display: inline-flex;
+                align-items: center;
             }
-            .btn-edit {
-                background-color: #fbbc04;
-                color: white;
-            }
-            .btn-edit:hover {
-                background-color: #e3a903;
-                color: white;
-            }
-            .btn-delete {
-                background-color: #d93025;
-                color: white;
-            }
-            .btn-delete:hover {
-                background-color: #c02a20;
-                color: white;
-            }
+            .btn-update { background-color: #f59f00; color: white; }
+            .btn-update:hover { background-color: #e67e22; box-shadow: 0 4px 8px rgba(245, 159, 0, 0.3); color: white; }
+            .btn-delete { background-color: #d93025; color: white; }
+            .btn-delete:hover { background-color: #c02a20; color: white; }
 
             .custom-badge {
                 padding: 6px 12px;
@@ -167,30 +156,10 @@
                 font-weight: 600;
                 display: inline-block;
             }
-            .badge-admin {
-                background-color: #e8f0fe;
-                color: #1f6feb;
-            }
-            .badge-staff {
-                background-color: #e6f4ea;
-                color: #188038;
-            }
-            .badge-auditor {
-                background-color: #fff4e5;
-                color: #f9a825;
-            }
-            .badge-active {
-                background-color: #e6f4ea;
-                color: #188038;
-            }
-            .badge-locked {
-                background-color: #ffecec;
-                color: #d93025;
-            }
+            .badge-active { background-color: #e6f4ea; color: #188038; }
+            .badge-inactive { background-color: #ffecec; color: #d93025; }
 
-            .search-box {
-                min-width: 250px;
-            }
+            .search-box { min-width: 250px; }
         </style>
     </head>
     <body>
@@ -203,37 +172,26 @@
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-shrink-0">
                     <div class="d-flex align-items-center">
                         <button id="sidebarToggle" title="Đóng/Mở thanh công cụ"><i class="fa-solid fa-bars"></i></button>
-                        <h2 class="text-primary mb-0 fw-bold"><i class="fa-solid fa-users me-2"></i>User Management</h2>
+                        <h2 class="text-primary mb-0 fw-bold"><i class="fa-solid fa-box-open me-2"></i>Product List</h2>
                     </div>
-                    <a href="<%=request.getContextPath()%>/UserController/Add" class="text-decoration-none">
-                        <button class="btn btn-add shadow-sm"><i class="fa-solid fa-user-plus me-1"></i> Create User</button>
+                    <a href="<%=request.getContextPath()%>/ProductController/Form" class="btn-create-new shadow-sm">
+                        <i class="fa-solid fa-plus me-1"></i> New Product
                     </a>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0">
                     <div class="input-group search-box shadow-sm w-auto">
                         <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                        <input type="text" id="userSearch" class="form-control border-start-0 ps-0" placeholder="Search Username...">
+                        <input type="text" id="productSearch" class="form-control border-start-0 ps-0" placeholder="Search Product Name...">
                     </div>
 
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <label for="roleFilter" class="fw-semibold text-secondary mb-0">Role:</label>
-                            <select id="roleFilter" class="form-select w-auto shadow-sm border-0">
-                                <option value="ALL">All Roles</option>
-                                <option value="ADMIN">Admin</option>
-                                <option value="AUDITOR">Auditor</option>
-                                <option value="STAFF">Staff</option>
-                            </select>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <label for="statusFilter" class="fw-semibold text-secondary mb-0">Status:</label>
-                            <select id="statusFilter" class="form-select w-auto shadow-sm border-0">
-                                <option value="ALL">All Status</option>
-                                <option value="ACTIVE">Active</option>
-                                <option value="LOCKED">Locked</option>
-                            </select>
-                        </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="statusFilter" class="fw-semibold text-secondary mb-0">Filter by Status:</label>
+                        <select id="statusFilter" class="form-select w-auto shadow-sm border-0">
+                            <option value="ALL">All Status</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="INACTIVE">Inactive</option>
+                        </select>
                     </div>
                 </div>
 
@@ -243,59 +201,62 @@
                             <thead class="table-dark">
                                 <tr>
                                     <th class="ps-4 py-3">ID</th>
-                                    <th>Username</th>
-                                    <th>Role</th>
+                                    <th>Product Name</th>
+                                    <th>Price</th>
                                     <th>Status</th>
-                                    <th>Created At</th>
+                                    <th>Create At</th>
                                     <th class="text-center pe-4">Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="userTableBody">
-                                <% if (userList != null && !userList.isEmpty()) {
-                                        for (User u : userList) {
-                                            String role = u.getRole() != null ? u.getRole().toUpperCase() : "STAFF";
-                                            String status = u.getStatus() != null ? u.getStatus().toUpperCase() : "LOCKED";
+                            <tbody id="productTableBody">
+                                <%
+                                    List<Product> list = (List<Product>) request.getAttribute("productList");
+                                    DecimalFormat formatter = new DecimalFormat("#,### VNĐ");
+
+                                    if (list != null && !list.isEmpty()) {
+                                        for (Product item : list) {
+                                            String status = item.getStatus() != null ? item.getStatus().toUpperCase() : "INACTIVE";
                                 %>
-                                <tr class="user-row" data-role="<%= role%>" data-status="<%= status%>">
-                                    <td class="ps-4 text-muted fw-bold">#<%=u.getUserId()%></td>
+                                <tr class="product-row" data-status="<%= status%>">
+                                    <td class="ps-4 text-muted fw-bold">#<%= item.getProductId()%></td>
 
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 35px; height: 35px;">
-                                                <i class="fa-solid fa-user text-secondary"></i>
+                                            <div class="bg-light rounded d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px;">
+                                                <i class="fa-solid fa-cube text-secondary"></i>
                                             </div>
-                                            <strong class="username-text"><%=u.getUsername()%></strong>
+                                            <strong class="text-primary product-name"><%= (item.getProductName() != null) ? item.getProductName() : ""%></strong>
                                         </div>
                                     </td>
 
-                                    <td>
-                                        <% if ("ADMIN".equals(role)) { %><span class="custom-badge badge-admin"><i class="fa-solid fa-crown me-1"></i>ADMIN</span>
-                                        <% } else if ("AUDITOR".equals(role)) { %><span class="custom-badge badge-auditor"><i class="fa-solid fa-eye me-1"></i>AUDITOR</span>
-                                        <% } else { %><span class="custom-badge badge-staff"><i class="fa-solid fa-user-pen me-1"></i>STAFF</span><% } %>
-                                    </td>
+                                    <td class="fw-bold text-success"><%= (item.getPrice() != null) ? formatter.format(item.getPrice()) : "0 VNĐ"%></td>
 
                                     <td>
-                                        <% if ("ACTIVE".equals(status)) { %><span class="custom-badge badge-active"><i class="fa-solid fa-check-circle me-1"></i>ACTIVE</span>
-                                        <% } else { %><span class="custom-badge badge-locked"><i class="fa-solid fa-lock me-1"></i>LOCKED</span><% }%>
+                                        <% if ("ACTIVE".equals(status)) { %>
+                                        <span class="custom-badge badge-active"><i class="fa-solid fa-check-circle me-1"></i>ACTIVE</span>
+                                        <% } else {%>
+                                        <span class="custom-badge badge-inactive"><i class="fa-solid fa-ban me-1"></i><%= status%></span>
+                                        <% }%>
                                     </td>
 
-                                    <td class="text-muted"><%=u.getCreatedAt()%></td>
+                                    <td class="text-muted"><%= (item.getCreatedAt() != null) ? item.getCreatedAt() : ""%></td>
 
                                     <td class="text-center pe-4">
-                                        <a href="<%=request.getContextPath()%>/UserController/Edit?id=<%=u.getUserId()%>" class="action-btn btn-edit me-1"><i class="fa-solid fa-pen"></i> Edit</a>
-                                        <a href="<%=request.getContextPath()%>/UserController/Delete?id=<%=u.getUserId()%>" class="action-btn btn-delete" onclick="return confirm('⚠️ Warning: Are you sure you want to delete this account: <%=u.getUsername()%>? This action cannot be undone!');"><i class="fa-solid fa-trash"></i> Delete</a>
+                                        <a href="<%=request.getContextPath()%>/ProductController/Form?productId=<%= item.getProductId()%>" class="action-btn btn-update me-1"><i class="fa-solid fa-pen-to-square me-1"></i> Update</a>
+                                        <a href="<%=request.getContextPath()%>/ProductController/Delete?productId=<%= item.getProductId()%>" class="action-btn btn-delete" onclick="return confirm('Are you sure want to delete product: <%= item.getProductName()%>? This action cannot be undone!')"><i class="fa-solid fa-trash me-1"></i> Delete</a>
                                     </td>
                                 </tr>
-                                <% }
-                                } else { %>
+                                <%      }
+                                } else {
+                                %>
                                 <tr id="noDataRow">
                                     <td colspan="6" class="text-center text-muted py-5">
-                                        <i class="fa-solid fa-users-slash mb-3" style="font-size: 40px; color: #dee2e6;"></i><br>
-                                        <h5>No Data</h5>
-                                        <p class="mb-0">No users have been created in the system yet.</p>
+                                        <i class="fa-solid fa-box-open mb-3" style="font-size: 40px; color: #dee2e6;"></i><br>
+                                        <h5>No products have been created yet!</h5>
+                                        <p class="mb-0">Create a new product by clicking "New Product".</p>
                                     </td>
                                 </tr>
-                                <% }%>
+                                <%  }%>
                             </tbody>
                         </table>
                     </div>
@@ -305,7 +266,6 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                // Đóng mở Sidebar
                 const toggleBtn = document.getElementById("sidebarToggle");
                 const sidebar = document.getElementById("sidebar");
                 if (toggleBtn && sidebar) {
@@ -314,30 +274,22 @@
                     });
                 }
 
-                // Elements cho Filter và Search
-                const roleFilter = document.getElementById("roleFilter");
+                const searchInput = document.getElementById("productSearch");
                 const statusFilter = document.getElementById("statusFilter");
-                const searchInput = document.getElementById("userSearch");
-                const userRows = document.querySelectorAll(".user-row");
+                const productRows = document.querySelectorAll(".product-row");
 
-                // Hàm thực thi bộ lọc 3 lớp (Role + Status + Search Username)
                 function filterTable() {
-                    const selectedRole = roleFilter.value;
-                    const selectedStatus = statusFilter.value;
                     const searchTerm = searchInput.value.toLowerCase().trim();
+                    const selectedStatus = statusFilter.value;
 
-                    userRows.forEach(row => {
-                        const rowRole = row.getAttribute("data-role");
+                    productRows.forEach(row => {
                         const rowStatus = row.getAttribute("data-status");
-                        const username = row.querySelector(".username-text").innerText.toLowerCase();
+                        const productName = row.querySelector(".product-name").innerText.toLowerCase();
 
-                        // Kiểm tra điều kiện
-                        const matchRole = (selectedRole === "ALL" || rowRole === selectedRole);
                         const matchStatus = (selectedStatus === "ALL" || rowStatus === selectedStatus);
-                        const matchSearch = username.includes(searchTerm);
+                        const matchSearch = productName.includes(searchTerm);
 
-                        // Chỉ hiện dòng khi thỏa mãn cả 3 điều kiện
-                        if (matchRole && matchStatus && matchSearch) {
+                        if (matchStatus && matchSearch) {
                             row.style.display = "";
                         } else {
                             row.style.display = "none";
@@ -345,13 +297,8 @@
                     });
                 }
 
-                // Lắng nghe sự kiện
-                if (roleFilter)
-                    roleFilter.addEventListener("change", filterTable);
-                if (statusFilter)
-                    statusFilter.addEventListener("change", filterTable);
-                if (searchInput)
-                    searchInput.addEventListener("keyup", filterTable);
+                if (searchInput) searchInput.addEventListener("keyup", filterTable);
+                if (statusFilter) statusFilter.addEventListener("change", filterTable);
             });
         </script>
     </body>

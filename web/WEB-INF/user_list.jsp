@@ -12,14 +12,15 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <style>
             body, html {
-                height: 100vh;
+
+                height: 100vh; /* Khóa cuộn toàn trang */
                 margin: 0;
                 font-family: 'Inter', sans-serif;
                 background-color: #f4f6f9;
                 overflow: hidden;
             }
 
-            /* --- SIDEBAR STYLES --- */
+            /* --- SIDEBAR STYLES (Nguyên bản 100% của bạn) --- */
             .sidebar {
                 width: 260px;
                 background-color: #212529;
@@ -58,10 +59,12 @@
                 margin: 0 auto 10px auto;
                 color: white;
             }
+
             .glow-online {
                 color: #198754;
                 text-shadow: 0 0 5px #198754, 0 0 10px #198754;
             }
+
             #sidebarToggle {
                 background: none;
                 border: none;
@@ -75,6 +78,8 @@
                 color: #0d6efd;
             }
 
+            /* --- END SIDEBAR STYLES --- */
+
             /* Main Content Flexbox Layout */
             .main-content {
                 transition: all 0.3s ease-in-out;
@@ -82,7 +87,7 @@
                 height: 100vh;
                 display: flex;
                 flex-direction: column;
-                overflow: hidden;
+                overflow: hidden; /* Tránh sinh ra thanh cuộn phụ ở nội dung */
             }
 
             /* BẢNG & THANH CUỘN (SCROLLBAR) */
@@ -142,40 +147,10 @@
                 text-decoration: none;
                 display: inline-block;
             }
-            .btn-edit {
-                background-color: #fbbc04;
-                color: white;
-            }
-            .btn-edit:hover {
-                background-color: #e3a903;
-                color: white;
-            }
-            .btn-delete {
-                background-color: #d93025;
-                color: white;
-            }
-            .btn-delete:hover {
-                background-color: #c02a20;
-                color: white;
-            }
-
-            /* Nút Toggle Status */
-            .btn-lock {
-                background-color: #6c757d;
-                color: white;
-            }
-            .btn-lock:hover {
-                background-color: #5a6268;
-                color: white;
-            }
-            .btn-unlock {
-                background-color: #198754;
-                color: white;
-            }
-            .btn-unlock:hover {
-                background-color: #146c43;
-                color: white;
-            }
+            .btn-edit { background-color: #fbbc04; color: white; }
+            .btn-edit:hover { background-color: #e3a903; color: white; }
+            .btn-delete { background-color: #d93025; color: white; }
+            .btn-delete:hover { background-color: #c02a20; color: white; }
 
             .custom-badge {
                 padding: 6px 12px;
@@ -184,34 +159,13 @@
                 font-weight: 600;
                 display: inline-block;
             }
-            .badge-admin {
-                background-color: #e8f0fe;
-                color: #1f6feb;
-            }
-            .badge-staff {
-                background-color: #e6f4ea;
-                color: #188038;
-            }
-            .badge-auditor {
-                background-color: #fff4e5;
-                color: #f9a825;
-            }
-            .badge-active {
-                background-color: #e6f4ea;
-                color: #188038;
-            }
-            .badge-locked {
-                background-color: #ffecec;
-                color: #d93025;
-            }
-            .badge-offline {
-                background-color: #f1f3f4;
-                color: #5f6368;
-            } /* Bổ sung màu cho OFFLINE */
+            .badge-admin { background-color: #e8f0fe; color: #1f6feb; }
+            .badge-staff { background-color: #e6f4ea; color: #188038; }
+            .badge-auditor { background-color: #fff4e5; color: #f9a825; }
+            .badge-active { background-color: #e6f4ea; color: #188038; }
+            .badge-locked { background-color: #ffecec; color: #d93025; }
 
-            .search-box {
-                min-width: 250px;
-            }
+            .search-box { min-width: 250px; }
         </style>
     </head>
     <body>
@@ -252,7 +206,6 @@
                             <select id="statusFilter" class="form-select w-auto shadow-sm border-0">
                                 <option value="ALL">All Status</option>
                                 <option value="ACTIVE">Active</option>
-                                <option value="OFFLINE">Offline</option>
                                 <option value="LOCKED">Locked</option>
                             </select>
                         </div>
@@ -280,6 +233,7 @@
                                 %>
                                 <tr class="user-row" data-role="<%= role%>" data-status="<%= status%>">
                                     <td class="ps-4 text-muted fw-bold">#<%=u.getUserId()%></td>
+
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 35px; height: 35px;">
@@ -288,6 +242,7 @@
                                             <strong class="username-text"><%=u.getUsername()%></strong>
                                         </div>
                                     </td>
+
                                     <td>
                                         <% if ("ADMIN".equals(role)) { %><span class="custom-badge badge-admin"><i class="fa-solid fa-crown me-1"></i>ADMIN</span>
                                         <% } else if ("AUDITOR".equals(role)) { %><span class="custom-badge badge-auditor"><i class="fa-solid fa-eye me-1"></i>AUDITOR</span>
@@ -295,26 +250,15 @@
                                     </td>
 
                                     <td>
-                                        <% if ("ACTIVE".equals(status)) { %>
-                                        <span class="custom-badge badge-active"><i class="fa-solid fa-check-circle me-1"></i>ACTIVE</span>
-                                        <% } else if ("OFFLINE".equals(status)) { %>
-                                        <span class="custom-badge badge-offline"><i class="fa-solid fa-circle-dot me-1"></i>OFFLINE</span>
-                                        <% } else { %>
-                                        <span class="custom-badge badge-locked"><i class="fa-solid fa-lock me-1"></i>LOCKED</span>
-                                        <% }%>
+                                        <% if ("ACTIVE".equals(status)) { %><span class="custom-badge badge-active"><i class="fa-solid fa-check-circle me-1"></i>ACTIVE</span>
+                                        <% } else { %><span class="custom-badge badge-locked"><i class="fa-solid fa-lock me-1"></i>LOCKED</span><% }%>
                                     </td>
 
                                     <td class="text-muted"><%=u.getCreatedAt()%></td>
 
                                     <td class="text-center pe-4">
-                                        <% if ("LOCKED".equals(status)) {%>
-                                        <a href="<%=request.getContextPath()%>/UserController/UpdateStatus?id=<%=u.getUserId()%>&status=ACTIVE" class="action-btn btn-unlock me-1" onclick="return confirm('Bạn có chắc muốn MỞ KHÓA tài khoản <%=u.getUsername()%>?');"><i class="fa-solid fa-unlock"></i> Activate</a>
-                                        <% } else {%>
-                                        <a href="<%=request.getContextPath()%>/UserController/UpdateStatus?id=<%=u.getUserId()%>&status=LOCKED" class="action-btn btn-lock me-1" onclick="return confirm('Bạn có chắc muốn KHÓA tài khoản <%=u.getUsername()%>?');"><i class="fa-solid fa-lock"></i> Lock</a>
-                                        <% }%>
-
                                         <a href="<%=request.getContextPath()%>/UserController/Edit?id=<%=u.getUserId()%>" class="action-btn btn-edit me-1"><i class="fa-solid fa-pen"></i> Edit</a>
-                                        <a href="<%=request.getContextPath()%>/UserController/Delete?id=<%=u.getUserId()%>" class="action-btn btn-delete" onclick="return confirm('⚠️ Cảnh báo: Bạn có chắc muốn XÓA VĨNH VIỄN tài khoản <%=u.getUsername()%>? Hành động này không thể hoàn tác!');"><i class="fa-solid fa-trash"></i> Delete</a>
+                                        <a href="<%=request.getContextPath()%>/UserController/Delete?id=<%=u.getUserId()%>" class="action-btn btn-delete" onclick="return confirm('⚠️ Warning: Are you sure you want to delete this account: <%=u.getUsername()%>? This action cannot be undone!');"><i class="fa-solid fa-trash"></i> Delete</a>
                                     </td>
                                 </tr>
                                 <% }
@@ -322,7 +266,8 @@
                                 <tr id="noDataRow">
                                     <td colspan="6" class="text-center text-muted py-5">
                                         <i class="fa-solid fa-users-slash mb-3" style="font-size: 40px; color: #dee2e6;"></i><br>
-                                        <h5>No Data</h5><p class="mb-0">No users have been created in the system yet.</p>
+                                        <h5>No Data</h5>
+                                        <p class="mb-0">No users have been created in the system yet.</p>
                                     </td>
                                 </tr>
                                 <% }%>
@@ -344,12 +289,13 @@
                     });
                 }
 
-                // Lọc và Tìm kiếm
+                // Elements cho Filter và Search
                 const roleFilter = document.getElementById("roleFilter");
                 const statusFilter = document.getElementById("statusFilter");
                 const searchInput = document.getElementById("userSearch");
                 const userRows = document.querySelectorAll(".user-row");
 
+                // Hàm thực thi bộ lọc 3 lớp (Role + Status + Search Username)
                 function filterTable() {
                     const selectedRole = roleFilter.value;
                     const selectedStatus = statusFilter.value;
@@ -360,10 +306,12 @@
                         const rowStatus = row.getAttribute("data-status");
                         const username = row.querySelector(".username-text").innerText.toLowerCase();
 
+                        // Kiểm tra điều kiện
                         const matchRole = (selectedRole === "ALL" || rowRole === selectedRole);
                         const matchStatus = (selectedStatus === "ALL" || rowStatus === selectedStatus);
                         const matchSearch = username.includes(searchTerm);
 
+                        // Chỉ hiện dòng khi thỏa mãn cả 3 điều kiện
                         if (matchRole && matchStatus && matchSearch) {
                             row.style.display = "";
                         } else {
@@ -372,6 +320,7 @@
                     });
                 }
 
+                // Lắng nghe sự kiện
                 if (roleFilter)
                     roleFilter.addEventListener("change", filterTable);
                 if (statusFilter)

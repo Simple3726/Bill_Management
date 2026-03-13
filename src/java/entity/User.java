@@ -12,7 +12,7 @@ public class User {
     private String username;
     private String password;
     private String role;      // ADMIN / STAFF / AUDITOR
-    private String status;    // ACTIVE / LOCKED/ OFFLINE
+    private String status;    // ONLINE / LOCKED/ OFFLINE
     private LocalDateTime createdAt;
 
     public User() {

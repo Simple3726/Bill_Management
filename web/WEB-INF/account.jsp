@@ -189,7 +189,7 @@
                                     <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
                                         <span class="text-secondary fw-semibold"><i class="fa-solid fa-shield-halved me-2"></i>Status</span>
                                         <% if ("ACTIVE".equals(user.getStatus())) { %>
-                                            <span class="custom-badge badge-active"><i class="fa-solid fa-check-circle me-1"></i>ACTIVE</span>
+                                            <span class="custom-badge badge-active"><i class="fa-solid fa-check-circle me-1"></i>ONLINE</span>
                                         <% } else { %>
                                             <span class="custom-badge badge-locked"><i class="fa-solid fa-lock me-1"></i>LOCKED</span>
                                         <% }%>

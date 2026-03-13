@@ -16,7 +16,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Invoice Management</title>
+        <title>Bill Management</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
         <style>
@@ -318,7 +318,7 @@
                             <div class="input-group">
                                 <input type="number" name="amount" id="totalAmountInput" class="form-control form-control-lg text-end" 
                                        step="0.01" value="0" readonly style="background-color: #fff3f3; color: #dc3545;">
-                                <span class="input-group-text">VND</span>
+                                <span class="input-group-text">VNĐ</span>
 
                                 <% if (isEdit && invoice.getAmount() != null) {%>
                                 <input type="hidden" name="oldAmount" value="<%= invoice.getAmount()%>">

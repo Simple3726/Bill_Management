@@ -251,7 +251,7 @@
                             <label for="statusFilter" class="fw-semibold text-secondary mb-0">Status:</label>
                             <select id="statusFilter" class="form-select w-auto shadow-sm border-0">
                                 <option value="ALL">All Status</option>
-                                <option value="ACTIVE">Active</option>
+                                <option value="ACTIVE">Online</option>
                                 <option value="OFFLINE">Offline</option>
                                 <option value="LOCKED">Locked</option>
                             </select>
@@ -296,7 +296,7 @@
 
                                     <td>
                                         <% if ("ACTIVE".equals(status)) { %>
-                                        <span class="custom-badge badge-active"><i class="fa-solid fa-check-circle me-1"></i>ACTIVE</span>
+                                        <span class="custom-badge badge-active"><i class="fa-solid fa-check-circle me-1"></i>ONLINE</span>
                                         <% } else if ("OFFLINE".equals(status)) { %>
                                         <span class="custom-badge badge-offline"><i class="fa-solid fa-circle-dot me-1"></i>OFFLINE</span>
                                         <% } else { %>

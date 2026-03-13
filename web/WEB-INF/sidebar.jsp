@@ -4,7 +4,53 @@
     // Lấy thông tin User hiện tại từ Session cho Sidebar
     User currentUserSidebar = (User) session.getAttribute("user");
     String roleSidebar = (currentUserSidebar != null) ? currentUserSidebar.getRole() : "";
+    
+    // LẤY ĐÚNG URL GỐC ĐỂ LÀM TÍNH NĂNG ACTIVE TAB
+    String currentURL = (String) request.getAttribute("javax.servlet.forward.request_uri");
+    if (currentURL == null) {
+        currentURL = request.getRequestURI();
+    }
+    
+    String queryString = (String) request.getAttribute("javax.servlet.forward.query_string");
+    if (queryString == null) {
+        queryString = request.getQueryString();
+    }
+    if (queryString == null) queryString = "";
+
+    // Hàm Helper xác định Tab nào đang được chọn
+    class MenuHelper {
+        public String getActive(String currentURL, String queryString, String keyword, String queryKeyword) {
+            if (currentURL == null) return "";
+            
+            boolean matchPath = currentURL.contains(keyword);
+            
+            if (queryKeyword != null && !queryKeyword.isEmpty()) {
+                return (matchPath && queryString.contains(queryKeyword)) ? "active" : "";
+            } else {
+                // Tránh nhầm lẫn giữa "Shift" và "Shift Management"
+                if (keyword.equals("/ShiftController") && queryString.contains("action=list")) return "";
+                // Tránh nhầm lẫn giữa "User Management" và "Profile"
+                if (keyword.equals("/UserController") && currentURL.contains("Profile")) return "";
+                
+                return matchPath ? "active" : "";
+            }
+        }
+    }
+    MenuHelper menu = new MenuHelper();
 %>
+
+<style>
+    /* CLASS ACTIVE GIỮ MÀU XANH CỐ ĐỊNH KHI ĐANG Ở TRANG ĐÓ */
+    .sidebar-link.active {
+        background-color: #0d6efd !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.4);
+    }
+    .sidebar-link.active i {
+        color: #ffffff !important;
+    }
+</style>
 
 <%
     String actionAlert = (String) session.getAttribute("actionAlert");
@@ -25,8 +71,8 @@
                 actionAlertMsg.style.opacity = "0";
                 setTimeout(function () {
                     actionAlertMsg.remove();
-                }, 600); // Đợi 0.6s cho hiệu ứng mờ kết thúc rồi xóa hẳn khỏi DOM
-            }, 2000); // 3000ms = 3 giây
+                }, 600); 
+            }, 2000); 
         }
     });
 </script>
@@ -34,6 +80,7 @@
         session.removeAttribute("actionAlert");
     }
 %>
+
 <div class="sidebar d-flex flex-column p-3 shadow" id="sidebar">
     <div class="text-center mb-4 mt-2 text-nowrap">
         <h4 class="fw-bold text-white"><i class="fa-solid fa-shield-halved text-primary me-2"></i>Bill Manager</h4>
@@ -43,7 +90,7 @@
     <div class="text-center mb-4 text-nowrap">
 
         <a href="<%=request.getContextPath()%>/UserController/Profile" style="text-decoration:none;color:inherit;">
-            <div class="user-avatar shadow">
+            <div class="user-avatar shadow" style="<%= menu.getActive(currentURL, queryString, "/UserController/Profile", null).equals("active") ? "border: 3px solid #0d6efd; box-shadow: 0 0 10px rgba(13,110,253,0.5) !important;" : "" %>">
                 <i class="fa-solid fa-user-tie"></i>
             </div>
         </a>
@@ -62,37 +109,37 @@
 
     <div class="flex-grow-1 overflow-hidden">
         <% if ("ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar)) {%>
-        <a href="<%=request.getContextPath()%>/DashBoardController" class="sidebar-link mb-2">
+        <a href="<%=request.getContextPath()%>/DashBoardController" class="sidebar-link mb-2 <%= menu.getActive(currentURL, queryString, "/DashBoardController", null) %>">
             <i class="fa-solid fa-chart-pie me-2"></i> Dashboard
         </a>
         <% } %>
 
         <% if ("STAFF".equals(roleSidebar) || "ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar)) {%>
-        <a href="<%=request.getContextPath()%>/ShiftController" class="sidebar-link mb-2">
+        <a href="<%=request.getContextPath()%>/ShiftController" class="sidebar-link mb-2 <%= menu.getActive(currentURL, queryString, "/ShiftController", null) %>">
             <i class="fa-solid fa-clock-rotate-left me-2"></i> Shift
         </a>
-        <a href="<%=request.getContextPath()%>/InvoiceController/List" class="sidebar-link mb-2">
+        <a href="<%=request.getContextPath()%>/InvoiceController/List" class="sidebar-link mb-2 <%= menu.getActive(currentURL, queryString, "/InvoiceController", null) %>">
             <i class="fa-solid fa-file-invoice-dollar me-2"></i> Invoice Management
         </a>
         <% } %>
 
         <% if ("AUDITOR".equals(roleSidebar) || "ADMIN".equals(roleSidebar)) {%>
-        <a href="<%=request.getContextPath()%>/AlertController" class="sidebar-link mb-2">
+        <a href="<%=request.getContextPath()%>/AlertController" class="sidebar-link mb-2 <%= menu.getActive(currentURL, queryString, "/AlertController", null) %>">
             <i class="fa-solid fa-bell me-2"></i> Alert Management
         </a>
         <% } %>
 
         <% if ("ADMIN".equals(roleSidebar) || "AUDITOR".equals(roleSidebar) || "STAFF".equals(roleSidebar)) {%>
-        <a href="<%=request.getContextPath()%>/ProductController/List" class="sidebar-link mb-2">
+        <a href="<%=request.getContextPath()%>/ProductController/List" class="sidebar-link mb-2 <%= menu.getActive(currentURL, queryString, "/ProductController", null) %>">
             <i class="fa-solid fa-box-open me-2"></i> Product List
         </a>
         <% } %>
 
         <% if ("ADMIN".equals(roleSidebar)) {%>
-        <a href="<%=request.getContextPath()%>/ShiftController?action=list" class="sidebar-link mb-2">
+        <a href="<%=request.getContextPath()%>/ShiftController?action=list" class="sidebar-link mb-2 <%= menu.getActive(currentURL, queryString, "/ShiftController", "action=list") %>">
             <i class="fa-solid fa-list-check me-2"></i> Shift Management
         </a>
-        <a href="<%=request.getContextPath()%>/UserController/List" class="sidebar-link mb-2">
+        <a href="<%=request.getContextPath()%>/UserController/List" class="sidebar-link mb-2 <%= menu.getActive(currentURL, queryString, "/UserController", null) %>">
             <i class="fa-solid fa-users-gear me-2"></i> User Management
         </a>
         <% }%>

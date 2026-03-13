@@ -21,6 +21,13 @@ import repository.UserDAO;
 @WebServlet(name = "LoginController", urlPatterns = {"/LoginController"})
 public class LoginController extends HttpServlet {
 
+    private UserDAO dao;
+
+    @Override
+    public void init() throws ServletException {
+        dao = new UserDAO();
+    }
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -49,28 +56,33 @@ public class LoginController extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
             return;
         }
-        UserDAO dao = new UserDAO();
         User user = dao.login(userID, pass);
         if (user != null) {
-            HttpSession session = request.getSession();
-            if(user.getStatus().equals("LOCKED")){
+
+            if ("LOCKED".equals(user.getStatus())) {
                 request.setAttribute("MSG", "This account had been Locked");
                 request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
                 return;
             }
+            HttpSession session = request.getSession();
             session.setAttribute("user", user);
-            switch (user.getRole()){
+            session.setAttribute("userId", user.getUserId());
+            // khi login sẽ set status trạng thái ở đây "Online"
+            dao.updateStatus(user.getUserId(), "ONLINE");
+            switch (user.getRole()) {
                 case "STAFF":
                     response.sendRedirect(request.getContextPath() + "/InvoiceController/List");
                     break;
+
                 case "ADMIN":
                     request.getRequestDispatcher("DashBoardController").forward(request, response);
                     break;
+
                 case "AUDITOR":
                     request.getRequestDispatcher("AlertController").forward(request, response);
                     break;
             }
-            
+
         } else {
             request.setAttribute("MSG", "Incorrect UserID or Password");
             request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
@@ -95,7 +107,7 @@ public class LoginController extends HttpServlet {
             // Ép xuất lỗi ra màn hình trình duyệt
             response.setContentType("text/html;charset=UTF-8");
             response.getWriter().print("<h3 style='color:red;'>Lỗi Database tại LoginController: " + ex.getMessage() + "</h3>");
-            ex.printStackTrace(); 
+            ex.printStackTrace();
         }
     }
 

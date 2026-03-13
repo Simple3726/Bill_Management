@@ -115,7 +115,7 @@ public class UserService {
     // ACTIVATE USER
     // ================================
     public boolean activateUser(long userId) {
-        return userDAO.updateStatus(userId, "ACTIVE");
+        return userDAO.updateStatus(userId, "ONLINE");
     }
 
     // ================================

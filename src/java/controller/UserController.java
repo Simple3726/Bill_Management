@@ -84,7 +84,9 @@ public class UserController extends HttpServlet {
             case "/ChangePassword":
                 changePassword(request, response);
                 break;
-
+            case "/UpdateStatus":
+                updateUserStatus(request, response);
+                break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -174,6 +176,35 @@ public class UserController extends HttpServlet {
                 .forward(request, response);
     }
 
+    private void updateUserStatus(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, Exception {
+
+        try {
+            long id = Long.parseLong(request.getParameter("id"));
+            String status = request.getParameter("status");
+
+            // BƯỚC QUAN TRỌNG: Lấy User cũ từ Database lên trước
+            User user = service.getUserById(id); // Giả sử bạn có hàm lấy User theo ID
+
+            if (user != null) {
+                // Chỉ ghi đè đúng cái Status, giữ nguyên Username, Role, CreatedAt...
+                user.setStatus(status);
+
+                // Lưu lại vào DB
+                service.updateUser(user);
+                // Lưu ý: Nếu lớp Service/DAO của bạn có hàm viết riêng như service.updateStatus(id, status) thì gọi trực tiếp càng tốt, không cần lấy User lên.
+            }
+
+            // Báo thành công và chuyển hướng
+            request.getSession().setAttribute("message", "User status updated successfully!");
+            response.sendRedirect(request.getContextPath() + "/UserController/List");
+
+        } catch (Exception e) {
+            request.getSession().setAttribute("error", "Failed to update user status.");
+            response.sendRedirect(request.getContextPath() + "/UserController/List");
+        }
+    }
+
     // ======================================
     // UPDATE USER
     // ======================================
@@ -185,13 +216,22 @@ public class UserController extends HttpServlet {
         String role = request.getParameter("role");
         String status = request.getParameter("status");
 
-        User user = new User();
-        user.setUserId(id);
-        user.setUsername(username);
-        user.setRole(role);
-        user.setStatus(status);
+        // Lấy User hiện tại lên để giữ lại các trường không sửa (ví dụ: Password, CreatedAt)
+        User user = service.getUserById(id);
 
-        service.updateUser(user);
+        if (user != null) {
+            if (username != null && !username.trim().isEmpty()) {
+                user.setUsername(username);
+            }
+            if (role != null) {
+                user.setRole(role);
+            }
+            if (status != null) {
+                user.setStatus(status);
+            }
+
+            service.updateUser(user);
+        }
 
         response.sendRedirect(request.getContextPath() + "/UserController/List");
     }

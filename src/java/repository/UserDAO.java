@@ -151,7 +151,28 @@ public class UserDAO {
 
         return false;
     }
+    public boolean updateInfor(User user) {
+    // Thêm role và status vào câu lệnh UPDATE
+    String sql = "UPDATE Users SET username=?, password=?, role=?, status=? WHERE user_id=?";
 
+    try (Connection conn = DBConnection.getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        // Set giá trị theo đúng thứ tự dấu chấm hỏi (?) trong câu SQL
+        ps.setString(1, user.getUsername());
+        ps.setString(2, user.getPassword());
+        ps.setString(3, user.getRole());    // Thêm update Role
+        ps.setString(4, user.getStatus());  // Thêm update Status
+        ps.setLong(5, user.getUserId());    // Điều kiện WHERE
+
+        return ps.executeUpdate() > 0;
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return false;
+}
     // ===============================
     // UPDATE PASSWORD
     // ===============================

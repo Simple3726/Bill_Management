@@ -164,7 +164,7 @@
             .badge-auditor { background-color: #fff4e5; color: #f9a825; }
             .badge-active { background-color: #e6f4ea; color: #188038; }
             .badge-locked { background-color: #ffecec; color: #d93025; }
-
+            .badge-offline {background-color: #f1f3f4;color: #5f6368; }
             .search-box { min-width: 250px; }
         </style>
     </head>
@@ -205,7 +205,7 @@
                             <label for="statusFilter" class="fw-semibold text-secondary mb-0">Status:</label>
                             <select id="statusFilter" class="form-select w-auto shadow-sm border-0">
                                 <option value="ALL">All Status</option>
-                                <option value="ACTIVE">Active</option>
+                                <option value="ONLINE">Online</option>
                                 <option value="LOCKED">Locked</option>
                             </select>
                         </div>
@@ -250,8 +250,21 @@
                                     </td>
 
                                     <td>
-                                        <% if ("ACTIVE".equals(status)) { %><span class="custom-badge badge-active"><i class="fa-solid fa-check-circle me-1"></i>ACTIVE</span>
-                                        <% } else { %><span class="custom-badge badge-locked"><i class="fa-solid fa-lock me-1"></i>LOCKED</span><% }%>
+                                        <% if ("ONLINE".equals(status)) { %>
+                                            <span class="custom-badge badge-active">
+                                                <i class="fa-solid fa-check-circle me-1"></i>Online
+                                            </span>
+
+                                        <% } else if ("OFFLINE".equals(status)) { %>
+                                            <span class="custom-badge badge-offline">
+                                                <i class="fa-solid fa-circle me-1"></i>Offline
+                                            </span>
+
+                                        <% } else { %>
+                                            <span class="custom-badge badge-locked">
+                                                <i class="fa-solid fa-lock me-1"></i>Locked
+                                            </span>
+                                        <% } %>
                                     </td>
 
                                     <td class="text-muted"><%=u.getCreatedAt()%></td>

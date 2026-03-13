@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import repository.UserDAO;
 import service.ShiftService;
 
 /**
@@ -20,10 +21,11 @@ import service.ShiftService;
 public class LogOutController extends HttpServlet {
 
     private ShiftService shiftService;
-
+    private UserDAO dao;
     @Override
     public void init() throws ServletException {
         shiftService = new ShiftService();
+        dao = new UserDAO();
     }
 
     /**
@@ -57,6 +59,8 @@ public class LogOutController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/ShiftController");
             return;
         }else {
+            // khi logout ra thì sẽ set status là "OFFLINE" ở đây
+            dao.updateStatus(currentUserId, "OFFLINE");
             session.invalidate();
             request.setAttribute("MSG_LOGOUT", "Logout successfully");
             response.sendRedirect(request.getContextPath() + "/LoginController");

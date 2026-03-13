@@ -193,7 +193,7 @@ public class UserDAO {
     }
 
     // ===============================
-    // UPDATE STATUS (LOCK / ACTIVE)
+    // UPDATE STATUS (ONLINE/ OFFLINE/ LOCKED)
     // ===============================
     public boolean updateStatus(long userId, String status) {
         String sql = "UPDATE Users SET status=? WHERE user_id=?";
@@ -271,7 +271,7 @@ public class UserDAO {
     public int countActiveStaff() {
 
         String sql = "SELECT COUNT(*) FROM Users "
-                + "WHERE role = 'STAFF' AND status = 'ACTIVE'";
+                + "WHERE role = 'STAFF' AND status = 'ONLINE'";
 
         try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 

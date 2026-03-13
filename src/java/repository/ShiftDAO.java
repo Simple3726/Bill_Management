@@ -10,7 +10,6 @@ import java.util.List;
 public class ShiftDAO {
 
     public Long insert(Shift shift) {
-        // ĐÃ SỬA: Thêm cột shift_date vào câu lệnh SQL
         String sql = "INSERT INTO Shifts(user_id, shift_date, start_time, end_time, status) VALUES (?, ?, ?, ?, ?)";
         Long generatedId = null;
         try (Connection conn = DBConnection.getConnection();
@@ -18,7 +17,6 @@ public class ShiftDAO {
             
             ps.setLong(1, shift.getUserId());
             
-            // ĐÃ SỬA: Tự động trích xuất ngày từ start_time để lưu vào shift_date
             ps.setDate(2, java.sql.Date.valueOf(shift.getStartTime().toLocalDate())); 
             
             ps.setTimestamp(3, Timestamp.valueOf(shift.getStartTime()));

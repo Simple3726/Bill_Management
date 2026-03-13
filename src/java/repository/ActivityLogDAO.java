@@ -9,14 +9,12 @@ import java.util.List;
 public class ActivityLogDAO {
 
     public void insert(ActivityLog log) {
-        // ĐÃ SỬA: Đổi tên bảng thành Activity_Logs và cột thành action_type
         String sql = "INSERT INTO Activity_Logs(user_id, shift_id, action_type, entity_type, entity_id, created_at) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, log.getUserId());
             
-            // Xử lý an toàn nếu shift_id bị null (Dành cho Admin)
             if (log.getShiftId() != null) ps.setLong(2, log.getShiftId());
             else ps.setNull(2, Types.BIGINT);
 
@@ -35,7 +33,6 @@ public class ActivityLogDAO {
 
     public List<ActivityLog> findByShift(Long shiftId) {
         List<ActivityLog> list = new ArrayList<>();
-        // ĐÃ SỬA: Đổi tên bảng thành Activity_Logs
         String sql = "SELECT * FROM Activity_Logs WHERE shift_id = ? ORDER BY created_at DESC";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -56,7 +53,6 @@ public class ActivityLogDAO {
         log.setUserId(rs.getLong("user_id"));
         log.setShiftId(rs.getLong("shift_id"));
         
-        // ĐÃ SỬA: Lấy từ cột action_type thay vì action
         log.setActionType(rs.getString("action_type")); 
         
         log.setEntityType(rs.getString("entity_type"));

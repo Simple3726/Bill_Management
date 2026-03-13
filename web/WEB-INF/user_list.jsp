@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <style>
             body, html {
+
                 height: 100vh; /* Khóa cuộn toàn trang */
                 margin: 0;
                 font-family: 'Inter', sans-serif;
@@ -58,10 +59,12 @@
                 margin: 0 auto 10px auto;
                 color: white;
             }
+
             .glow-online {
                 color: #198754;
                 text-shadow: 0 0 5px #198754, 0 0 10px #198754;
             }
+
             #sidebarToggle {
                 background: none;
                 border: none;
@@ -74,6 +77,7 @@
             #sidebarToggle:hover {
                 color: #0d6efd;
             }
+
             /* --- END SIDEBAR STYLES --- */
 
             /* Main Content Flexbox Layout */
@@ -143,22 +147,10 @@
                 text-decoration: none;
                 display: inline-block;
             }
-            .btn-edit {
-                background-color: #fbbc04;
-                color: white;
-            }
-            .btn-edit:hover {
-                background-color: #e3a903;
-                color: white;
-            }
-            .btn-delete {
-                background-color: #d93025;
-                color: white;
-            }
-            .btn-delete:hover {
-                background-color: #c02a20;
-                color: white;
-            }
+            .btn-edit { background-color: #fbbc04; color: white; }
+            .btn-edit:hover { background-color: #e3a903; color: white; }
+            .btn-delete { background-color: #d93025; color: white; }
+            .btn-delete:hover { background-color: #c02a20; color: white; }
 
             .custom-badge {
                 padding: 6px 12px;
@@ -167,30 +159,13 @@
                 font-weight: 600;
                 display: inline-block;
             }
-            .badge-admin {
-                background-color: #e8f0fe;
-                color: #1f6feb;
-            }
-            .badge-staff {
-                background-color: #e6f4ea;
-                color: #188038;
-            }
-            .badge-auditor {
-                background-color: #fff4e5;
-                color: #f9a825;
-            }
-            .badge-active {
-                background-color: #e6f4ea;
-                color: #188038;
-            }
-            .badge-locked {
-                background-color: #ffecec;
-                color: #d93025;
-            }
+            .badge-admin { background-color: #e8f0fe; color: #1f6feb; }
+            .badge-staff { background-color: #e6f4ea; color: #188038; }
+            .badge-auditor { background-color: #fff4e5; color: #f9a825; }
+            .badge-active { background-color: #e6f4ea; color: #188038; }
+            .badge-locked { background-color: #ffecec; color: #d93025; }
 
-            .search-box {
-                min-width: 250px;
-            }
+            .search-box { min-width: 250px; }
         </style>
     </head>
     <body>

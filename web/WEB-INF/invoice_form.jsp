@@ -1,24 +1,25 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="entity.Invoice" %>
+<%@ page import="entity.Product" %>
+<%@ page import="java.util.List" %>
 <%
-    // Lấy đối tượng invoice từ request
+    // Get invoice object from request
     Invoice invoice = (Invoice) request.getAttribute("invoice");
 
-    // Kiểm tra xem là form tạo mới hay form sửa
+    // Check if this is an edit form or create form
     boolean isEdit = (invoice != null && invoice.getInvoiceId() != null);
 
-    // Kiểm tra xem hóa đơn đã có ngày tạo chưa (để hiển thị phần người tạo/ngày tạo)
+    // Check if invoice has a creation date
     boolean hasCreatedAt = (isEdit && invoice.getCreatedAt() != null);
 %>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Quản lý Hóa đơn</title>
+        <title>Invoice Management</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
         <style>
-            /* [Giữ nguyên toàn bộ CSS cũ của bạn ở đây] */
             * {
                 box-sizing: border-box;
                 margin: 0;
@@ -35,7 +36,7 @@
                 max-width: 900px;
                 margin: 3rem auto;
                 padding: 0 15px;
-            } /* Mở rộng max-width một chút cho bảng đẹp hơn */
+            } 
             .invoice-card {
                 background-color: #fff;
                 border-radius: 15px;
@@ -71,22 +72,11 @@
                 margin-right: -10px;
                 row-gap: 1rem;
             }
-            .col-4 {
-                width: 33.33%;
-                padding: 0 10px;
-            }
-            .col-6 {
-                width: 50%;
-                padding: 0 10px;
-            }
-            .col-8 {
-                width: 66.66%;
-                padding: 0 10px;
-            }
-            .col-12 {
-                width: 100%;
-                padding: 0 10px;
-            }
+            .col-4 { width: 33.33%; padding: 0 10px; }
+            .col-6 { width: 50%; padding: 0 10px; }
+            .col-8 { width: 66.66%; padding: 0 10px; }
+            .col-12 { width: 100%; padding: 0 10px; }
+            
             .form-label {
                 display: inline-block;
                 margin-bottom: 0.5rem;
@@ -116,9 +106,7 @@
                 font-weight: bold;
                 color: #0d6efd;
             }
-            .text-end {
-                text-align: right;
-            }
+            .text-end { text-align: right; }
             .input-group {
                 display: flex;
                 align-items: stretch;
@@ -150,9 +138,7 @@
                 font-size: 0.875em;
                 color: #6c757d;
             }
-            .mt-4 {
-                margin-top: 1.5rem;
-            }
+            .mt-4 { margin-top: 1.5rem; }
             hr {
                 margin: 2rem 0;
                 color: inherit;
@@ -193,9 +179,7 @@
                 color: white;
                 padding: 0.6rem 1.5rem;
             }
-            .btn-save:hover {
-                background-color: #0b5ed7;
-            }
+            .btn-save:hover { background-color: #0b5ed7; }
             .btn-add {
                 background-color: #198754;
                 color: white;
@@ -203,9 +187,7 @@
                 width: 100%;
                 height: 100%;
             }
-            .btn-add:hover {
-                background-color: #157347;
-            }
+            .btn-add:hover { background-color: #157347; }
             .btn-delete {
                 color: #dc3545;
                 background: none;
@@ -213,11 +195,9 @@
                 cursor: pointer;
                 font-size: 1.2rem;
             }
-            .btn-delete:hover {
-                color: #a52834;
-            }
+            .btn-delete:hover { color: #a52834; }
 
-            /* Style cho bảng giỏ hàng */
+            /* Style for cart section */
             .cart-section {
                 background-color: #f8f9fa;
                 border: 1px solid #dee2e6;
@@ -252,7 +232,10 @@
             <div class="invoice-card">
 
                 <div class="card-header-flex">
-                    <h2 class="header-title"><i class="fa-solid fa-file-invoice-dollar"></i>Tạo Hóa Đơn Mới</h2>
+                    <h2 class="header-title">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> 
+                        <%= isEdit ? "Update Invoice" : "Create New Invoice" %>
+                    </h2>
                     <span class="badge">
                         ID: <%= (isEdit && invoice.getInvoiceId() != null) ? invoice.getInvoiceId() : "New"%>
                     </span>
@@ -268,33 +251,45 @@
 
                     <div class="row">
                         <div class="col-6">
-                            <label class="form-label">Mã hóa đơn</label>
+                            <label class="form-label">Invoice Code</label>
                             <input type="text" name="invoiceCode" class="form-control" 
-                                   value="<%= invoice.getInvoiceCode()%>" readonly>
-                            <input type="hidden" name="status" value="<%=invoice.getStatus()%>">
+                                   value="<%= (invoice != null && invoice.getInvoiceCode() != null) ? invoice.getInvoiceCode() : ""%>" readonly>
+                            <input type="hidden" name="status" value="<%= (invoice != null && invoice.getStatus() != null) ? invoice.getStatus() : ""%>">
                         </div>
                     </div>
 
                     <div class="cart-section">
-                        <h4 style="margin-bottom: 1rem; color: #495057;"><i class="fa-solid fa-cart-plus"></i> Chi tiết mặt hàng</h4>
+                        <h4 style="margin-bottom: 1rem; color: #495057;"><i class="fa-solid fa-cart-plus"></i> Item Details</h4>
 
                         <div class="row">
                             <div class="col-6">
-                                <label class="form-label">Chọn sản phẩm</label>
+                                <label class="form-label">Select Product</label>
                                 <select id="productSelect" class="form-control">
-                                    <option value="" disabled selected>-- Chọn một sản phẩm --</option>
-                                    <option value="1" data-name="Cà phê đen đá" data-price="25000">Cà phê đen đá - 25,000đ</option>
-                                    <option value="2" data-name="Bạc xỉu" data-price="35000">Bạc xỉu - 35,000đ</option>
-                                    <option value="3" data-name="Trà đào cam sả" data-price="45000">Trà đào cam sả - 45,000đ</option>
+                                    <option value="" disabled selected>-- Select a product --</option>
+                                    <%
+                                        // Load dynamic products from the request attribute
+                                        List<Product> pList = (List<Product>) request.getAttribute("productList");
+                                        if (pList != null && !pList.isEmpty()) {
+                                            for (Product p : pList) {
+                                    %>
+                                                <option value="<%= p.getProductId() %>" 
+                                                        data-name="<%= p.getProductName() %>" 
+                                                        data-price="<%= p.getPrice() %>">
+                                                    <%= p.getProductName() %> - <%= String.format("%,.0f", p.getPrice()) %> VND
+                                                </option>
+                                    <%
+                                            }
+                                        }
+                                    %>
                                 </select>
                             </div>
                             <div class="col-4">
-                                <label class="form-label">Số lượng</label>
+                                <label class="form-label">Quantity</label>
                                 <input type="number" id="quantityInput" class="form-control" value="1" min="1">
                             </div>
                             <div class="col-12 mt-4" style="width: 100%; padding-top: 1.8rem;">
                                 <button type="button" class="btn btn-add" onclick="addToCart()">
-                                    <i class="fa-solid fa-plus"></i> Thêm vào hóa đơn
+                                    <i class="fa-solid fa-plus"></i> Add to Invoice
                                 </button>
                             </div>
                         </div>
@@ -302,23 +297,24 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Tên sản phẩm</th>
-                                    <th style="text-align: center;">Số lượng</th>
-                                    <th style="text-align: right;">Đơn giá</th>
-                                    <th style="text-align: right;">Thành tiền</th>
-                                    <th style="text-align: center;">Xóa</th>
+                                    <th>Product Name</th>
+                                    <th style="text-align: center;">Quantity</th>
+                                    <th style="text-align: right;">Unit Price</th>
+                                    <th style="text-align: right;">Total Price</th>
+                                    <th style="text-align: center;">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="cartTableBody">
                                 <tr id="emptyRow">
-                                    <td colspan="5" style="text-align: center; color: #6c757d; font-style: italic;">Chưa có mặt hàng nào trong hóa đơn.</td>
+                                    <td colspan="5" style="text-align: center; color: #6c757d; font-style: italic;">No items in the invoice yet.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+                    
                     <div class="row mt-4">
                         <div class="col-12">
-                            <label class="form-label" style="font-size: 1.2rem; color: #dc3545;">TỔNG TIỀN THANH TOÁN</label>
+                            <label class="form-label" style="font-size: 1.2rem; color: #dc3545;">TOTAL AMOUNT</label>
                             <div class="input-group">
                                 <input type="number" name="amount" id="totalAmountInput" class="form-control form-control-lg text-end" 
                                        step="0.01" value="0" readonly style="background-color: #fff3f3; color: #dc3545;">
@@ -332,8 +328,8 @@
 
                         <% if (hasCreatedAt) {%>
                         <div class="col-6 mt-4 meta-text">
-                            <small>Create By: <strong><%= invoice.getCreatedBy()%></strong></small>
-                            <small>Create At: <%= invoice.getCreatedAt()%></small>
+                            <small>Created By: <strong><%= invoice.getCreatedBy()%></strong></small>
+                            <small>Created At: <%= invoice.getCreatedAt()%></small>
                         </div>
                         <div class="col-6 mt-4 meta-text text-end">
                             <small>Last Update: <%= (invoice.getUpdatedAt() != null) ? invoice.getUpdatedAt() : ""%></small>
@@ -344,9 +340,9 @@
                     <hr>
 
                     <div class="actions">
-                        <a href="<%=request.getContextPath()%>/InvoiceController/List" class="btn btn-light">Hủy bỏ</a>
+                        <a href="<%=request.getContextPath()%>/InvoiceController/List" class="btn btn-light">Cancel</a>
                         <button type="submit" class="btn btn-save" onclick="return validateBeforeSubmit()">
-                            <i class="fa-solid fa-save me-2"></i> Lưu Hóa Đơn
+                            <i class="fa-solid fa-save me-2"></i> Save Invoice
                         </button>
                     </div>
 
@@ -355,21 +351,21 @@
         </div>
 
         <script>
-            // Mảng lưu trữ các mặt hàng đã chọn
+            // Array to store selected items
             let cart = [];
 
-            // Hàm định dạng tiền tệ (Ví dụ: 35000 -> 35,000)
+            // Function to format currency (e.g., 35000 -> 35,000)
             function formatCurrency(number) {
-                return new Intl.NumberFormat('vi-VN').format(number);
+                return new Intl.NumberFormat('en-US').format(number);
             }
 
-            // Hành động: Bấm nút "Thêm vào hóa đơn"
+            // Action: Click "Add to Invoice"
             function addToCart() {
                 const selectBox = document.getElementById('productSelect');
                 const quantityInput = document.getElementById('quantityInput');
 
                 if (selectBox.selectedIndex === 0 || selectBox.value === "") {
-                    alert("Vui lòng chọn một mặt hàng!");
+                    alert("Please select a product!");
                     return;
                 }
 
@@ -380,16 +376,16 @@
                 const quantity = parseInt(quantityInput.value);
 
                 if (quantity <= 0) {
-                    alert("Số lượng phải lớn hơn 0!");
+                    alert("Quantity must be greater than 0!");
                     return;
                 }
 
-                // Kiểm tra xem sản phẩm đã có trong giỏ chưa
+                // Check if the product is already in the cart
                 let existingItem = cart.find(item => item.productId === productId);
                 if (existingItem) {
-                    existingItem.quantity += quantity; // Nếu có rồi thì cộng dồn số lượng
+                    existingItem.quantity += quantity; // Accumulate quantity if already exists
                 } else {
-                    // Nếu chưa có thì thêm mới vào mảng
+                    // Add new item to the array
                     cart.push({
                         productId: productId,
                         productName: productName,
@@ -398,44 +394,45 @@
                     });
                 }
 
-                // Reset ô số lượng về 1 sau khi thêm
+                // Reset quantity field to 1 after adding
                 quantityInput.value = 1;
                 selectBox.selectedIndex = 0;
 
-                // Cập nhật lại giao diện
+                // Update UI
                 updateCartUI();
             }
 
-            // Hành động: Xóa 1 dòng trong giỏ
+            // Action: Remove 1 row from the cart
             function removeCartItem(index) {
                 cart.splice(index, 1);
                 updateCartUI();
             }
 
-            // Cập nhật giao diện (Vẽ lại bảng, tính tiền, đẩy JSON vào thẻ input ẩn)
+            // Update UI (Redraw table, calculate total, push JSON to hidden input)
             function updateCartUI() {
                 const tbody = document.getElementById('cartTableBody');
                 const totalAmountInput = document.getElementById('totalAmountInput');
                 const cartDataInput = document.getElementById('cartDataInput');
 
-                tbody.innerHTML = ''; // Xóa sạch bảng cũ
+                tbody.innerHTML = ''; // Clear old table content
                 let totalAmount = 0;
 
                 if (cart.length === 0) {
-                    tbody.innerHTML = '<tr id="emptyRow"><td colspan="5" style="text-align: center; color: #6c757d; font-style: italic;">Chưa có mặt hàng nào trong hóa đơn.</td></tr>';
+                    tbody.innerHTML = '<tr id="emptyRow"><td colspan="5" style="text-align: center; color: #6c757d; font-style: italic;">No items in the invoice yet.</td></tr>';
                 } else {
                     cart.forEach((item, index) => {
                         const itemTotal = item.price * item.quantity;
                         totalAmount += itemTotal;
 
                         const tr = document.createElement('tr');
+                        // IMPORTANT: Escaping the $ sign for JS template literals to prevent JSP EL conflicts
                         tr.innerHTML = `
                             <td><strong>\${item.productName}</strong></td>
                             <td style="text-align: center;">\${item.quantity}</td>
-                            <td style="text-align: right;">\${formatCurrency(item.price)}đ</td>
-                            <td style="text-align: right; color: #0d6efd; font-weight: bold;">\${formatCurrency(itemTotal)}đ</td>
+                            <td style="text-align: right;">\${formatCurrency(item.price)} VND</td>
+                            <td style="text-align: right; color: #0d6efd; font-weight: bold;">\${formatCurrency(itemTotal)} VND</td>
                             <td style="text-align: center;">
-                                <button type="button" class="btn-delete" onclick="removeCartItem(\${index})" title="Xóa">
+                                <button type="button" class="btn-delete" onclick="removeCartItem(\${index})" title="Remove">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </td>
@@ -444,24 +441,24 @@
                     });
                 }
 
-                // Ghi tổng tiền vào ô Total
+                // Write total amount to the Total input
                 totalAmountInput.value = totalAmount;
 
-                // **QUAN TRỌNG NHẤT**: Biến mảng JS thành chuỗi JSON và nhét vào thẻ <input type="hidden">
+                // **MOST IMPORTANT**: Convert JS array to JSON string and insert into the hidden input
                 cartDataInput.value = JSON.stringify(cart);
             }
 
-            // Chặn submit nếu giỏ hàng trống
+            // Block submit if the cart is empty
             function validateBeforeSubmit() {
                 if (cart.length === 0) {
-                    alert("Không thể lưu hóa đơn! Vui lòng thêm ít nhất 1 mặt hàng vào hóa đơn.");
+                    alert("Cannot save the invoice! Please add at least 1 item to the invoice.");
                     return false;
                 }
                 return true;
             }
 
-            // (Dành cho chức năng Edit) Nếu đang Edit, bạn có thể truyền chuỗi JSON từ Java vào mảng `cart` tại đây
-            // Ví dụ: cart = <%= (isEdit) ? "gọi_hàm_Java_trả_về_chuỗi_json" : "[]"%>;
+            // (For Edit Function) If editing, you can pass JSON string from Java into the `cart` array here
+            // Example: cart = <%= (isEdit) ? "call_java_function_returning_json_string" : "[]"%>;
             // updateCartUI();
         </script>
 

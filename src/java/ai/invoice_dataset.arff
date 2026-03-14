@@ -1,0 +1,20 @@
+@relation invoice_fraud_detection
+
+@attribute amount numeric
+@attribute invoice_hour numeric
+@attribute status {PENDING,APPROVED,REJECTED}
+@attribute is_weekend {yes,no}
+@attribute duplicated_invoice {yes,no}
+@attribute fraud {yes,no}
+
+@data
+500000,10,APPROVED,no,no,no
+2000000,1,PENDING,yes,no,yes
+150000,14,APPROVED,no,no,no
+3500000,3,PENDING,yes,yes,yes
+600000,11,APPROVED,no,no,no
+4500000,2,PENDING,yes,yes,yes
+800000,15,APPROVED,no,no,no
+2500000,4,PENDING,yes,no,yes
+300000,13,APPROVED,no,no,no
+4000000,1,PENDING,yes,yes,yes

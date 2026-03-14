@@ -169,7 +169,18 @@
                     <button id="sidebarToggle" title="Đóng/Mở thanh công cụ"><i class="fa-solid fa-bars"></i></button>
                     <h2 class="text-danger mb-0 fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>Alert List</h2>
                 </div>
+                <!-- ================AI check======================================= -->
+                <button id="checkFraudBtn" class="btn btn-danger shadow-sm">
+                    <i class="fa-solid fa-shield-halved me-1"></i>
+                    Hard Check Fraud by ML model (J48)
+                </button>
 
+                <span id="fraudLoading" style="display:none;">
+                    <i class="fa-solid fa-spinner fa-spin text-danger"></i>
+                    Checking AI...
+                </span>
+                <span id="fraudResult" class="fw-bold ms-2"></span>
+                <!-- ================AI check======================================= -->
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-shrink-0">
                     <div class="input-group search-box shadow-sm">
                         <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
@@ -299,6 +310,50 @@
                     statusFilter.addEventListener("change", filterTable);
                 if (searchInput)
                     searchInput.addEventListener("keyup", filterTable);
+            });
+            document.getElementById("checkFraudBtn").addEventListener("click", function () {
+
+                const btn = document.getElementById("checkFraudBtn");
+                const loading = document.getElementById("fraudLoading");
+                const result = document.getElementById("fraudResult");
+
+                btn.disabled = true;
+                loading.style.display = "inline";
+                result.innerHTML = "";
+
+                fetch("<%=request.getContextPath()%>/InvoiceController?action=checkFraud").then(response => response.text())
+                        .then(data => {
+
+                            // delay 1.5 giây cho hiệu ứng AI scanning
+                            setTimeout(function () {
+
+                                loading.style.display = "none";
+                                btn.disabled = false;
+
+                                if (data.trim() === "yes") {
+
+                                    result.innerHTML =
+                                            "<span class='text-danger'><i class='fa-solid fa-triangle-exclamation'></i> Fraud Risk Detected</span>";
+
+                                } else {
+
+                                    result.innerHTML =
+                                            "<span class='text-success'><i class='fa-solid fa-check'></i> No Fraud</span>";
+
+                                }
+
+                            }, 1500);
+
+                        })
+                        .catch(err => {
+
+                            loading.style.display = "none";
+                            btn.disabled = false;
+
+                            result.innerHTML =
+                                    "<span class='text-danger'>AI Error</span>";
+
+                        });
             });
         </script>
     </body>

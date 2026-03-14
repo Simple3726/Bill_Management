@@ -1,5 +1,6 @@
 package controller;
 
+import ai.PredictFraud;
 import entity.Alert;
 import repository.AlertDAO;
 
@@ -10,6 +11,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import repository.InvoiceDAO;
 import service.InvoiceService;
+import weka.classifiers.Classifier;
+import weka.core.Instances;
+import weka.core.SerializationHelper;
+import weka.core.converters.ConverterUtils;
 
 @WebServlet(name = "AlertController", urlPatterns = {"/AlertController"})
 public class AlertController extends HttpServlet {
@@ -69,7 +74,6 @@ public class AlertController extends HttpServlet {
 
                 return;
             }
-
             // mặc định load alert list
             List<Alert> alertList = alertDAO.findAll();
 
@@ -77,7 +81,31 @@ public class AlertController extends HttpServlet {
 
             request.getRequestDispatcher("/WEB-INF/alert_list.jsp")
                     .forward(request, response);
-
+            //===================================Xử Lý AI=========================================
+//            if ("checkFraud".equals(action)) {
+//                try {
+//                    // load dataset
+//                    ConverterUtils.DataSource source
+//                            = new ConverterUtils.DataSource(
+//                                    getServletContext().getRealPath("/WEB-INF/fraud_dataset.arff")
+//                            );
+//                    Instances dataset = source.getDataSet();
+//                    dataset.setClassIndex(dataset.numAttributes() - 1);
+//                    // load model
+//                    Classifier model = (Classifier) SerializationHelper.read(
+//                            getServletContext().getRealPath("/WEB-INF/fraud_model.model")
+//                    );
+//                    // predict
+//                    String fraudResult = PredictFraud.predictInvoice(0, model, dataset);
+//                    response.setContentType("text/plain");
+//                    response.getWriter().write(fraudResult);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    response.getWriter().write("error");
+//                }
+//                return;
+//            }
+            //=================================================================================
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp");

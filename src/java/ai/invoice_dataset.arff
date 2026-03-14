@@ -2,19 +2,22 @@
 
 @attribute amount numeric
 @attribute invoice_hour numeric
-@attribute status {PENDING,APPROVED,REJECTED}
 @attribute is_weekend {yes,no}
+@attribute user_role {ADMIN,STAFF,AUDITOR}
+@attribute shift_status {OPEN,CLOSED}
+@attribute invoice_status {COMPLETED,PENDING,APPROVED,REJECTED,DELETED}
+@attribute edit_count numeric
 @attribute duplicated_invoice {yes,no}
 @attribute fraud {yes,no}
 
 @data
-500000,10,APPROVED,no,no,no
-2000000,1,PENDING,yes,no,yes
-150000,14,APPROVED,no,no,no
-3500000,3,PENDING,yes,yes,yes
-600000,11,APPROVED,no,no,no
-4500000,2,PENDING,yes,yes,yes
-800000,15,APPROVED,no,no,no
-2500000,4,PENDING,yes,no,yes
-300000,13,APPROVED,no,no,no
-4000000,1,PENDING,yes,yes,yes
+500000,10,no,STAFF,OPEN,APPROVED,0,no,no
+2000000,1,yes,STAFF,OPEN,PENDING,2,no,yes
+150000,14,no,STAFF,CLOSED,APPROVED,0,no,no
+3500000,3,yes,ADMIN,OPEN,PENDING,3,yes,yes
+600000,11,no,STAFF,OPEN,APPROVED,1,no,no
+4500000,2,yes,ADMIN,CLOSED,PENDING,4,yes,yes
+800000,15,no,STAFF,OPEN,APPROVED,0,no,no
+2500000,4,yes,STAFF,OPEN,PENDING,2,no,yes
+300000,13,no,STAFF,CLOSED,APPROVED,0,no,no
+4000000,1,yes,ADMIN,OPEN,PENDING,5,yes,yes

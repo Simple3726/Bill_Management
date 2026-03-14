@@ -247,8 +247,8 @@
                 new Chart(document.getElementById('alertChart'), {
                     type: 'pie',
                     data: {
-                        labels: ['New', 'Investigating', 'Resolved'], 
-                        datasets: [{data: [<%= data.get("NEW_ALERT")%>, <%= data.get("INVESTIGATING_ALERT")%>, <%= data.get("RESOLVED_ALERT")%>], backgroundColor: ['#d93025', '#f9a825', '#188038']}]
+                        labels: ['New', 'Resolved'], 
+                        datasets: [{data: [<%= data.get("NEW_ALERT")%>, <%= data.get("RESOLVED_ALERT")%>], backgroundColor: ['#d93025', '#188038']}]
                     },
                     options: {maintainAspectRatio: false}
                 });

@@ -210,12 +210,26 @@ public class UserController extends HttpServlet {
     // ======================================
     private void updateUser(HttpServletRequest request, HttpServletResponse response)
             throws IOException, Exception {
-
+        HttpSession currSession = request.getSession(false);
+        User currUser = (User) currSession.getAttribute("user");
+        if (currUser == null) {
+            response.sendRedirect(request.getContextPath() + "/LoginController?action=required");
+            return;
+        }
         long id = Long.parseLong(request.getParameter("id"));
+        
+        if (currUser.getRole().equals("ADMIN")) {
+            if (currUser.getUserId() == id) {
+                currSession.setAttribute("actionAlert", "Cannot lock yourself!!!");
+                response.sendRedirect(request.getContextPath() + "/UserController/List");
+                return;
+            }
+        }
+        
         String username = request.getParameter("username");
         String role = request.getParameter("role");
         String status = request.getParameter("status");
-
+        
         // Lấy User hiện tại lên để giữ lại các trường không sửa (ví dụ: Password, CreatedAt)
         User user = service.getUserById(id);
 

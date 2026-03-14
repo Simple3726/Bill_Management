@@ -217,8 +217,15 @@ public class InvoiceController extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("user");
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect(request.getContextPath() + "/LoginController?action=required");
+            return;
+        }
+        Shift currShift = shiftService.getCurrentShift(user.getUserId());
+        if(currShift == null){
+            session.setAttribute("actionAlert", "Action Denied: Please open shift first!");
+            response.sendRedirect(request.getContextPath() + "/ShiftController");
             return;
         }
         Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
@@ -226,6 +233,7 @@ public class InvoiceController extends HttpServlet {
         service.delete(invoiceId, curUser.getUserId());
 
         response.sendRedirect(request.getContextPath() + "/InvoiceController/List");
+        return;
     }
 
     private void showForm(HttpServletRequest request, HttpServletResponse response)

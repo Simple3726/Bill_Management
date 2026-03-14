@@ -133,7 +133,9 @@ public class InvoiceController extends HttpServlet {
                         detail.setProductName(arrProductNames[i]);
                         detail.setQuantity(Integer.parseInt(arrQuantities[i]));
                         detail.setUnitPrice(new BigDecimal(arrUnitPrices[i]));
-                        detail.setTotalPrice(new BigDecimal(request.getParameter("amount")));
+                        BigDecimal quantity = new BigDecimal(detail.getQuantity());
+                        BigDecimal total = detail.getUnitPrice().multiply(quantity);
+                        detail.setTotalPrice(total);
                         detailList.add(detail);
                     }
                 }

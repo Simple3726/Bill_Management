@@ -181,7 +181,6 @@
                         <select id="alertStatusFilter" class="form-select w-auto shadow-sm border-0">
                             <option value="ALL">All Alerts</option>
                             <option value="NEW">New</option>
-                            <option value="INVESTIGATING">Investigating</option>
                             <option value="RESOLVED">Resolved</option>
                         </select>
                     </div>

@@ -1,20 +1,25 @@
 package ai;
 
+import entity.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
+import javax.servlet.http.HttpSession;
 import utils.DBConnection;
 import weka.classifiers.Classifier;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.SerializationHelper;
+import weka.core.converters.ConverterUtils;
 
 public class PredictFraud {
 
     public static String predictInvoice(long invoiceId, Classifier model, Instances dataset) throws Exception {
 
-        String sql =
-                "SELECT "
+        String sql
+                = "SELECT "
                 + "i.invoice_id, "
                 + "i.amount, "
                 + "DATEPART(HOUR, i.created_at) AS invoice_hour, "
@@ -38,17 +43,17 @@ public class PredictFraud {
                 + "AND i.created_at BETWEEN s.start_time AND s.end_time "
                 + "WHERE i.invoice_id = ?";
 
-        String prediction = "no";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String prediction = "";
+        double riskScore = 0;
+        double[] dist = null;
+        String formattedScore = "";
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, invoiceId);
 
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-
                 double amount = rs.getDouble("amount");
                 int hour = rs.getInt("invoice_hour");
 
@@ -58,9 +63,9 @@ public class PredictFraud {
                 String invoiceStatus = rs.getString("invoice_status");
 
                 int editCount = rs.getInt("edit_count");
-
                 String duplicate = rs.getString("duplicated_invoice");
 
+                // tạo instance
                 Instance inst = new DenseInstance(dataset.numAttributes());
                 inst.setDataset(dataset);
 
@@ -73,28 +78,47 @@ public class PredictFraud {
                 inst.setValue(6, editCount);
                 inst.setValue(7, duplicate);
 
+                // fraud chưa biết
+                inst.setMissing(dataset.classIndex());
+
+                // predict
                 double result = model.classifyInstance(inst);
 
                 prediction = dataset.classAttribute().value((int) result);
 
-                if ("yes".equals(prediction)) {
+                // probability
+                dist = model.distributionForInstance(inst);
+                formattedScore = String.format("%.2f", dist[1]);
+                int fraudIndex = dataset.classAttribute().indexOfValue("yes");
 
-                    String insertAlert =
-                            "INSERT INTO Alerts(entity_type, entity_id, risk_score, message) "
-                            + "VALUES ('INVOICE', ?, ?, ?)";
+                riskScore = dist[fraudIndex];
 
-                    try (PreparedStatement psAlert = conn.prepareStatement(insertAlert)) {
-
-                        psAlert.setLong(1, invoiceId);
-                        psAlert.setInt(2, 80);
-                        psAlert.setString(3, "AI detected suspicious invoice");
-
-                        psAlert.executeUpdate();
-                    }
-                }
+//                System.out.println("Prediction: " + prediction);
+//                System.out.println("Risk score: " + riskScore);
+//                System.out.println("dist = [" + dist[0] + ", " + dist[1] + "]");
+            } else {
+                return "Invoice not found";
             }
         }
-
-        return prediction;
+        return prediction +  formattedScore ;
     }
+
+//    public static void main(String[] args) throws Exception {
+//
+//        String arffPath = "C:/Users/Admin/Documents/GitHub/Bill_Management/web/WEB-INF/invoice_dataset.arff";
+//        String modelPath = "C:/Users/Admin/Documents/GitHub/Bill_Management/web/WEB-INF/risk_logistic.model";
+//
+//        //long invoiceId = 3; // test trực tiếp id
+//        ConverterUtils.DataSource source = new ConverterUtils.DataSource(arffPath);
+//        Instances dataset = source.getDataSet();
+//        dataset.setClassIndex(dataset.numAttributes() - 1);
+//
+//        Classifier model = (Classifier) SerializationHelper.read(modelPath);
+//        System.out.println(model);
+//        for (int i = 1; i < 10; i++) {
+//            String result = PredictFraud.predictInvoice(i, model, dataset);
+//            System.out.println("Prediction = " + result + "\n");
+//        }
+//
+//    }
 }

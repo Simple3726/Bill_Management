@@ -15,11 +15,11 @@ public class Alert {
     private String message;
     private String status; // NEW / INVESTIGATING / RESOLVED
     private LocalDateTime createdAt;
-
+    private String fraud;
     public Alert() {
     }
 
-    public Alert(Long alertId, String entityType, Long entityId, Integer riskScore, String message, String status, LocalDateTime createdAt) {
+    public Alert(Long alertId, String entityType, Long entityId, Integer riskScore, String message, String status, LocalDateTime createdAt, String fraud) {
         this.alertId = alertId;
         this.entityType = entityType;
         this.entityId = entityId;
@@ -27,6 +27,7 @@ public class Alert {
         this.message = message;
         this.status = status;
         this.createdAt = createdAt;
+        this.fraud = fraud;
     }
 
     public Long getAlertId() {
@@ -85,4 +86,12 @@ public class Alert {
         this.createdAt = createdAt;
     }
 
+    public String getFraud() {
+        return fraud;
+    }
+
+    public void setFraud(String fraud) {
+        this.fraud = fraud;
+    }
+    
 }

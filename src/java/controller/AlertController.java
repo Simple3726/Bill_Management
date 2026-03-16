@@ -2,15 +2,22 @@ package controller;
 
 import ai.PredictFraud;
 import entity.Alert;
+import entity.User;
 import repository.AlertDAO;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import repository.ActivityLogDAO;
 import repository.InvoiceDAO;
+import repository.ShiftDAO;
 import service.InvoiceService;
+import service.ShiftService;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
@@ -19,93 +26,110 @@ import weka.core.converters.ConverterUtils;
 @WebServlet(name = "AlertController", urlPatterns = {"/AlertController"})
 public class AlertController extends HttpServlet {
 
-    AlertDAO alertDAO = new AlertDAO();
+    private AlertDAO alertDAO;
+    private InvoiceDAO invoiceDAO;
+
+    @Override
+    public void init() throws ServletException {
+        alertDAO = new AlertDAO();
+        invoiceDAO = new InvoiceDAO();
+    }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
 
-            AlertDAO alertDAO = new AlertDAO();
-
             String action = request.getParameter("action");
-
             // nếu bấm investigate
-            if ("investigate".equals(action)) {
-
-                Long alertId = Long.parseLong(request.getParameter("alertId"));
-
-                Alert alert = alertDAO.findById(alertId);
-
-                request.setAttribute("alert", alert);
-
-                request.getRequestDispatcher("/WEB-INF/investigate.jsp")
-                        .forward(request, response);
-
-                return;
-            }
-
-            // nếu bấm resolve
-            if ("resolve".equals(action)) {
-
-                InvoiceDAO invoiceDAO = new InvoiceDAO();
-
-                Long alertId = Long.parseLong(request.getParameter("alertId"));
-                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
-
-                alertDAO.updateStatus(alertId, "RESOLVED");
-                invoiceDAO.updateStatus(invoiceId, "APPROVED");
-
-                response.sendRedirect(request.getContextPath() + "/AlertController");
-
-                return;
-            }
-            if ("reject".equals(action)) {
-
-                InvoiceDAO invoiceDAO = new InvoiceDAO();
-
-                Long alertId = Long.parseLong(request.getParameter("alertId"));
-                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
-
-                alertDAO.updateStatus(alertId, "RESOLVED");
-                invoiceDAO.updateStatus(invoiceId, "REJECTED");
-
-                response.sendRedirect(request.getContextPath() + "/AlertController");
-
-                return;
-            }
-            // mặc định load alert list
-            List<Alert> alertList = alertDAO.findAll();
-
-            request.setAttribute("alertList", alertList);
-
-            request.getRequestDispatcher("/WEB-INF/alert_list.jsp")
-                    .forward(request, response);
-            //===================================Xử Lý AI=========================================
-//            if ("checkFraud".equals(action)) {
-//                try {
-//                    // load dataset
-//                    ConverterUtils.DataSource source
-//                            = new ConverterUtils.DataSource(
-//                                    getServletContext().getRealPath("/WEB-INF/fraud_dataset.arff")
-//                            );
-//                    Instances dataset = source.getDataSet();
-//                    dataset.setClassIndex(dataset.numAttributes() - 1);
-//                    // load model
-//                    Classifier model = (Classifier) SerializationHelper.read(
-//                            getServletContext().getRealPath("/WEB-INF/fraud_model.model")
-//                    );
-//                    // predict
-//                    String fraudResult = PredictFraud.predictInvoice(0, model, dataset);
-//                    response.setContentType("text/plain");
-//                    response.getWriter().write(fraudResult);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    response.getWriter().write("error");
-//                }
+//            if ("investigate".equals(action)) {
+//
+//                Long alertId = Long.parseLong(request.getParameter("alertId"));
+//
+//                Alert alert = alertDAO.findById(alertId);
+//
+//                request.setAttribute("alert", alert);
+//
+//                request.getRequestDispatcher("/WEB-INF/investigate.jsp")
+//                        .forward(request, response);
+//
 //                return;
 //            }
+//
+//            // nếu bấm resolve
+//            if ("resolve".equals(action)) {
+//
+//                InvoiceDAO invoiceDAO = new InvoiceDAO();
+//
+//                Long alertId = Long.parseLong(request.getParameter("alertId"));
+//                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
+//
+//                alertDAO.updateStatus(alertId, "RESOLVED");
+//                invoiceDAO.updateStatus(invoiceId, "APPROVED");
+//
+//                response.sendRedirect(request.getContextPath() + "/AlertController");
+//
+//                return;
+//            }
+//            if ("reject".equals(action)) {
+//
+//                InvoiceDAO invoiceDAO = new InvoiceDAO();
+//
+//                Long alertId = Long.parseLong(request.getParameter("alertId"));
+//                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
+//
+//                alertDAO.updateStatus(alertId, "RESOLVED");
+//                invoiceDAO.updateStatus(invoiceId, "REJECTED");
+//
+//                response.sendRedirect(request.getContextPath() + "/AlertController");
+//
+//                return;
+//            }
+            //===================================Xử Lý AI=========================================
+            if ("checkFraud".equals(action)) {
+                try {
+
+                    // 1. Load model và dataset 1 lần duy nhất
+                    String arffPath = getServletContext().getRealPath("/WEB-INF/invoice_dataset.arff");
+                    String modelPath = getServletContext().getRealPath("/WEB-INF/risk_logistic.model");
+
+                    ConverterUtils.DataSource source = new ConverterUtils.DataSource(arffPath);
+                    Instances dataset = source.getDataSet();
+                    dataset.setClassIndex(dataset.numAttributes() - 1);
+                    Classifier model = (Classifier) SerializationHelper.read(modelPath);
+
+                    // 2. Lấy danh sách ID và dự đoán luôn
+                    HttpSession session = request.getSession();
+                    User currentUser = (User) session.getAttribute("user");
+                    List<Long> ids = invoiceDAO.getInvoiceIdsByUserId(currentUser.getUserId());
+
+                    List<Map<String, Object>> finalResults = new ArrayList<>();
+                    for (Long id : ids) {
+                        String score = PredictFraud.predictInvoice(id, model, dataset);
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("id", id);
+                        map.put("score", score);
+                        finalResults.add(map);
+                    }
+                    
+                    // 3. Gửi danh sách kết quả cuối cùng sang JSP
+                    request.setAttribute("fraudResults", finalResults);
+                    request.getRequestDispatcher("/WEB-INF/alert_list.jsp").forward(request, response);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    response.getWriter().write("error");
+                    return;
+                }
+            }
             //=================================================================================
+            // mặc định load alert list
+//            List<Alert> alertList = alertDAO.findAll();
+//
+//            request.setAttribute("alertList", alertList);
+//
+//            request.getRequestDispatcher("/WEB-INF/alert_list.jsp")
+//                    .forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp");

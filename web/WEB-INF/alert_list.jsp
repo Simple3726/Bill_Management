@@ -193,7 +193,7 @@
 
                             <i class="fa-solid fa-magnifying-glass-chart me-2"></i>
 
-                            Check Fraud
+                            Check Fraud By RandomForest model
 
                         </button>
 

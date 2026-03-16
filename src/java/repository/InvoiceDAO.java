@@ -383,12 +383,9 @@ public class InvoiceDAO {
 
     public List<Long> getInvoiceIdsByUserId(long userId) {
         List<Long> list = new ArrayList<>();
-        String sql = "SELECT invoice_id FROM Invoices WHERE created_by = ?";
+        String sql = "SELECT invoice_id FROM Invoices";
 
         try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setLong(1, userId);
-
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(rs.getLong("invoice_id"));

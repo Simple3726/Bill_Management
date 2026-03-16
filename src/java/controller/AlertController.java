@@ -1,30 +1,46 @@
 package controller;
 
+import ai.PredictFraud;
 import entity.Alert;
+import entity.User;
 import repository.AlertDAO;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import repository.ActivityLogDAO;
 import repository.InvoiceDAO;
+import repository.ShiftDAO;
 import service.InvoiceService;
+import service.ShiftService;
+import weka.classifiers.Classifier;
+import weka.core.Instances;
+import weka.core.SerializationHelper;
+import weka.core.converters.ConverterUtils;
 
 @WebServlet(name = "AlertController", urlPatterns = {"/AlertController"})
 public class AlertController extends HttpServlet {
 
-    AlertDAO alertDAO = new AlertDAO();
+    private AlertDAO alertDAO;
+    private InvoiceDAO invoiceDAO;
+
+    @Override
+    public void init() throws ServletException {
+        alertDAO = new AlertDAO();
+        invoiceDAO = new InvoiceDAO();
+    }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
 
-            AlertDAO alertDAO = new AlertDAO();
-
             String action = request.getParameter("action");
-
             // nếu bấm investigate
             if ("investigate".equals(action)) {
 
@@ -69,14 +85,46 @@ public class AlertController extends HttpServlet {
 
                 return;
             }
+            //===================================Xử Lý AI=========================================
+            if ("checkFraud".equals(action)) {
+                try {
 
-            // mặc định load alert list
-            List<Alert> alertList = alertDAO.findAll();
+                    // 1. Load model và dataset 1 lần duy nhất
+                    String arffPath = getServletContext().getRealPath("/WEB-INF/invoice_dataset.arff");
+                    String modelPath = getServletContext().getRealPath("/WEB-INF/risk_logistic.model");
 
-            request.setAttribute("alertList", alertList);
+                    ConverterUtils.DataSource source = new ConverterUtils.DataSource(arffPath);
+                    Instances dataset = source.getDataSet();
+                    dataset.setClassIndex(dataset.numAttributes() - 1);
+                    Classifier model = (Classifier) SerializationHelper.read(modelPath);
 
-            request.getRequestDispatcher("/WEB-INF/alert_list.jsp")
-                    .forward(request, response);
+                    // 2. Lấy danh sách ID và dự đoán luôn
+                    HttpSession session = request.getSession();
+                    User currentUser = (User) session.getAttribute("user");
+                    List<Long> ids = invoiceDAO.getInvoiceIdsByUserId(currentUser.getUserId());
+
+                    List<Map<String, Object>> finalResults = new ArrayList<>();
+                    for (Long id : ids) {
+                        String score = PredictFraud.predictInvoice(id, model, dataset);
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("id", id);
+                        map.put("score", score);
+                        finalResults.add(map);
+                    }
+                    // mặc định load alert list
+                    List<Alert> alertList = alertDAO.findAll();
+                    request.setAttribute("alertList", alertList);
+                    // 3. Gửi danh sách kết quả cuối cùng sang JSP
+                    request.setAttribute("fraudResults", finalResults);
+                    request.getRequestDispatcher("/WEB-INF/alert_list.jsp").forward(request, response);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    response.getWriter().write("error");
+                    return;
+                }
+            }
+            //=================================================================================
 
         } catch (Exception e) {
             e.printStackTrace();

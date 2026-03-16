@@ -377,4 +377,25 @@ public class InvoiceDAO {
 
         return BigDecimal.ZERO;
     }
+    // =====================================
+    // Lấy tất cả InvoiceID dựa trên UserID
+    // =====================================
+
+    public List<Long> getInvoiceIdsByUserId(long userId) {
+        List<Long> list = new ArrayList<>();
+        String sql = "SELECT invoice_id FROM Invoices";
+
+        try ( Connection conn = DBConnection.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getLong("invoice_id"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+    
 }

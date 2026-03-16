@@ -1,5 +1,6 @@
 package controller;
 
+import ai.PredictFraud;
 import entity.Invoice;
 import entity.InvoiceDetail;
 import entity.Product;
@@ -19,6 +20,11 @@ import repository.InvoiceDetailDAO;
 import service.InvoiceService;
 import service.ProductService;
 import service.ShiftService;
+import weka.classifiers.Classifier;
+import weka.core.Instances;
+import weka.core.SerializationHelper;
+import weka.core.converters.ConverterUtils;
+import weka.core.converters.ConverterUtils.DataSource;
 
 /**
  *
@@ -112,7 +118,42 @@ public class InvoiceController extends HttpServlet {
                 invoice.setAmount(new BigDecimal(request.getParameter("amount")));
                 invoice.setCreatedBy(currentUser.getUserId());
                 invoice = service.createInvoice(invoice, currShift);
+                //===================================AI=======================================
 
+                String action = request.getParameter("action");
+
+                if ("checkFraud".equals(action)) {
+
+                    try {
+
+                        Classifier model = (Classifier) SerializationHelper.read(
+                                getServletContext().getRealPath("/ai/risk_logistic.model")
+                        );
+
+                        DataSource source = new DataSource(
+                                getServletContext().getRealPath("/ai/invoice_dataset.arff")
+                        );
+
+                        Instances dataset = source.getDataSet();
+                        dataset.setClassIndex(dataset.numAttributes() - 1);
+
+                        String fraudResult
+                                = PredictFraud.predictInvoice(invoice.getInvoiceId(), model, dataset);
+
+                        response.setContentType("text/plain");
+                        response.getWriter().write(fraudResult);
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+                        response.getWriter().write("error");
+
+                    }
+
+                    return;
+                }
+
+                //============================================================================
                 if (invoice == null) {
                     currSession.setAttribute("actionAlert", "Cannot add Invoice to database!");
                     response.sendRedirect(request.getContextPath() + "/InvoiceController/List");

@@ -88,7 +88,7 @@ public class PredictFraud {
 
                 // probability
                 dist = model.distributionForInstance(inst);
-                formattedScore = String.format("%.2f", dist[1]);
+                formattedScore = String.format("%.0f", dist[1] * 100);
                 int fraudIndex = dataset.classAttribute().indexOfValue("yes");
 
                 riskScore = dist[fraudIndex];
@@ -100,7 +100,7 @@ public class PredictFraud {
                 return "Invoice not found";
             }
         }
-        return prediction +  formattedScore ;
+        return prediction + " / " +  formattedScore ;
     }
 
 //    public static void main(String[] args) throws Exception {

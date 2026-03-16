@@ -42,49 +42,49 @@ public class AlertController extends HttpServlet {
 
             String action = request.getParameter("action");
             // nếu bấm investigate
-//            if ("investigate".equals(action)) {
-//
-//                Long alertId = Long.parseLong(request.getParameter("alertId"));
-//
-//                Alert alert = alertDAO.findById(alertId);
-//
-//                request.setAttribute("alert", alert);
-//
-//                request.getRequestDispatcher("/WEB-INF/investigate.jsp")
-//                        .forward(request, response);
-//
-//                return;
-//            }
-//
-//            // nếu bấm resolve
-//            if ("resolve".equals(action)) {
-//
-//                InvoiceDAO invoiceDAO = new InvoiceDAO();
-//
-//                Long alertId = Long.parseLong(request.getParameter("alertId"));
-//                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
-//
-//                alertDAO.updateStatus(alertId, "RESOLVED");
-//                invoiceDAO.updateStatus(invoiceId, "APPROVED");
-//
-//                response.sendRedirect(request.getContextPath() + "/AlertController");
-//
-//                return;
-//            }
-//            if ("reject".equals(action)) {
-//
-//                InvoiceDAO invoiceDAO = new InvoiceDAO();
-//
-//                Long alertId = Long.parseLong(request.getParameter("alertId"));
-//                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
-//
-//                alertDAO.updateStatus(alertId, "RESOLVED");
-//                invoiceDAO.updateStatus(invoiceId, "REJECTED");
-//
-//                response.sendRedirect(request.getContextPath() + "/AlertController");
-//
-//                return;
-//            }
+            if ("investigate".equals(action)) {
+
+                Long alertId = Long.parseLong(request.getParameter("alertId"));
+
+                Alert alert = alertDAO.findById(alertId);
+
+                request.setAttribute("alert", alert);
+
+                request.getRequestDispatcher("/WEB-INF/investigate.jsp")
+                        .forward(request, response);
+
+                return;
+            }
+
+            // nếu bấm resolve
+            if ("resolve".equals(action)) {
+
+                InvoiceDAO invoiceDAO = new InvoiceDAO();
+
+                Long alertId = Long.parseLong(request.getParameter("alertId"));
+                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
+
+                alertDAO.updateStatus(alertId, "RESOLVED");
+                invoiceDAO.updateStatus(invoiceId, "APPROVED");
+
+                response.sendRedirect(request.getContextPath() + "/AlertController");
+
+                return;
+            }
+            if ("reject".equals(action)) {
+
+                InvoiceDAO invoiceDAO = new InvoiceDAO();
+
+                Long alertId = Long.parseLong(request.getParameter("alertId"));
+                Long invoiceId = Long.parseLong(request.getParameter("invoiceId"));
+
+                alertDAO.updateStatus(alertId, "RESOLVED");
+                invoiceDAO.updateStatus(invoiceId, "REJECTED");
+
+                response.sendRedirect(request.getContextPath() + "/AlertController");
+
+                return;
+            }
             //===================================Xử Lý AI=========================================
             if ("checkFraud".equals(action)) {
                 try {
@@ -111,7 +111,9 @@ public class AlertController extends HttpServlet {
                         map.put("score", score);
                         finalResults.add(map);
                     }
-                    
+                    // mặc định load alert list
+                    List<Alert> alertList = alertDAO.findAll();
+                    request.setAttribute("alertList", alertList);
                     // 3. Gửi danh sách kết quả cuối cùng sang JSP
                     request.setAttribute("fraudResults", finalResults);
                     request.getRequestDispatcher("/WEB-INF/alert_list.jsp").forward(request, response);
@@ -123,13 +125,7 @@ public class AlertController extends HttpServlet {
                 }
             }
             //=================================================================================
-            // mặc định load alert list
-//            List<Alert> alertList = alertDAO.findAll();
-//
-//            request.setAttribute("alertList", alertList);
-//
-//            request.getRequestDispatcher("/WEB-INF/alert_list.jsp")
-//                    .forward(request, response);
+
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp");

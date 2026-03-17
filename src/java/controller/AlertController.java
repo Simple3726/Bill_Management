@@ -101,7 +101,7 @@ public class AlertController extends HttpServlet {
                     // 2. Lấy danh sách ID và dự đoán luôn
                     HttpSession session = request.getSession();
                     User currentUser = (User) session.getAttribute("user");
-                    List<Long> ids = invoiceDAO.getInvoiceIdsByUserId(currentUser.getUserId());
+                    List<Long> ids = invoiceDAO.getInvoiceIdsByAllUserId(currentUser.getUserId());
 
                     List<Map<String, Object>> finalResults = new ArrayList<>();
                     for (Long id : ids) {
@@ -125,7 +125,13 @@ public class AlertController extends HttpServlet {
                 }
             }
             //=================================================================================
+            // mặc định load alert list
+            List<Alert> alertList = alertDAO.findAll();
 
+            request.setAttribute("alertList", alertList);
+
+            request.getRequestDispatcher("/WEB-INF/alert_list.jsp")
+                    .forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp");

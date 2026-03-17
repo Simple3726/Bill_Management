@@ -378,10 +378,10 @@ public class InvoiceDAO {
         return BigDecimal.ZERO;
     }
     // =====================================
-    // Lấy tất cả InvoiceID dựa trên UserID
+    // Lấy tất cả InvoiceID dựa trên tất cả UserID
     // =====================================
 
-    public List<Long> getInvoiceIdsByUserId(long userId) {
+    public List<Long> getInvoiceIdsByAllUserId(long userId) {
         List<Long> list = new ArrayList<>();
         String sql = "SELECT invoice_id FROM Invoices";
 

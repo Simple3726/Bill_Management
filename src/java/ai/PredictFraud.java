@@ -1,18 +1,13 @@
 package ai;
 
-import entity.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.List;
-import javax.servlet.http.HttpSession;
 import utils.DBConnection;
 import weka.classifiers.Classifier;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.SerializationHelper;
-import weka.core.converters.ConverterUtils;
 
 public class PredictFraud {
 

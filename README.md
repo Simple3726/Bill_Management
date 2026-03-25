@@ -1,2 +1,1 @@
-- Database: Bill_Management
-- Có 2 file sql trong gr tự chạy roi thêm data vô test
+lib có chứa thư viện cần thiết cho prj
